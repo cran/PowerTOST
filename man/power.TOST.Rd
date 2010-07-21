@@ -4,8 +4,8 @@
 Power of the TOST procedure
 }
 \description{
-Calculates the power of the two-one-sided t-tests procedure for various
-study designs used in BE studies
+Calculates the exact or approximate power of the two-one-sided t-tests 
+procedure for various study designs used in BE studies.
 }
 \usage{
 power.TOST(alpha = 0.05, logscale = TRUE, theta1 = 0.8, theta2, diff = 0.95, 
@@ -44,11 +44,12 @@ power.TOST(alpha = 0.05, logscale = TRUE, theta1 = 0.8, theta2, diff = 0.95,
   \item{exact}{
   Shall the calculations done exact (based on formulas with Owen's Q) or
   approximately via non-central Student's t-distribution? TRUE or FALSE.
+  Defaults to TRUE.
   }
 }
 \details{
-The calculations of power are exact based on Owen's Q-function.
-There is also an implementation of approximate power via non-central 
+The exact calculations of power are based on Owen's Q-function.\cr
+The approximate power is an implementation of  via non-central 
 t-distribution.
 }
 \value{
@@ -63,6 +64,9 @@ Diletti D., Hauschke D., and Steinijans V. W. (1991) \cr
 "Sample Size Determination for Bioequivalence Assessment \cr 
 by Means of Confidence Intervals" \cr 
 Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29, 1-8 
+
+See here for a short description:\cr
+See \url{../doc/BE_power_sample_size_excerpt.pdf}.
 }
 \author{
 D. Labes
@@ -71,6 +75,8 @@ D. Labes
  \code{\link{sampleN.TOST}, \link{known.designs}}
 }
 \examples{
-# power for the 2x2 cross-over
+# power for the 2x2 cross-over 
+# using all the other default values
 power.TOST(CV=0.25, n=24)
+# gives: [1] 0.7391155
 }

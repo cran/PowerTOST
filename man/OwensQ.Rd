@@ -24,7 +24,7 @@ Biometrika, 52, 437-446.
 }
 \author{D. Labes}
 \note{
-This function is intended for internal use.\cr
+This function is intended for internal use in the power calculations.\cr
 But may be usefull for others.
 }
 

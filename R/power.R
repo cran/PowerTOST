@@ -1,9 +1,9 @@
 # Author: dlabes
 #------------------------------------------------------------------------------
 # helper function to calculate std err from CV of lognormal data
-.CV2se <- function(CV) return(sqrt(log(1.0 + CV^2)))
+CV2se <- function(CV) return(sqrt(log(1.0 + CV^2)))
 # reverse helper function
-.se2CV <- function(se) return(sqrt(exp(se*se)-1))
+se2CV <- function(se) return(sqrt(exp(se*se)-1))
 #------------------------------------------------------------------------------
 # 'raw' power function without any error checks,
 # does not vectorize propperly!
@@ -12,12 +12,12 @@
 # diffm=log(null ratio), theta1=log(lower BE limit), theta2=log(upper BE limit)
 # in case of additive model:
 # diffm=1-null ratio, theta1=lower BE limit-1, theta2=upper BE limit -1
-.power.TOST <- function(alpha=0.05, theta1, theta2, diffm, se, n, df, bk=2)
+.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, se, n, df, bk=2)
 {
   tval   <- qt(1 - alpha, df, lower.tail = TRUE)
   
-  delta1 <- (diffm-theta1)/(se*sqrt(bk/n))
-  delta2 <- (diffm-theta2)/(se*sqrt(bk/n))
+  delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
+  delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
   R      <- (delta1-delta2)*sqrt(df)/(2.*tval)
   
   # to avoid numerical errors in OwensQ implementation
@@ -46,12 +46,12 @@
 # 'raw' power function without any error checks, 
 # approximation based on non-central t
 # this vectorices ok
-.approx.power.TOST <- function(alpha=0.05, theta1, theta2, diffm, 
+.approx.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
 		                       se, n, df, bk=2)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE, log.p = FALSE)
-  delta1 <- (diffm-theta1)/(se*sqrt(bk/n))
-  delta2 <- (diffm-theta2)/(se*sqrt(bk/n))
+  delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
+  delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
 	
   pow <- pt(-tval, df, ncp=delta2)-pt(tval, df, ncp=delta1)
   pow[pow<0] <- 0 # this is to avoid neg. power due to approx. (vector form)
@@ -64,12 +64,12 @@
 # according to Chow, Liu "Design and Analysis of Bioavailability ..."
 # Chapter 9.6 and implemented in PASS 2008
 # where does this all come from?
-.approx2.power.TOST <- function(alpha=0.05, theta1, theta2, diffm, 
+.approx2.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
                                 se, n, df, bk=2)
 {
 	tval <- qt(1 - alpha, df, lower.tail = TRUE)
-	delta1 <- (diffm-theta1)/(se*sqrt(bk/n))
-	delta2 <- (diffm-theta2)/(se*sqrt(bk/n))
+	delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
+	delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
 	
 	pow <- pt(-delta2-tval,df) - pt(tval-delta1,df)
 	pow[pow<0] <- 0 # this is to avoid neg. power due to approx. (vector form)
@@ -107,7 +107,7 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1=0.8, theta2,
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
     ldiff   <- log(diff)
-    se      <- sqrt(log(1.+CV^2))
+    se      <- CV2se(CV)
   } else {
     if (missing(theta2)) theta2 <- -theta1
     ltheta1 <- theta1
@@ -157,15 +157,15 @@ exppower.TOST <- function(alpha=0.05, theta1=0.8, theta2, diff=0.95,
   dfe  <- parse(text=ades$df[1],srcfile=NULL) #degrees of freedom as expression
   bk   <- ades$bk                             #design const.
   
-  if (missing(CV) | missing(dfCV)) stop("Err: CV and/or df must be given!")
+  if (missing(CV) | missing(dfCV)) stop("Err: CV and df must be given!")
   if (missing(n))  stop("Err: number of subjects must be given!")
 
   if (missing(theta2)) theta2 <- 1/theta1
   ltheta1 <- log(theta1)
   ltheta2 <- log(theta2)
   ldiff   <- log(diff)
-  se      <- sqrt(log(1.+CV^2))
-  df <- eval(dfe)
+  se      <- CV2se(CV)
+  df      <- eval(dfe)
   pow <- .exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se, dfCV, n, df, bk)
 
   return( pow )

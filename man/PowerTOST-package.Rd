@@ -17,8 +17,8 @@ Moreover the package contains functions for power and sample size based on
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 0.5\cr
-Date: \tab 2010-05-07\cr
+Version: \tab 0.6-2\cr
+Date: \tab 2010-07-21\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
@@ -45,4 +45,3 @@ S.A. Joulious\cr
 CRC Press, Chapman & Hall 2010
 }
 \keyword{ package }
-\keyword{ design }

@@ -45,7 +45,7 @@ OwensQ <- function (nu, t, delta, a, b)
 { #version without for - loop, it works without
 	lnQconst <- -((nu/2.0)-1.0)*log(2.0) - lgamma(nu/2.)
 	dens <- pnorm( t*x/sqrt(nu) - delta, mean = 0, sd = 1, log = FALSE) * 
-			exp( (nu-1)*log(x) - 0.5*x^2 + lnQconst )
+			    exp( (nu-1)*log(x) - 0.5*x^2 + lnQconst )
 	
 	return(dens)
 }

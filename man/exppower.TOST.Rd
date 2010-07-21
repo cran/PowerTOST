@@ -4,22 +4,22 @@
 'Expected' power of TOST procedure
 }
 \description{
-Calculates the expected power according to Joulious for a variety of study
-designs used in bioequivalence studies
+Calculates the 'expected' power according to Joulious for a variety of study
+designs used in bioequivalence studies.
 }
 \usage{
 exppower.TOST(alpha = 0.05, theta1 = 0.8, theta2, diff = 0.95, 
-               CV, dfCV, n, design = "2x2")
+              CV, dfCV, n, design = "2x2")
 }
 \arguments{
   \item{alpha}{
 Level of significance. Mostly set to 0.05.
 }
   \item{theta1}{
-Theta1 is the lower bioequivalence limit as ratio.
+Lower bioequivalence limit as ratio.
 }
   \item{theta2}{
-Theta2 is the upper bioequivalence limit.
+Upper bioequivalence limit.
 If not given theta2 will be calculated as 1/theta1.
 }
   \item{diff}{
@@ -41,11 +41,11 @@ See known.designs() for designs covered in this package.
 }
 \details{
 This function calculates the so-called 'expected' power based on S.A. Joulious
-taking into account that usually the CV is not known but estimated from
-previous study / studies with an uncertainty. See reference.
+taking into account that usually the CV is not known \cr but estimated from a
+previous study / studies with an uncertainty. See references.
 }
 \value{
-Value of power according to the input.
+Value of expected power according to the input.
 }
 \references{
 S.A. Joulious, R.J. Owen\cr
@@ -61,8 +61,8 @@ CRC Press, Chapman & Hall 2010
 D. Labes
 }
 \note{
-This function is only implemented for logscale=TRUE. Therefore this argument is
-not included in the function call.
+This function is only implemented for logscale=TRUE.\cr
+Therefore this argument is not included in the function call.
 }
 
 \seealso{
@@ -70,7 +70,12 @@ not included in the function call.
 }
 \examples{
 # expected power for a 2x2 crossover
-# CV 30\% known from a pilot study with 12 subjects (dfCV=10)
-# should give: [1] 0.3575385
-exppower.TOST(CV=0.3,dfCV=10,n=20)
+# CV 30\% known from a pilot study with 12 subjects (-> dfCV=10)
+# using all the defaults for other parameters
+# should give: [1] 0.735977
+exppower.TOST(CV=0.3, dfCV=10, n=40)
+
+# Compare this to the usual power (CV known, "carved in stone")
+# gives: [1] 0.8158453
+power.TOST(CV=0.3, n=40)
 }
