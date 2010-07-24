@@ -61,7 +61,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
     diffm   <- log(diff)
-    se      <- sqrt(log(1.+CV^2))
+    se      <- CV2se(CV)
     if (print) cat("log-transformed data (multiplicative model)\n\n")
   } else {
     if (missing(theta2)) theta2=-theta1
@@ -160,7 +160,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
 #------------------------------------------------------------------------------
 # sample size start for Joulious "expected" power
 .expsampleN0 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
-                          se, dfse, steps=2, bk=2)
+                         se, dfse, steps=2, bk=2)
 {
   Z1 <- qnorm(1-alpha)
   if (abs(diffm)>0.0001) tinv <- qt(targetpower, dfse, Z1)  else
@@ -184,9 +184,9 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
 # leave upper BE margin (ltheta2) empty and the function will use 1/lower
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, 
-                             theta1=0.8, theta2, diff=0.95, CV, dfCV, 
-                             alpha2=0.05,
-                             design="2x2", print=TRUE, details=FALSE)
+                            theta1=0.8, theta2, diff=0.95, CV, dfCV, 
+                            alpha2=0.05,
+                            design="2x2", print=TRUE, details=FALSE)
 {
   #number of the design and check if design is implemented
   d.no <- .design.no(design)
@@ -210,11 +210,11 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8,
       stop("Err: CV and df must have equal number of entries!", call.=FALSE)
     }
     dfse <- sum(dfCV)
-    CVp  <- .CV2se(CV)^2 #need s-squared
+    CVp  <- CV2se(CV)^2 #need s-squared
     CVp  <- CVp * dfCV
     CVp  <- sum(CVp)/dfse
     CVp  <- sqrt(CVp)
-    CVp  <- .se2CV(CVp)
+    CVp  <- se2CV(CVp)
   } else {
     dfse <- dfCV
     CVp  <- CV
@@ -227,8 +227,8 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8,
     cat("Study design: ",d.name,"\n")
     if (details) { 
       cat("Design characteristics:\n")
-      cat("df = ",ades$df,", design const. = ",bk,
-          ", step = ",steps,"\n\n",sep="")
+      cat("df = ",ades$df,", design const. = ",bk,", step = ",steps,
+          "\n\n",sep="")
     }     
   }
   if (missing(theta2)) theta2=1/theta1
@@ -238,7 +238,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8,
   ltheta1 <- log(theta1)
   ltheta2 <- log(theta2)
   diffm   <- log(diff)
-  se      <- .CV2se(CVp)
+  se      <- CV2se(CVp)
   
   if (print) {
     cat("log-transformed data (multiplicative model)\n\n")
@@ -255,14 +255,14 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8,
     } else {
       cat("CV                 = ", CVp, " with ", dfse," df\n", sep="")
     }   
-    cat("one-sided upper CL = ",.se2CV(seupper)," (level = ",
+    cat("one-sided upper CL = ",se2CV(seupper)," (level = ",
         100*(1-alpha2),"%)\n",sep="")
   }
   
   #start value from large sample approx. 
-  n  <- .expsampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, 
+  n   <- .expsampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, 
                       se, dfse, steps, bk)
-  df <- eval(dfe)
+  df  <- eval(dfe)
   
   pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
   if (details) {

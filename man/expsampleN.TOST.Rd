@@ -48,12 +48,12 @@ Character string describing the study design.
 See known.designs() for designs covered in this package.
 }
   \item{print}{
-If TRUE the function prints its results. If FALSE only
+If TRUE (default) the function prints its results. If FALSE only
 a data.frame with the results will be returned.
 }
   \item{details}{
 If TRUE the design characteristics and the steps during
-sample size calculations will be shown.
+sample size calculations will be shown. Defaults to FALSE.
 }
 }
 \details{
@@ -83,15 +83,24 @@ This function is only implemented for logscale=TRUE. Therefore this argument is
 not included in the function definition.
 }
 
-
 \seealso{
- \code{\link{exppower.TOST}}, \link{known.designs}
+ \code{\link{exppower.TOST}, \link{known.designs}, \link{sampleN.TOST}}
 }
 \examples{
 # Classical 2x2 cross-over, target power = 80\%,
 # BE limits 80 ... 125\%, assumed true BE ratio 0.95,
 # intra-subject CV=30\% estimated with 10 df
-# -> gives n=48 with achieved power 0.805082
+# using all the defaults
 expsampleN.TOST(CV=0.3, dfCV=10)
+# -> gives n=48 with achieved expected power 0.805082
+# Compare this to the usual sample size with CV known as 'carved in stone'
+sampleN.TOST(CV=0.3)
 
+# More then one CV with corresponding degrees of freedom 
+# other parameters as above
+CVs <- c(0.25, 0.3)
+dfs <- c(  22, 10)
+expsampleN.TOST(CV=CVs, dfCV=dfs)
+# -> gives a pooled CV=0.2664927 with df=32
+# and a sample size n=34 with achieved expected power 0.815019
 }

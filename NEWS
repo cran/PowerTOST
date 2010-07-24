@@ -1,0 +1,12 @@
+Version 0.6-2 
+released 2010-07-21
+     - some internal code consolidation
+     - internal hidden functions .CV2se() and .se2CV() made public
+     - minor enhancements in help pages 
+     - more examples
+     - short documentation of used statistical apparatus
+       BE_power_sample_size_excerpt.pdf
+       for classical power / sample size in directory /doc added
+
+Version 0.5-1 
+     - first release to CRAN on 2010-05-07

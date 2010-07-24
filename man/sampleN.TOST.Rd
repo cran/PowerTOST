@@ -1,7 +1,7 @@
 \name{sampleN.TOST}
 \alias{sampleN.TOST}
 \title{
-Sample size based on TOST
+Sample size based on power of TOST
 }
 \description{
 Calculates the necessary sample size to have at least a given power.
@@ -20,11 +20,13 @@ Power to achieve at least. Must be >0 and <1.
 Typical values are 0.8 or 0.9.
 }
   \item{logscale}{
-Should the data used on log-transformed or on original scale. TRUE or FALSE.
+Should the data used on log-transformed or on original scale? TRUE or FALSE.
+Defaults to TRUE.
 }
   \item{theta1}{
 Lower bioequivalence limit.
-In case of logtrans=TRUE it must be given as ratio, otherwise as diff. to 1.
+In case of logscale=TRUE it must be given as ratio, 
+otherwise as difference to 1.
 }
   \item{theta2}{
 Upper bioequivalence limit.
@@ -39,24 +41,25 @@ given as ratio, otherwise as difference to 1. See examples.
 Variation coefficient as ratio.
 }
   \item{design}{
-Character string describing the study design.
+Character string describing the study design.\cr
 See known.designs() for designs covered in this package.
 }
   \item{exact}{
-Shall the calculations done exact (based on formulas with Owen's Q) or
-approximately via non-central Student's t-distribution? TRUE or FALSE.
+Shall the calculations done exact (based on formulas with Owen's Q) \cr
+or approximately via non-central Student's t-distribution? TRUE or FALSE. \cr
+Defaults to TRUE.
 }
   \item{print}{
-If TRUE the function prints its results. If FALSE only
-a data.frame with the results will be returned.
+If TRUE (default) the function prints its results. If FALSE only
+a data.frame with the results will be returned. 
 }
   \item{details}{
 If TRUE the design characteristics and the steps during
-sample size calculations will be shown.
+sample size calculations will be shown. \cr Defaults to FALSE.
 }
 }
 \value{
-Data.frame with the results will be returned.
+A data.frame with the results will be returned.
 }
 \references{
 Phillips, K. F. (1990)\cr 
@@ -78,13 +81,12 @@ D. Labes
 # Exact calculation for a classical 2x2 cross-over
 # BE limits 80 ... 125\%, assumed true BE ratio 0.95
 # intra-subject CV=30\%
+# using all the default values
 sampleN.TOST(CV=0.3)
 
 # Exact calculation for a parallel group design
 # evaluation on the original (untransformed) scale
 # BE limits 80 ... 120\%, assumed true BE ratio 0.95
 # total CV=20\%
-sampleN.TOST(CV=0.2, logscale=FALSE, theta1=-0.2, diff=-0.05,
-             design="parallel")
-
+sampleN.TOST(CV=0.2, logscale=FALSE, theta1=-0.2, diff=-0.05, design="parallel")
 }
