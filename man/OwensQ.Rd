@@ -12,10 +12,13 @@
 }
 \details{
 Uses integrate() from package stats to perform the numerical evaluation of the  
-definit integral in Owen's Q.
+definite integral in Owen's Q. \cr
+See \url{../doc/BE_power_sample_size_excerpt.pdf} in the package subdirectory /doc for the 
+definition of Owen's Q. \cr
+The arguments to the function must be scalars. No vectors allowed.
 }
 \value{
-Returns the value of Owen's Q.
+Returns the value of Owen's Q-function at given input arguments.
 }
 \references{
 Owen, D. B. (1965) \cr
@@ -25,11 +28,11 @@ Biometrika, 52, 437-446.
 \author{D. Labes}
 \note{
 This function is intended for internal use in the power calculations.\cr
-But may be usefull for others.
+But may be useful for others.
 }
 
 \examples{
-#This function is intended for internal use.
+# This function is intended for internal use.
 OwensQ(10,2.5,5,0,2)
 #[1] 9.388137e-06 
 }

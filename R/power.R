@@ -29,7 +29,7 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
     return (p1 + p2 -1.)
   }
   # attempt to vectorize (it vectorizes properly if diffm is a vector
-  # OR se is a vector OR n,df) TODO: check it!
+  # OR se is a vector OR n,df) 
   nel <- length(delta1)
   dl <- length(tval)
   p1 <-c(1:nel)	
@@ -43,9 +43,9 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
   return( p2-p1 )
 }
 #------------------------------------------------------------------------------
-# 'raw' power function without any error checks, 
+# 'raw' approximate power function without any error checks, 
 # approximation based on non-central t
-# this vectorices ok
+# this vectorizes ok
 .approx.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
 		                       se, n, df, bk=2)
 {
@@ -79,16 +79,16 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 #------------------------------------------------------------------------------
 # Power of two-one-sided-t-tests using OwensQ or approx. using non-central t
 # (this is a wrapper to .power.TOST(...) and .approx.power.TOST(...))
-# In case of logscale=TRUE give diff, theata1 and theta2 as ratios
-# f.i. ldiff=0.95, theta1=0.8, theta2=1.25
-# In case of logscale=FALSE give diff, theata1 and theta2 as difference 
-# to 1 f.i. diff=0.05 (5% difference), 
+# In case of logscale=TRUE give theta0, theata1 and theta2 as ratios
+# f.i. theta0=0.95, theta1=0.8, theta2=1.25
+# In case of logscale=FALSE give theta0, theata1 and theta2 as difference 
+# to 1 f.i. theta0=0.05 (5% difference), 
 # theata1=-0.2, theta2=0.2 20% equiv. margins)
 # CV is always the coefficient of variation but as ratio, not % 
 # leave upper BE margin (ltheta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
-power.TOST <- function(alpha=0.05, logscale=TRUE, theta1=0.8, theta2, 
-		                   diff=0.95, CV, n, design="2x2", exact=TRUE)
+power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, 
+                       theta0, diff, CV, n, design="2x2", exact=TRUE)
 {
   # check if design is implemented
   d.no <- .design.no(design)
@@ -99,74 +99,36 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1=0.8, theta2,
   dfe  <- parse(text=ades$df[1],srcfile=NULL) #degrees of freedom as expression
   bk   <- ades$bk                             #design const.
   
-  if (missing(CV)) stop("Err: CV must be given!")
-  if (missing(n))  stop("Err: number of subjects must be given!")
+  if (missing(CV)) stop("CV must be given!")
+  if (missing(n))  stop("Number of subjects must be given!")
+  
+  # for backward compatibility with former versions
+  if (!missing(diff)) theta0 <- diff
+  
   # handle log-transformation	
   if (logscale) {
+    if (missing(theta0)) theta0 <- 0.95
+    if (missing(theta1)) theta1 <- 0.8
     if (missing(theta2)) theta2 <- 1/theta1
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
-    ldiff   <- log(diff)
+    ldiff   <- log(theta0)
     se      <- CV2se(CV)
-  } else {
+  } else { # untransformed
+    if (missing(theta1)) theta1 <- -0.2
+    if (missing(theta0)) theta0 <- 0.05
     if (missing(theta2)) theta2 <- -theta1
     ltheta1 <- theta1
     ltheta2 <- theta2
-    ldiff   <- diff
+    ldiff   <- theta0
     se      <- CV
   }
-	
+  
   df <- eval(dfe)
   if ( !exact )
     pow <- .approx.power.TOST(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk)
   else
     pow <- .power.TOST(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk)
 	
-  return( pow )
-}
-
-#------------------------------------------------------------------------------
-# Approximate "expected" power according to Joulious book
-# taking into account the uncertainty of an estimated se with 
-# dfse degrees of freedom
-# Only for log-transformed data.
-# Raw function: see the call in exp.power.TOST()
-.exppower.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
-                            se, dfse, n, df, bk=2)
-{
-  tval <- qt(1 - alpha, df, lower.tail = TRUE)
-  d1   <- sqrt(n*(diffm-ltheta1)^2/(bk*se^2))
-  d2   <- sqrt(n*(diffm-ltheta2)^2/(bk*se^2))
-  
-  pow  <- pt(d1,dfse,tval) + pt(d2,dfse,tval) - 1
-  
-  return(pow)
-  
-}  
-#------------------------------------------------------------------------------
-# Joulious "expected" power
-exppower.TOST <- function(alpha=0.05, theta1=0.8, theta2, diff=0.95, 
-                           CV, dfCV, n, design="2x2")
-{
-  # check if design is implemented
-  d.no <- .design.no(design)
-  if (is.na(d.no)) stop("Err: unknown design!")
-  
-  # design characteristics
-  ades <- .design.props(d.no)
-  dfe  <- parse(text=ades$df[1],srcfile=NULL) #degrees of freedom as expression
-  bk   <- ades$bk                             #design const.
-  
-  if (missing(CV) | missing(dfCV)) stop("Err: CV and df must be given!")
-  if (missing(n))  stop("Err: number of subjects must be given!")
-
-  if (missing(theta2)) theta2 <- 1/theta1
-  ltheta1 <- log(theta1)
-  ltheta2 <- log(theta2)
-  ldiff   <- log(diff)
-  se      <- CV2se(CV)
-  df      <- eval(dfe)
-  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se, dfCV, n, df, bk)
-
   return( pow )
 }

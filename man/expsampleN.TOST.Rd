@@ -10,7 +10,7 @@ for the study designs covered
 }
 \usage{
 expsampleN.TOST(alpha = 0.05, targetpower = 0.8, theta1 = 0.8, theta2, 
-                diff = 0.95, CV, dfCV, alpha2 = 0.05, design = "2x2", 
+                theta0 = 0.95, diff, CV, dfCV, alpha2 = 0.05, design = "2x2", 
                 print = TRUE, details = FALSE)
 }
 \arguments{
@@ -26,13 +26,19 @@ Lower bioequivalence limit as ratio.
 }
   \item{theta2}{
 Upper bioequivalence limit as ratio.
-If not given theta2 will be calculated as 1/theta1.
+If not given \code{theta2} will be calculated as \code{1/theta1}.
 }
-  \item{diff}{
+  \item{theta0}{
 'True' or assumed bioequivalence ratio. Typically set to 0.95.
 }
+  \item{diff}{
+Same as \code{theta0}. This argument is only for back compatibility with 
+former versions. \cr
+It will be ceased in the next version.\cr
+If both \code{theta0} and \code{diff} are given, theta0 rules.
+}
   \item{CV}{
-Coefficient of variation as ratio. 
+Coefficient of variation as ratio. \cr
 May be given as vector. Then the CV's were pooled as weighted mean with
 their df=degrees of freedom as weights.
 }
@@ -41,23 +47,23 @@ Degrees of freedom for the CV's. Must be a vector of same length as CV.
 }
   \item{alpha2}{
 Significance level for the calculation of an upper confidence interval
-for the CV.
+for the CV (informal only).
 }
   \item{design}{
-Character string describing the study design.
-See known.designs() for designs covered in this package.
+Character string describing the study design.\cr
+See \code{known.designs()} for designs covered in this package.
 }
   \item{print}{
-If TRUE (default) the function prints its results. If FALSE only
-a data.frame with the results will be returned.
+If TRUE (default) the function prints its results.\cr
+If FALSE only a data.frame with the results will be returned.
 }
   \item{details}{
 If TRUE the design characteristics and the steps during
-sample size calculations will be shown. Defaults to FALSE.
+sample size calculations will be shown.\cr Defaults to FALSE.
 }
 }
 \details{
-The sample size is calculated based on 'expected' power via Joulious formulas
+The sample size is calculated based on 'expected' power via Joulious formulas 
 based on non-central t-distribution.
 }
 \value{
@@ -65,13 +71,13 @@ A data.frame with the input values and the result of the sample size.
 }
 \references{
 S.A. Joulious, R.J. Owen\cr
-"Sample size calculations for clinical studies allowing for \cr
+"Sample size calculations for clinical studies allowing for 
 uncertainty in variance"\cr
 Pharmaceutical Statistics (2006), 5, 29-37
 
 S.A. Joulious\cr
 "Sample sizes for Clinical Trials"\cr
-CRC Press, Chapman & Hall 2010
+CRC Press, Chapman & Hall, Boca Raton 2010
 }
 \author{
 D. Labes
@@ -88,7 +94,7 @@ not included in the function definition.
 }
 \examples{
 # Classical 2x2 cross-over, target power = 80\%,
-# BE limits 80 ... 125\%, assumed true BE ratio 0.95,
+# BE limits 80 ... 125\%, assumed true BE ratio = 95%,
 # intra-subject CV=30\% estimated with 10 df
 # using all the defaults
 expsampleN.TOST(CV=0.3, dfCV=10)
