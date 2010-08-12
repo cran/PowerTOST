@@ -1,50 +1,61 @@
 \name{power.TOST}
 \alias{power.TOST}
 \title{
-Power of the TOST procedure
+Power of the classical TOST procedure
 }
 \description{
 Calculates the exact or approximate power of the two-one-sided t-tests 
 procedure for various study designs used in BE studies.
 }
 \usage{
-power.TOST(alpha = 0.05, logscale = TRUE, theta1 = 0.8, theta2, diff = 0.95, 
-           CV, n, design = "2x2", exact = TRUE)
+power.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, diff, CV, 
+           n, design = "2x2", exact = TRUE)
 }
 \arguments{
   \item{alpha}{
-  Level of significance. Mostly set to 0.05.
-  }
+Type I error, significance level. Mostly set to 0.05.
+}
   \item{logscale}{
-  TRUE or FALSE. Are the evaluation planned after log-transformation?
-  }
+Should the data used on log-transformed or on original scale? TRUE or FALSE.\cr
+Defaults to TRUE.
+}
   \item{theta1}{
-  Theta1 is the lower bioequivalence limit.
-  In case of logtrans=TRUE it is given as ratio, otherwise as diff. to 1.
-  }
+Lower bioequivalence limit.\cr
+In case of \code{logscale=TRUE} it is given as ratio, otherwise as diff. to 1.\cr
+Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
+}
   \item{theta2}{
-  Theta2 is the upper bioequivalence limit.
-  If not given theta2 will be calculated as 1/theta1 if logscale=TRUE or
-  as -theta1 if logscale=FALSE.
-  }
+Upper bioequivalence limit.\cr
+If not given theta2 will be calculated as \code{1/theta1} if \code{logscale=TRUE} \cr
+or as \code{-theta1} if \code{logscale=FALSE}.
+}
+  \item{theta0}{
+'True' or assumed bioequivalence ratio. \cr
+In case of \code{logscale=TRUE} it must be given as ratio, \cr
+otherwise as difference to 1. See examples.\cr
+Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}
+}
   \item{diff}{
-  'True' or assumed bioequivalence ratio. In case of logscale=TRUE it must be 
-  given as ratio, otherwise as difference to 1. See examples.
-  }
+Same as \code{theta0}. This argument is only for back compatibility with former versions. \cr
+It will be ceased in the next version.\cr
+If both \code{theta0} and \code{diff} are given, \code{theta0} rules.
+}
   \item{CV}{
-  Variation coefficient as ratio.
-  }
+Coefficient of variation as ratio.\cr
+In case of cross-over studies this is the within-subject CV, \cr
+in case of a parallel-group design the CV of the total variability.
+}
   \item{n}{
-  Number of subjects under study.
-  }
+Number of subjects under study.
+}
   \item{design}{
-  Character string describing the study design.
-  See known.designs() for designs covered in this package.
+Character string describing the study design.\cr
+See \code{known.designs()} for designs covered in this package.
   }
   \item{exact}{
-  Shall the calculations done exact (based on formulas with Owen's Q) or
-  approximately via non-central Student's t-distribution? TRUE or FALSE.
-  Defaults to TRUE.
+Shall the calculations done exact (based on formulas with Owen's Q) or
+approximately via non-central Student's t-distribution? \cr 
+TRUE or FALSE. Defaults to TRUE.
   }
 }
 \details{
@@ -61,12 +72,12 @@ Phillips, K. F. (1990) \cr
 Journal of Pharmacokinetics and Biopharmaceutics, 18, 137-144.
 
 Diletti D., Hauschke D., and Steinijans V. W. (1991) \cr
-"Sample Size Determination for Bioequivalence Assessment \cr 
-by Means of Confidence Intervals" \cr 
+"Sample Size Determination for Bioequivalence Assessment by Means of 
+Confidence Intervals" \cr 
 Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29, 1-8 
 
 See here for a short description:\cr
-See \url{../doc/BE_power_sample_size_excerpt.pdf}.
+\url{../doc/BE_power_sample_size_excerpt.pdf}.
 }
 \author{
 D. Labes

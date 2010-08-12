@@ -1,3 +1,15 @@
+Version 0.7-1 
+released 2010-08-12
+     - functions added for the power and sample size for the ratio of 
+       two means with normally distributed data on the original scale 
+       (based on Fieller's confidence (fiducial) interval).
+       AFAIK until now only implemented in the commercial nQuery.
+     - Note that the parameter diff (Null ratio / Null diff.) is now
+       named theta0 since it was annoying for users to call it diff in case
+       of ratios (logscale=TRUE). The parameter diff is still supported
+       but will be ceased in the next release. Therefore a warning is issued 
+       if diff is used.
+       
 Version 0.6-2 
 released 2010-07-21
      - some internal code consolidation
