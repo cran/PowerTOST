@@ -82,5 +82,5 @@ non-inferiority" EMEA, London (2000)
 # 2x2 crossover study, n=24
 # using all the defaults:
 power.RatioF(CV=0.2, CVb=0.4, n=24)
-# gives [1] 0.7314324
+# gives [1] 0.731509
 }

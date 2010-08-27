@@ -65,6 +65,10 @@ no  design    df      df2    steps  bk
 .design.props <- function(design.no)
 {
 	des <- known.designs()
-	return (des[des$no==design.no,])
+  des <- des[des$no==design.no,]
+  # in case of 2x2 the alias 2x2x2 causes 2 entries
+  des <- des[1,]
+  if (is.na(des$no)) stop("Design ",design.no," not defined!")
+	return (des)
 }	
 
