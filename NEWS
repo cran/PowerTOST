@@ -1,3 +1,6 @@
+Version 0.7-2 
+released 2010-08-27
+     - little bug causing warnings in case of 2x2 alias 2x2x2 removed
 Version 0.7-1 
 released 2010-08-12
      - functions added for the power and sample size for the ratio of 

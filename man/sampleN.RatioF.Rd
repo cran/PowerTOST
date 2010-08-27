@@ -94,7 +94,7 @@ non-inferiority" EMEA, London (2000)
 # 'true' ratio = 95\%, BE acceptance limits 80-125\%
 # using all the defaults:
 sampleN.RatioF(CV=0.2, CVb=0.4)
-# gives n=28 with an achieved power of 0.807880
+# gives n=28 with an achieved power of 0.807695
 # see Hauschke et.al. (2007) Table 10.3a
 
 # sample size for a 2-group parallel study
@@ -102,7 +102,7 @@ sampleN.RatioF(CV=0.2, CVb=0.4)
 # alpha=0.025 (95\% CIs), target power = 90\%
 # 'true' ratio = 90\%, BE acceptance limits 75-133.33\%
 sampleN.RatioF(targetpower=0.9, theta1=0.75, theta0=0.90, CV=0.4, design="parallel")
-# gives n=236 with an achieved power of 0.900696
+# gives n=236 with an achieved power of 0.900681
 # see Hauschke et.al. (2007) Table 10.2
 
 # a rather strange setting of ratio0! have a look at n.
