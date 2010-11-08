@@ -21,8 +21,8 @@ intended for studies with clinical endpoints.
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 0.7-2\cr
-Date: \tab 2010-08-27\cr
+Version: \tab 0.7-3\cr
+Date: \tab 2010-11-09\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }

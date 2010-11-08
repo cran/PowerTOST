@@ -22,12 +22,16 @@ Returns a data.frame with \cr
 The design string has to be used in the functions call for power and sample size.
 }
 \note{
+The design string for higher order crossover designs is named as:\cr
+\code{treatments x sequences x periods} in case of replicate designs and\cr
+\code{treatments x periods} in case of crossover designs for more then 2 treatments.\cr
+\cr
 The df for the replicate crossover designs are those without carry-over in the model.\cr
 Chen, Chow and Liu used models with carry-over, i.e. one df lower as here.\cr
 The design constant in case of design 2x2x4 is here bk=1. 
 Chen, Chow and Liu used bk=1.1 due to carry-over in the model.\cr\cr
 n is the total number of subjects in case of cross-over design or 
-the number per group in case of parallel group design.\cr\cr
+the number per treatment group in case of parallel group design.\cr\cr
 df2 = degrees of freedom for robust analysis (aka Senn's basic estimator). 
 These are not used at moment.
 }
@@ -39,7 +43,7 @@ J. Pharmacokinetics and Biopharmaceutics, Vol. 25, No. 6, p753-765 (1997)
 
 S. Senn\cr
 "Cross-over Trials in Clinical Research" \cr
-Second Edition, John Wiley & Sons, Chicester 2002
+Second Edition, John Wiley & Sons, Chichester 2002
 }
 \author{
 D. Labes

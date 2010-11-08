@@ -26,7 +26,7 @@
 # leave upper BE margin (theta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
 sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, 
-                         theta1, theta2, theta0, diff, CV, design="2x2",
+                         theta1, theta2, theta0, CV, design="2x2",
                          exact=TRUE, print=TRUE, details=FALSE)
 {
   #number of the design and check
@@ -43,11 +43,6 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
   
-  # for backward compatibility with former versions
-  if (!missing(diff) & missing(theta0)) {
-    theta0 <- diff
-    warning("Use now theta0 instead of diff.",call.=FALSE, immediate. = TRUE)
-  }
   # print the configuration:
   if (print) {
     cat("\n+++++++++++ Equivalence test - TOST +++++++++++\n")

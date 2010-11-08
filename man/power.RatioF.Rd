@@ -30,8 +30,8 @@ True ('null') assumed bioequivalence ratio. Typically set to 0.95 for planning.
 }
   \item{CV}{
 Coefficient of variation as ratio. In case of \code{design="parallel"} this is
-the CV of the total variability, \cr
-in case of \code{design="2x2"} the intra-subject CV (CVw in the reference).
+the CV of the total variability, in case of \code{design="2x2"} the 
+intra-subject CV (CVw in the reference).
 }
   \item{CVb}{
 CV of the between-subject variability. Only necessary for \code{design="2x2"}.

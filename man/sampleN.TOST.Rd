@@ -8,7 +8,7 @@ Calculates the necessary sample size to have at least a given power.
 }
 \usage{
 sampleN.TOST(alpha = 0.05, targetpower = 0.8, logscale = TRUE, theta1, theta2, 
-             theta0, diff, CV, design = "2x2", exact = TRUE, print = TRUE, 
+             theta0, CV, design = "2x2", exact = TRUE, print = TRUE, 
              details = FALSE)
 }
 \arguments{
@@ -37,13 +37,8 @@ or as \code{-theta1} if \code{logscale=FALSE}.
 'True' or assumed bioequivalence ratio. \cr
 In case of \code{logscale=TRUE} it must be given as ratio, otherwise as 
 difference to 1. See examples.\cr
-Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.\cr
+Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}.\cr
 Note that this argument was named \code{diff} in former versions.
-}
-  \item{diff}{
-Same as \code{theta0}. This argument is only for back compatibility with former versions. \cr
-It will be ceased in the next version.\cr
-If both \code{theta0} and \code{diff} are given, \code{theta0} rules.
 }
   \item{CV}{
 Coefficient of variation as ratio.
@@ -86,7 +81,7 @@ Diletti, D., Hauschke, D., and Steinijans, V. W. (1992)\cr
 and bioequivalence ranges of 0.9 to 1.11 and 0.7 to 1.43"\cr
 Int. J. of Clinical Pharmacology, Therapy and Toxicology, 30 Suppl.No.1, S59-62
 
-See here for a short description:\cr
+See here (R_HOME/library/PowerTOST/doc) for a short description:\cr
 \url{../doc/BE_power_sample_size_excerpt.pdf}.
 }
 \author{
