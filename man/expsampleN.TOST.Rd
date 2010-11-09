@@ -10,7 +10,7 @@ for the study designs covered
 }
 \usage{
 expsampleN.TOST(alpha = 0.05, targetpower = 0.8, theta1 = 0.8, theta2, 
-                theta0 = 0.95, diff, CV, dfCV, alpha2 = 0.05, design = "2x2", 
+                theta0 = 0.95, CV, dfCV, alpha2 = 0.05, design = "2x2", 
                 print = TRUE, details = FALSE)
 }
 \arguments{
@@ -31,23 +31,19 @@ If not given \code{theta2} will be calculated as \code{1/theta1}.
   \item{theta0}{
 'True' or assumed bioequivalence ratio. Typically set to 0.95.
 }
-  \item{diff}{
-Same as \code{theta0}. This argument is only for back compatibility with 
-former versions. \cr
-It will be ceased in the next version.\cr
-If both \code{theta0} and \code{diff} are given, theta0 rules.
-}
   \item{CV}{
 Coefficient of variation as ratio. \cr
 May be given as vector. Then the CV's were pooled as weighted mean with
 their df=degrees of freedom as weights.
 }
   \item{dfCV}{
-Degrees of freedom for the CV's. Must be a vector of same length as CV.
+Degrees of freedom for the CV's. Must be a vector of same length as CV.\cr
+The df's are usually (in case of cross-over studies) \code{N-nseq} where N is the 
+total sample size and nseq the number of sequences.
 }
   \item{alpha2}{
 Significance level for the calculation of an upper confidence interval
-for the CV (informal only).
+for CV (for informal purposes only).
 }
   \item{design}{
 Character string describing the study design.\cr

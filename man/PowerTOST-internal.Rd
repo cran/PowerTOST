@@ -23,7 +23,8 @@
 .power.RatioF: power of ratio of means with normal data on original scale (working horse)\cr
 .Q.integrand: Integrand for Owen'Q function \cr
 .sampleN0: Start value of sample size\cr
-.sampleN0.RatioF: Start value of sample size for ratio of means with normal data on original scale
+.sampleN0.RatioF: Start value of sample size for ratio of means with normal data 
+on original scale
 }
 \details{These are usually not to be called by the user.}
 \keyword{internal}

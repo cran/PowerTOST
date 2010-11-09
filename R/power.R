@@ -47,7 +47,7 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 # approximation based on non-central t
 # this vectorizes ok
 .approx.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
-		                       se, n, df, bk=2)
+		                           se, n, df, bk=2)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE, log.p = FALSE)
   delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
@@ -87,8 +87,8 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 # CV is always the coefficient of variation but as ratio, not % 
 # leave upper BE margin (ltheta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
-power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, 
-                       theta0, diff, CV, n, design="2x2", exact=TRUE)
+power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
+                       CV, n, design="2x2", exact=TRUE)
 {
   # check if design is implemented
   d.no <- .design.no(design)
@@ -101,9 +101,6 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2,
   
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects must be given!")
-  
-  # for backward compatibility with former versions
-  if (!missing(diff)) theta0 <- diff
   
   # handle log-transformation	
   if (logscale) {

@@ -1,3 +1,8 @@
+Version 0.7-3 
+released 2010-10-09
+     - bugs in documentation removed
+     - input argument diff removed from sampleN.TOST, expsampleN.TOST,
+       power.TOST and exppower.TOST
 Version 0.7-2 
 released 2010-08-27
      - little bug causing warnings in case of 2x2 alias 2x2x2 removed

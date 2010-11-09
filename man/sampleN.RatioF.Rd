@@ -9,7 +9,8 @@ Fieller's confidence (fiducial) interval.
 }
 \usage{
 sampleN.RatioF(alpha = 0.025, targetpower = 0.8, theta1 = 0.8, theta2, 
-              theta0 = 0.95, CV, CVb, design = "2x2", print = TRUE, details = FALSE)
+              theta0 = 0.95, CV, CVb, design = "2x2", 
+              print = TRUE, details = FALSE)
 }
 \arguments{
   \item{alpha}{
@@ -55,9 +56,9 @@ Defaults to FALSE.
 \details{
 The sample size is based on exact power calculated using the bivariate 
 non-central t-distribution via function \code{pmvt()} from the package mvtnorm.\cr
-The CVw(ithin) and CVb(etween) in case of \code{design="2x2"} are obtained 
+The CV(within) and CVb(etween) in case of \code{design="2x2"} are obtained 
 via an appropriate ANOVA from the error term and from the difference 
-MS(subject within sequence)-MS(error).
+\code{(MS(subject within sequence)-MS(error))/2}.
 }
 \value{
 A data.frame with the input values and results will be returned.\cr

@@ -19,7 +19,7 @@
 }  
 #------------------------------------------------------------------------------
 # Joulious "expected" power
-exppower.TOST <- function(alpha=0.05, theta1=0.8, theta2, theta0=0.95, diff,
+exppower.TOST <- function(alpha=0.05, theta1=0.8, theta2, theta0=0.95,
                           CV, dfCV, n, design="2x2")
 {
   # check if design is implemented
@@ -35,9 +35,6 @@ exppower.TOST <- function(alpha=0.05, theta1=0.8, theta2, theta0=0.95, diff,
   if (missing(n)) stop("Number of subjects must be given!",call.=FALSE)
   
   if (missing(theta2)) theta2 <- 1/theta1
-  
-  # for backward compatibility with former versions
-  if (!missing(diff) & missing(theta0)) theta0 <- diff
   
   ltheta1 <- log(theta1)
   ltheta2 <- log(theta2)

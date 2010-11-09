@@ -8,12 +8,12 @@ Calculates the exact or approximate power of the two-one-sided t-tests
 procedure for various study designs used in BE studies.
 }
 \usage{
-power.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, diff, CV, 
-           n, design = "2x2", exact = TRUE)
+power.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n, 
+           design = "2x2", exact = TRUE)
 }
 \arguments{
   \item{alpha}{
-Type I error, significance level. Mostly set to 0.05.
+Type I error, significance level. Conventionally set to 0.05.
 }
   \item{logscale}{
 Should the data used on log-transformed or on original scale? TRUE or FALSE.\cr
@@ -34,11 +34,6 @@ or as \code{-theta1} if \code{logscale=FALSE}.
 In case of \code{logscale=TRUE} it must be given as ratio, \cr
 otherwise as difference to 1. See examples.\cr
 Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}
-}
-  \item{diff}{
-Same as \code{theta0}. This argument is only for back compatibility with former versions. \cr
-It will be ceased in the next version.\cr
-If both \code{theta0} and \code{diff} are given, \code{theta0} rules.
 }
   \item{CV}{
 Coefficient of variation as ratio.\cr
@@ -86,8 +81,8 @@ D. Labes
  \code{\link{sampleN.TOST}, \link{known.designs}}
 }
 \examples{
-# power for the 2x2 cross-over 
+# power for the 2x2 cross-over design with 24 subjects
 # using all the other default values
+# should give: [1] 0.7391155
 power.TOST(CV=0.25, n=24)
-# gives: [1] 0.7391155
 }

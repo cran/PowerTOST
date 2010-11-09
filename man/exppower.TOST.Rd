@@ -8,7 +8,7 @@ Calculates the 'expected' power according to Joulious for a variety of study
 designs used in bioequivalence studies.
 }
 \usage{
-exppower.TOST(alpha = 0.05, theta1 = 0.8, theta2, theta0 = 0.95, diff,
+exppower.TOST(alpha = 0.05, theta1 = 0.8, theta2, theta0 = 0.95, 
               CV, dfCV, n, design = "2x2")
 }
 \arguments{
@@ -24,12 +24,6 @@ If not given \code{theta2} will be calculated as \code{1/theta1}.
 }
   \item{theta0}{
 'True' or assumed bioequivalence ratio. Tpically set to 0.95.
-}
-  \item{diff}{
-Same as \code{theta0}. This argument is only for back compatibility with 
-former versions. \cr
-It will be ceased in the next version.\cr
-If both \code{theta0} and \code{diff} are given, theta0 rules.
 }
   \item{CV}{
 Coefficient of variation as ratio. 
@@ -47,7 +41,7 @@ See \code{known.designs()} for designs covered in this package.
 }
 \details{
 This function calculates the so-called 'expected' power based on S.A. Joulious
-taking into account that usually the CV is not known but estimated \cr from a
+taking into account that usually the CV is not known but estimated from a
 previous study / studies with an uncertainty. See references.
 }
 \value{

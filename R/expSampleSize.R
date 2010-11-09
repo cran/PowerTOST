@@ -29,7 +29,7 @@
 # leave upper BE margin (ltheta2) empty and the function will use 1/lower
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2, 
-                            theta0=0.95, diff, CV, dfCV, alpha2=0.05,
+                            theta0=0.95, CV, dfCV, alpha2=0.05,
                             design="2x2", print=TRUE, details=FALSE)
 {
   #number of the design and check if design is implemented
@@ -46,12 +46,6 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2,
   
   if (missing(CV) | missing(dfCV)) {
     stop("CV and df must be given!", call.=FALSE)
-  }
-  
-  # for backward compatibility with former versions
-  if (!missing(diff) & missing(theta0)) {
-    theta0 <- diff
-    warning("Use now theta0 instead of diff.",call.=FALSE, immediate. = TRUE)
   }
   
   # calculate pooled data if CV and dfCV are vectors
