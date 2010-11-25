@@ -1,3 +1,8 @@
+Version 0.8-1 
+released 2010-11-25
+     - helper function CVfromCI() added to estimate the CV from a confidence  
+       interval. Useful if no CV but CI was given in literature.
+
 Version 0.7-3 
 released 2010-10-09
      - bugs in documentation removed

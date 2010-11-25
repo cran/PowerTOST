@@ -8,7 +8,7 @@
   z1 <- qnorm(1-alpha)
   if (abs(diffm)>0.0001) z2 <- qnorm(targetpower) else
      z2 <- qnorm(1-(1-targetpower)/2)
-  n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
+  n01<-(bk/2)*( (z1+z2)*(se*sqrt(2)/(diffm-ltheta1)) )^2;
   n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
   n0 <- ceiling(max(n01,n02))
   #make an even multiple of step (=2 in case of 2x2 cross-over)
