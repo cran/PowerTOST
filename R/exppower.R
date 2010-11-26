@@ -1,6 +1,6 @@
 # Author: dlabes
 #------------------------------------------------------------------------------
-# Approximate "expected" power according to Joulious book
+# Approximate "expected" power according to Julious book
 # taking into account the uncertainty of an estimated se with 
 # dfse degrees of freedom
 # Only for log-transformed data.
@@ -18,7 +18,7 @@
   
 }  
 #------------------------------------------------------------------------------
-# Joulious "expected" power
+# Julious "expected" power
 exppower.TOST <- function(alpha=0.05, theta1=0.8, theta2, theta0=0.95,
                           CV, dfCV, n, design="2x2")
 {

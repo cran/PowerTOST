@@ -4,7 +4,7 @@
 'Expected' power of TOST procedure
 }
 \description{
-Calculates the 'expected' power according to Joulious for a variety of study
+Calculates the 'expected' power according to Julious for a variety of study
 designs used in bioequivalence studies.
 }
 \usage{
@@ -40,7 +40,7 @@ See \code{known.designs()} for designs covered in this package.
 }
 }
 \details{
-This function calculates the so-called 'expected' power based on S.A. Joulious
+This function calculates the so-called 'expected' power based on S.A. Julious
 taking into account that usually the CV is not known but estimated from a
 previous study / studies with an uncertainty. See references.
 }
@@ -48,12 +48,12 @@ previous study / studies with an uncertainty. See references.
 Value of expected power according to the input.
 }
 \references{
-S.A. Joulious, R.J. Owen\cr
+S.A. Julious, R.J. Owen\cr
 "Sample size calculations for clinical studies allowing for 
 uncertainty in variance"\cr
 Pharmaceutical Statistics (2006), 5, 29-37
 
-S.A. Joulious\cr
+S.A. Julious\cr
 "Sample sizes for Clinical Trials"\cr
 CRC Press, Chapman & Hall 2010
 }

@@ -3,7 +3,7 @@
 # 
 # Author: dlabes
 #------------------------------------------------------------------------------
-# sample size start for Joulious 'expected' power
+# sample size start for Julious 'expected' power
 .expsampleN0 <- function(alpha=0.05, targetpower, ltheta1, ltheta2, diffm, 
                          se, dfse, steps=2, bk=2)
 {
@@ -11,7 +11,7 @@
   if (abs(diffm)>0.0001) tinv <- qt(targetpower, dfse, Z1)  else
     tinv <- qt(1-(1-targetpower)/2, dfse, Z1) 
   
-  # is factor 2 in julious = bk?
+  # factor 2 in Julious = bk
   n01  <- bk*(se*tinv/(ltheta1-diffm))^2
   n02  <- bk*(se*tinv/(ltheta2-diffm))^2
   # print(n01);print(n02)

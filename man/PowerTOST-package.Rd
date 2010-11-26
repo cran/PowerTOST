@@ -14,15 +14,15 @@ Moreover the package contains functions for power and sample size based on
 'expected power' in case of uncertain (estimated) variability.\cr\cr
 Added are functions for the power and sample size for the ratio of 
 two means with normally distributed data on the original scale 
-(based on Fieller's confidence (fiducial) interval).\cr These functions are
-intended for studies with clinical endpoints.
+(based on Fieller's confidence (fiducial) interval).\cr 
+These functions are intended for studies with clinical endpoints.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 0.7-3\cr
-Date: \tab 2010-11-09\cr
+Version: \tab 0.8-1\cr
+Date: \tab 2010-11-25\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
@@ -50,12 +50,12 @@ Diletti, D., Hauschke, D., and Steinijans, V. W. (1991)\cr
 by Means of Confidence Intervals"\cr
 Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29, 1-8
 
-S.A. Joulious, R.J. Owen (2006)\cr
+S.A. Julious, R.J. Owen (2006)\cr
 "Sample size calculations for clinical studies allowing for \cr
 uncertainty in variance"\cr
 Pharmaceutical Statistics (2006), 5, 29-37
 
-S.A. Joulious (2010)\cr
+S.A. Julious (2010)\cr
 "Sample sizes for Clinical Trials"\cr
 CRC Press, Chapman & Hall 2010
 

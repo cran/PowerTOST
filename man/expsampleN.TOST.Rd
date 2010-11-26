@@ -4,7 +4,7 @@
 Sample size based on 'expected' power
 }
 \description{
-Calculates the sample size based on Joulious 'expected' power for a
+Calculates the sample size based on Julious 'expected' power for a
 variety of study designs used in bioequivalence studies. See known.designs() 
 for the study designs covered
 }
@@ -59,19 +59,19 @@ sample size calculations will be shown.\cr Defaults to FALSE.
 }
 }
 \details{
-The sample size is calculated based on 'expected' power via Joulious formulas 
+The sample size is calculated based on 'expected' power via Julious formulas 
 based on non-central t-distribution.
 }
 \value{
 A data.frame with the input values and the result of the sample size.
 }
 \references{
-S.A. Joulious, R.J. Owen\cr
+S.A. Julious, R.J. Owen\cr
 "Sample size calculations for clinical studies allowing for 
 uncertainty in variance"\cr
 Pharmaceutical Statistics (2006), 5, 29-37
 
-S.A. Joulious\cr
+S.A. Julious\cr
 "Sample sizes for Clinical Trials"\cr
 CRC Press, Chapman & Hall, Boca Raton 2010
 }

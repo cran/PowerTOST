@@ -14,17 +14,17 @@ known.designs <- function()
 # In case of 2x2x4 design Chen, Chow and Liu used bk=1.1 in a model 
 # with carry over.
 des <- ("
-no  design    df      df2    steps  bk
- 0  parallel 2*(n-1) 2*(n-1)  1      2
- 1  2x2      n-2     n-2      2      2
- 1  2x2x2    n-2     n-2      2      2
- 2  3x3      2*n-3   n-3      3      2
- 3  4x4      3*n-5   n-4      4      2
- 4  2x2x3    2*n-3   n-2      2      1.5
- 5  2x2x4    3*n-4   n-2      2      1
- 6  2x4x4    3*n-4   n-4      4      1
- 9  2x3x3    2*n-3   n-3      3      1.5
-10  2x4x2    n-2     n-2      4      8    
+no  design    df      df2    steps  bk    bkni
+ 0  parallel 2*(n-1) 2*(n-1)  1      2    NA
+ 1  2x2      n-2     n-2      2      2    0.5
+ 1  2x2x2    n-2     n-2      2      2    0.5
+ 2  3x3      2*n-3   n-3      3      2    NA
+ 3  4x4      3*n-5   n-4      4      2    NA
+ 4  2x2x3    2*n-3   n-2      2      1.5  0.375       # 3/8
+ 5  2x2x4    3*n-4   n-2      2      1    0.25        # 1/4
+ 6  2x4x4    3*n-4   n-4      4      1    0.0625      # 1/16
+ 9  2x3x3    2*n-3   n-3      3      1.5  0.1666667   # 1/6
+10  2x4x2    n-2     n-2      4      8    0.5
 ")
 # no. 10 is Balaam's design, a mixture of crossover and parallel group.
 # no. 9 is f.i. the partial replicate design TRR/RTR/RRT
