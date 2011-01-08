@@ -21,7 +21,7 @@
 .expsampleN0: start value of n for sample size based on exp. power.\cr
 .power.TOST: power of classical TOST (working horse)\cr
 .power.RatioF: power of ratio of means with normal data on original scale (working horse)\cr
-.Q.integrand: Integrand for Owen'Q function \cr
+.Q.integrand: Integrand for Owen's Q function \cr
 .sampleN0: Start value of sample size\cr
 .sampleN0.RatioF: Start value of sample size for ratio of means with normal data 
 on original scale
