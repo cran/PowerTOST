@@ -1,3 +1,8 @@
+Version 0.8-2 
+released 2011-01-10
+     - error in df for 3x3 and 4x4 crossover removed
+     - function for pooling CV's from different studies made public
+       see ?CVpooled
 Version 0.8-1 
 released 2010-11-25
      - helper function CVfromCI() added to estimate the CV from a confidence  

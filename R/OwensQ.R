@@ -1,13 +1,15 @@
 #-- The functions of normal-, t-distributions and integrate() ------------------
-require(stats)
+require(stats) #this is usually not necessary within a standard installation
 #-------------------------------------------------------------------------------
 # Owen's Q-function 
 # a, b must be a scalar numeric
 # nu, t and delta also, no vectors allowed
 OwensQ <- function (nu, t, delta, a, b)
 {
-	# Observation: for 'really' large df (nu>2000) and large delta/b the  
-	# density function is zero over nearly all its range! Q is than returned 
+	if (length(nu)>1 | length(t)>1 | length(delta)>1 | length(a)>1 | 
+      length(b)>1) stop("Input must be scalars!")
+  # Observation: for 'really' large df (nu>2000) and large delta/b the  
+	# density function is zero over nearly all its range! Q than returned 
 	# sometimes falsly as =0! See documentation ?integrate for that.
 	# example: OwensQ(3000,1.64,-10,0,300) = 1
 	#          OwensQ(3000,1.64,-10,0,350) = 5.614476e-12 !
@@ -15,33 +17,35 @@ OwensQ <- function (nu, t, delta, a, b)
 	low <- a; up <- b
 	if (nu>=1000){
 		# try to shorten the integration range
-    h <- (b-a)/499
-		x <- seq(a, b, by=h);x[1] <- a; x[500] <- b
+    h <- (b-a)/499 # 500 steps
+		x <- seq(a, b, by=h)
+    # next is paranoia
+    x[500] <- b
 		dens <- .Q.integrand(x, nu, t, delta)
-		x <- x[dens > 0] # .Machine$double.eps approx. 2.22e-16
-		n <- length(x)
+		x <- x[dens > 0] 
+    # or better > .Machine$double.xmin^0.5  approx. 1.5e-154 ?
+    #             .Machine$double.xmin^0.25 approx. 1.22e-77
+		n <- length(x)   
     if (n > 0) {# if any >0
-			up  <- min(x[n]+h, b)  # upper: xoff+step if < b
-			low <- max(x[1]-h, a)  # lower  xon-step if > a
-		} else {
-      # all == 0
+      # also paranoia: range step h greater than those with dens >0
+			low <- max(x[1]-h, a)  # lower: xon-step if this is > a
+      up  <- min(x[n]+h, b)  # upper: xoff+step if this is < b
+    } else {
+      # all == 0, thus return integral as zero
       return(0.0)
     }
 	}
 	# result of integrate() is a list, see ?integrate
 	# .Machine$double.eps^.5 = 1.490116e-08 on my machine
-	# MBESS uses .Machine$double.eps^0.25 = 0.0001220703
+	# MBESS uses .Machine$double.eps^0.25 = 0.0001220703 for both tolerances
 	# seems it makes no difference
 	Qintegral <- integrate(.Q.integrand, lower = low, upper = up, 
 			         nu=nu, t=t, delta = delta, subdivisions = 10000, 
 			         #rel.tol = .Machine$double.eps^0.5, 
-			         #abs.tol = .Machine$double.eps^0.5,
-			         rel.tol = 1.e-10, abs.tol=1.e-10, 
-			         stop.on.error = TRUE, keep.xy = FALSE, aux = NULL)
-	Q <- Qintegral[[1]]
-	
+               #abs.tol = .Machine$double.eps^0.5,
+			         rel.tol = 1.e-10, abs.tol=1.e-12, stop.on.error = TRUE)
 	# error handling? How?
-	return(Q)  
+	return(Qintegral[[1]])  
 }
 #-------------------------------------------------------------------------------
 # Integrand of the definit integral in Owen's Q. Used in the call of integrate()
@@ -56,7 +60,7 @@ OwensQ <- function (nu, t, delta, a, b)
 # simple x^(nu-1) doesnt work for high nu because  = inf 
 # and then exp( -0.5*x^2 + lnQconst )*x^(nu-1) -> NaN
   dens <- sign(x)^(nu-1) *
-          pnorm( t*x/sqrt(nu) - delta, mean = 0, sd = 1, log = FALSE) * 
+          pnorm( t*x/sqrt(nu) - delta, mean = 0, sd = 1, log.p = FALSE) * 
           exp( (nu-1)*log(abs(x)) - 0.5*x^2 + lnQconst )
       
 	return(dens)

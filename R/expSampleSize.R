@@ -26,7 +26,7 @@
 # Sample size for a desired "expected" power according to Julious: 
 # see known.designs() for covered experimental designs
 # Only for log-transformed data
-# leave upper BE margin (ltheta2) empty and the function will use 1/lower
+# leave upper BE margin (theta2) empty and the function will use 1/lower
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2, 
                             theta0=0.95, CV, dfCV, alpha2=0.05,
