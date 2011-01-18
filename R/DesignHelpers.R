@@ -40,14 +40,15 @@ no  design    df      df2    steps  bk    bkni
 	
   # nicer names for nicer output of design
   designs$name[designs$no==0] <- "2 parallel groups"
-  designs$name[designs$no %in% c(1,2,3)] <- 
-		  paste(designs$design[designs$no %in% c(1,2,3)],"crossover")
-  designs$name[designs$no %in% c(4,5,6)] <- 
-		  paste(designs$design[designs$no %in% c(4,5,6)],"replicate crossover")
-  designs$name[designs$no==10] <- "Balaam's design (2x4x2)" 
+  designs$name[designs$no %in% c(1,2,3,4)] <- 
+		  paste(designs$design[designs$no %in% c(1,2,3,4)],"crossover")
+  designs$name[designs$no %in% c(5,6,7)] <- 
+		  paste(designs$design[designs$no %in% c(5,6,7)],"replicate crossover")
+  
   designs$name[designs$no==9]  <- "partial replicate design (2x3x3)" 
-  #degrees of freedom as expression: not possible, 
-  #expression in data.frame not allowed 
+  designs$name[designs$no==10] <- "Balaam's design (2x4x2)" 
+  # degrees of freedom as expression: not possible, 
+  # expression in data.frame not allowed 
   return(designs)
 	
 }
