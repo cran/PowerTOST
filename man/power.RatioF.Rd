@@ -14,7 +14,7 @@ power.RatioF(alpha = 0.025, theta1 = 0.8, theta2, theta0 = 0.95, CV, CVb, n,
 }
 \arguments{
   \item{alpha}{
-Type I error or significance probability. \cr
+Type I error probability, aka significance level. \cr
 Defaults here to 0.025 because this function is intended for studies
 with clinical endpoints. 
 }
@@ -37,7 +37,10 @@ intra-subject CV (CVw in the reference).
 CV of the between-subject variability. Only necessary for \code{design="2x2"}.
 }
   \item{n}{
-Number of subjects to be planned.
+Number of subjects to be planned.\cr
+Attention! n is for both designs the total number of subjects.\cr
+This is different to the other power functions within this package where in 
+case of \code{design="parallel"} the number of subjects per group has to be used.
 }
   \item{design}{
 A character string describing the study design.\cr 
@@ -59,7 +62,7 @@ of two means for normally distributed data" \cr
 Stat. Med. 18(1) p93-105 (1999) 
 
 Hauschke D., Steinijans V. and Pigeot I.\cr
-"Bioequivalence studies in Drug Development"\cr
+"Bioequivalence Studies in Drug Development"\cr
 Chapter 10., John Wiley & Sons, Chichester (2007)
 }
 \author{
@@ -70,7 +73,10 @@ This function is intended for studies with clinical endpoints. \cr
 In such studies the 95\% confidence intervals are usually used for equivalence testing.\cr
 Therefore alpha defaults here to 0.025.\cr
 See CPMP/EWP/482/99 "Points to consider on switching between superiority and 
-non-inferiority" EMEA, London (2000)
+non-inferiority" EMEA, London (2000).\cr\cr
+The formulas given in the references rely on the assumption of equal variances
+in the two treatment groups for the parallel group design or on assuming equal 
+within-subject and between-subject variabilities for the 2x2 crossover design.
 }
 
 \seealso{

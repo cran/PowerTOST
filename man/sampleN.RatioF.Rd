@@ -10,16 +10,16 @@ Fieller's confidence (fiducial) interval.
 \usage{
 sampleN.RatioF(alpha = 0.025, targetpower = 0.8, theta1 = 0.8, theta2, 
               theta0 = 0.95, CV, CVb, design = "2x2", 
-              print = TRUE, details = FALSE)
+              print = TRUE, details = FALSE, imax=100)
 }
 \arguments{
   \item{alpha}{
-Type I error. Defaults here to 0.025 because this function is intended for studies
+Type I error probability. \cr
+Defaults here to 0.025 because this function is intended for studies
 with clinical endpoints. 
 }
   \item{targetpower}{
-Power to achieve at least. Must be >0 and <1.
-Typical values are 0.8 or 0.9.
+Power to achieve at least. Must be >0 and <1. Typical values are 0.8 or 0.9.
 }
   \item{theta1}{
 Lower bioequivalence limit. Typically 0.8 (default).
@@ -52,6 +52,10 @@ a data.frame with the results will be returned.
 If TRUE the steps during sample size calculations will be shown. \cr 
 Defaults to FALSE.
 }
+  \item{imax}{
+Maximum number of steps in sample size search. \cr 
+Defaults to 100. Adaption only in rare cases needed.
+}
 }
 \details{
 The sample size is based on exact power calculated using the bivariate 
@@ -62,7 +66,9 @@ via an appropriate ANOVA from the error term and from the difference
 }
 \value{
 A data.frame with the input values and results will be returned.\cr
-The sample size n returned is the total sample size for both designs.
+The sample size n returned is the \bold{total} sample size for both designs.\cr
+This is different from \code{sampleN.TOST()} where in case of \code{design="parallel"} 
+the number per group is returned.
 }
 \references{
 Hauschke D., Kieser M., Diletti E. and Burke M.\cr
@@ -81,7 +87,7 @@ This function is intended for studies with clinical endpoints.\cr In such studie
 the 95\% confidence intervals are usually used for equivalence testing.\cr
 Therefore alpha defaults here to 0.025.\cr
 See CPMP/EWP/482/99 "Points to consider on switching between superiority and 
-non-inferiority" EMEA, London (2000)
+non-inferiority" EMEA, London (2000).
 }
 
 \seealso{

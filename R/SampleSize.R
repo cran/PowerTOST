@@ -6,9 +6,13 @@
 		                  steps=2, bk=2)
 {
   z1 <- qnorm(1-alpha)
-  if (abs(diffm)>0.0001) z2 <- qnorm(targetpower) else
-     z2 <- qnorm(1-(1-targetpower)/2)
-  n01<-(bk/2)*( (z1+z2)*(se*sqrt(2)/(diffm-ltheta1)) )^2;
+  # value 0.04 corresponds roughly to log(0.96)
+  # with lower values there are many steps around between 0.95 and 1
+  if (abs(diffm)>0.04) z2 <- qnorm(targetpower) else {
+    z2 <- qnorm(1-(1-targetpower)/2) # diffm ~0 (log: theta0=1)
+    diffm <- 0
+  }
+  n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
   n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
   n0 <- ceiling(max(n01,n02))
   #make an even multiple of step (=2 in case of 2x2 cross-over)
@@ -27,7 +31,7 @@
 # in case of additive model or 1/lower if logscale=TRUE
 sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, 
                          theta1, theta2, theta0, CV, design="2x2",
-                         exact=TRUE, print=TRUE, details=FALSE)
+                         exact=TRUE, print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check
   d.no <- .design.no(design)
@@ -51,7 +55,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     cat("Study design: ",d.name,"\n")
     if (details) { 
       cat("Design characteristics:\n")
-      cat("df = ",ades$df,", design const. = ",bk,
+      cat("df = ",ades$df,", design constant = ",bk,
           ", step = ",steps,"\n\n",sep="")
     }     
   }
@@ -102,12 +106,15 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
     cat(" n     power\n")
     # do not print first too high
+    # this is for cases with only one step-down and than step up
     if (pow<=targetpower) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
   }
   iter <- 0
-  # iter>50 is emergency brake
+  # iter>100 is emergency brake
   # this is eventually not necessary, depends on quality of sampleN0
   # in experimentation I have seen max of six steps
+  # reformulation with only one loop does not shorten the code considerable
+  # --- loop until power <= target power, step-down
   while (pow>targetpower) {
     if (n<=4) { # min number
       if (print & iter==0) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
@@ -121,9 +128,9 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
       pow  <- .approx.power.TOST(alpha,ltheta1,ltheta2,diffm,se,n,df,bk)
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
-    if (iter>50) break  
+    if (iter>imax) break  
     # loop results in n with power too low
-    # must step one up again
+    # must step one up again. is done in the next loop
   }
   # --- loop until power >= target power
   while (pow<targetpower) {
@@ -134,8 +141,14 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
       pow  <- .power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk) else
       pow  <- .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
-    if (iter>50) break 
+    if (iter>imax) break 
   }
+
+  if (pow<targetpower) {
+    n <- NA
+    if (details) cat("Sample size search failed!\n")
+  }
+  
   if (print && !details) {
     cat("\nSample size\n")
     if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design

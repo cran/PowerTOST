@@ -11,7 +11,7 @@ for the study designs covered
 \usage{
 expsampleN.TOST(alpha = 0.05, targetpower = 0.8, theta1 = 0.8, theta2, 
                 theta0 = 0.95, CV, dfCV, alpha2 = 0.05, design = "2x2", 
-                print = TRUE, details = FALSE)
+                print = TRUE, details = FALSE, imax=100)
 }
 \arguments{
   \item{alpha}{
@@ -56,6 +56,10 @@ If FALSE only a data.frame with the results will be returned.
   \item{details}{
 If TRUE the design characteristics and the steps during
 sample size calculations will be shown.\cr Defaults to FALSE.
+}
+  \item{imax}{
+Maximum number of steps in sample size search. \cr 
+Defaults to 100. Adaption only in rare cases needed.
 }
 }
 \details{
