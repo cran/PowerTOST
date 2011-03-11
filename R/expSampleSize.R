@@ -8,8 +8,10 @@
                          se, dfse, steps=2, bk=2)
 {
   Z1 <- qnorm(1-alpha)
-  if (abs(diffm)>0.0001) tinv <- qt(targetpower, dfse, Z1)  else
+  if (abs(diffm)>0.02) tinv <- qt(targetpower, dfse, Z1)  else {
     tinv <- qt(1-(1-targetpower)/2, dfse, Z1) 
+    diffm <- 0
+  }
   
   # factor 2 in Julious = bk
   n01  <- bk*(se*tinv/(ltheta1-diffm))^2
@@ -30,7 +32,7 @@
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2, 
                             theta0=0.95, CV, dfCV, alpha2=0.05,
-                            design="2x2", print=TRUE, details=FALSE)
+                            design="2x2", print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check if design is implemented
   d.no <- .design.no(design)
@@ -134,7 +136,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2,
     pow  <- .exppower.TOST(alpha,ltheta1,ltheta2,diffm,se,dfse,n,df,bk) 
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
-    if (iter>50) break  
+    if (iter>imax) break  
   }
   while (pow<targetpower) {
     n    <- n+steps
@@ -142,7 +144,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2,
     df   <- eval(dfe)
     pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
-    if (iter>50) break 
+    if (iter>imax) break 
   }
   if (print && !details) {
     cat("\nSample size\n")

@@ -9,11 +9,11 @@ Calculates the necessary sample size to have at least a given power.
 \usage{
 sampleN.TOST(alpha = 0.05, targetpower = 0.8, logscale = TRUE, theta1, theta2, 
              theta0, CV, design = "2x2", exact = TRUE, print = TRUE, 
-             details = FALSE)
+             details = FALSE, imax=100)
 }
 \arguments{
   \item{alpha}{
-Type I error probability. Typically set to 0.05.
+Type I error probability. Per convention mostly set to 0.05.
 }
   \item{targetpower}{
 Power to achieve at least. Must be >0 and <1.\cr
@@ -60,6 +60,10 @@ If FALSE only a data.frame with the results will be returned.
 If TRUE the design characteristics and the steps during
 sample size calculations will be shown. \cr 
 Defaults to FALSE.
+}
+  \item{imax}{
+Maximum number of steps in sample size search. \cr 
+Defaults to 100. Adaption only in rare cases needed.
 }
 }
 \value{

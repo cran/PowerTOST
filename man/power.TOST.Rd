@@ -13,7 +13,7 @@ power.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n,
 }
 \arguments{
   \item{alpha}{
-Type I error, significance level. Conventionally set to 0.05.
+Type I error probability, significance level. Conventionally mostly set to 0.05.
 }
   \item{logscale}{
 Should the data used on log-transformed or on original scale? TRUE or FALSE.\cr

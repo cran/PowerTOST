@@ -87,8 +87,12 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
   # Chapter 10.3.3
   # John Wiley & Sons, Chichester (2007)
   z1 <- qnorm(1-alpha)
-  if (abs(theta0-1)>0.00001) z2 <- qnorm(targetpower) else 
-      z2 <- qnorm(1-(1-targetpower)/2)
+  # value 0.04 corresponds roughly to log(0.96)
+  # with lower values there can be many steps between 0.95 and 1
+  if (abs(log(theta0))>0.04) z2 <- qnorm(targetpower) else {
+    z2 <- qnorm(1-(1-targetpower)/2)
+    theta0 <- 1
+  }
   
   if (theta0<=theta1 | theta0>=theta2) stop("Ratio0 ",theta0,
       " must be between theta1/theta2 = ", theta1," / ",theta2," !")
@@ -117,7 +121,7 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
 # therefore 95% CIs had to be used and consequently alpha=0.025
 sampleN.RatioF <- function(alpha=0.025, targetpower=0.8, theta1=0.8, theta2,
                            theta0=0.95, CV, CVb, design="2x2", print=TRUE, 
-                           details=FALSE)
+                           details=FALSE, imax=100)
 {
   if (!(tolower(design) %in% c("2x2","parallel"))) {
     design <- "2x2"
@@ -180,14 +184,14 @@ sampleN.RatioF <- function(alpha=0.025, targetpower=0.8, theta1=0.8, theta2,
     iter <- iter+1
     pow  <- .power.RatioF(alpha, theta1, theta2, theta0, CV, CVb, n, design)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
-    if (iter>50) break 
+    if (iter>imax) break 
   }
   while (pow<targetpower) {
     n    <- n+steps
     iter <- iter+1
     pow <- .power.RatioF(alpha, theta1, theta2, theta0, CV, CVb, n, design)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
-    if (iter>50) break 
+    if (iter>imax) break 
   }
   if (print && !details) {
     cat("\nSample size\n")

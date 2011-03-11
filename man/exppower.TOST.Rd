@@ -13,7 +13,7 @@ exppower.TOST(alpha = 0.05, theta1 = 0.8, theta2, theta0 = 0.95,
 }
 \arguments{
   \item{alpha}{
-Level of significance. Mostly set to 0.05.
+Level of significance. Commonly set to 0.05.
 }
   \item{theta1}{
 Lower bioequivalence limit as ratio.

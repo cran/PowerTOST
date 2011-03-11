@@ -1,3 +1,10 @@
+Version 0.8-4 
+released 2011-03-11
+     - number of maximal steps in sample size search in the sample size 
+       functions, formerly hard coded as 50, made accessible to users via 
+       argument imax. but needs only adapted in rare extremal cases
+     - start value for sample size search improved around theta0=1 (logscale)
+       or theta0=0 (untransformed)
 Version 0.8-3 
 released 2011-01-18
      - bug fix in known.designs
