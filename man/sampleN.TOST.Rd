@@ -99,6 +99,7 @@ D. Labes
 # BE limits 80 ... 125\%, assumed true BE ratio 0.95
 # intra-subject CV=30\%
 # using all the default values
+# should give n=40 power=0.815845
 sampleN.TOST(CV=0.3)
 
 # Exact calculation for a parallel group design
@@ -106,6 +107,7 @@ sampleN.TOST(CV=0.3)
 # BE limits 80 ... 120\% = -20\% ... +20\% of reference, 
 # assumed true BE ratio 0.95\% = -5\% to reference mean
 # total CV=20\%
+# should give n=24 (per group) power=0.815435
 sampleN.TOST(logscale=FALSE, theta1=-0.2, theta0=-0.05, CV=0.2, design="parallel")
 
 # a rather strange setting of theta0! Have a look at n.

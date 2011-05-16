@@ -15,17 +15,21 @@ OwensQ <- function (nu, t, delta, a, b)
 	#          OwensQ(3000,1.64,-10,0,350) = 5.614476e-12 !
 	# Idea: adapt upper and/or lower integration limit to account for that
 	low <- a; up <- b
-	if (nu>=1000){
+  # May 2011: shrink  interval depending on delta*b 
+  # Craig Zupke's observations:
+  # power.TOST(0.410,FALSE,-5.97,5.97,8.5448,1,14,"parallel",TRUE)
+  # gives an Error; high b/delta
+	if (nu >= 1000 || abs(delta*b) > 30){
 		# try to shorten the integration range
-    h <- (b-a)/499 # 500 steps
+    h <- (b-a)/749 # 750 steps
 		x <- seq(a, b, by=h)
     # next is paranoia
-    x[500] <- b
+    x[750] <- b
 		dens <- .Q.integrand(x, nu, t, delta)
 		x <- x[dens > 0] 
     # or better > .Machine$double.xmin^0.5  approx. 1.5e-154 ?
     #             .Machine$double.xmin^0.25 approx. 1.22e-77
-		n <- length(x)   
+		n <- length(x)
     if (n > 0) {# if any >0
       # also paranoia: range step h greater than those with dens >0
 			low <- max(x[1]-h, a)  # lower: xon-step if this is > a

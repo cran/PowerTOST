@@ -35,10 +35,10 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
   p1 <-c(1:nel)	
   p2 <- p1
   for (i in seq_along(delta1)) {
-	if (dl>1) {ddf <- df[i]; ttt <- tval[i]} 
-	else {ddf <- df[1]; ttt <- tval[1]}
-	p1[i] <- OwensQ(ddf,  ttt, delta1[i], 0, R[i])
-	p2[i] <- OwensQ(ddf, -ttt, delta2[i], 0, R[i])
+  	if (dl>1) {ddf <- df[i]; ttt <- tval[i]} 
+  	  else {ddf <- df[1]; ttt <- tval[1]}
+  	p1[i] <- OwensQ(ddf,  ttt, delta1[i], 0, R[i])
+  	p2[i] <- OwensQ(ddf, -ttt, delta2[i], 0, R[i])
   }
   return( p2-p1 )
 }
