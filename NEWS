@@ -1,3 +1,9 @@
+Version 0.8-6 
+released 2011-05-18
+     - Bug removed which gave incorrect exact power values in case of
+       alpha>=0.5 (very unusual setting). Thanks again to Craig Zupke.
+       Cross checked results of power at equivalence margins against 
+       SAS Proc Power.
 Version 0.8-5 
 released 2011-05-16
      - code in Owen's Q adapted to account for large delta or large b

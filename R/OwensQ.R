@@ -19,26 +19,28 @@ OwensQ <- function (nu, t, delta, a, b)
   # Craig Zupke's observations:
   # power.TOST(0.410,FALSE,-5.97,5.97,8.5448,1,14,"parallel",TRUE)
   # gives an Error; high b/delta
-	if (nu >= 1000 || abs(delta*b) > 30){
-		# try to shorten the integration range
-    h <- (b-a)/749 # 750 steps
-		x <- seq(a, b, by=h)
-    # next is paranoia
-    x[750] <- b
-		dens <- .Q.integrand(x, nu, t, delta)
-		x <- x[dens > 0] 
-    # or better > .Machine$double.xmin^0.5  approx. 1.5e-154 ?
-    #             .Machine$double.xmin^0.25 approx. 1.22e-77
-		n <- length(x)
-    if (n > 0) {# if any >0
-      # also paranoia: range step h greater than those with dens >0
-			low <- max(x[1]-h, a)  # lower: xon-step if this is > a
-      up  <- min(x[n]+h, b)  # upper: xoff+step if this is < b
-    } else {
-      # all == 0, thus return integral as zero
-      return(0.0)
-    }
-	}
+  if (is.finite(b)){ # in case of alpha=0.5 b is infinite
+  	if (nu >= 1000 || abs(delta*b) > 30){
+  		# try to shorten the integration range
+      h <- (b-a)/749 # 750 steps
+  		x <- seq(a, b, by=h)
+      # next is paranoia
+      x[750] <- b
+  		dens <- .Q.integrand(x, nu, t, delta)
+  		x <- x[dens > 0] 
+      # or better > .Machine$double.xmin^0.5  approx. 1.5e-154 ?
+      #             .Machine$double.xmin^0.25 approx. 1.22e-77
+  		n <- length(x)
+      if (n > 0) {# if any >0
+        # also paranoia: range step h greater than those with dens >0
+  			low <- max(x[1]-h, a)  # lower: xon-step if this is > a
+        up  <- min(x[n]+h, b)  # upper: xoff+step if this is < b
+      } else {
+        # all == 0, thus return integral as zero
+        return(0.0)
+      }
+  	}
+  }
 	# result of integrate() is a list, see ?integrate
 	# .Machine$double.eps^.5 = 1.490116e-08 on my machine
 	# MBESS uses .Machine$double.eps^0.25 = 0.0001220703 for both tolerances

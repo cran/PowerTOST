@@ -15,19 +15,31 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 .power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, se, n, df, bk=2)
 {
   tval   <- qt(1 - alpha, df, lower.tail = TRUE)
+  # if alpha>0.5 (very unusual) then R is negative 
+  # in the application of OwensQ the upper integration limit 
+  # is lower then the lower integration limit!
+  # SAS OwenQ gives missings if b or a are negative!
   
   delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
   delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
-  R      <- (delta1-delta2)*sqrt(df)/(2.*tval)
+  # R is infinite in case of alpha=0.5
+  R      <- (delta1-delta2)*sqrt(df)/(2.*abs(tval))
   
   # to avoid numerical errors in OwensQ implementation
-  if (df[1]>10000) { 
+  if (df[1]>50000) { 
     # Joulious formula (57) or (67), normal approximation
     p1 <- pnorm( (abs(delta1)-tval), lower.tail = TRUE)
     p2 <- pnorm( (abs(delta2)-tval), lower.tail = TRUE)
 		
-    return (p1 + p2 -1.)
+    return(p1 + p2 -1.)
   }
+  if (df[1]>10000 & df[1]<=50000) {
+    # approximation via non-central t-distribution
+    return(
+      .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk)
+    )
+  }
+  
   # attempt to vectorize (it vectorizes properly if diffm is a vector
   # OR se is a vector OR n,df) 
   nel <- length(delta1)
