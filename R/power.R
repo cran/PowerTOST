@@ -104,7 +104,7 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
 {
   # check if design is implemented
   d.no <- .design.no(design)
-  if (is.na(d.no)) stop("Err: unknown design!")
+  if (is.na(d.no)) stop("Unknown design!")
   
   # design characteristics
   ades <- .design.props(d.no)

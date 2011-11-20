@@ -1,4 +1,4 @@
-\name{CV2se/se2CV}
+\name{CV2se+se2CV}
 \alias{CV2se}
 \alias{se2CV}
 \title{Helper functions}

@@ -1,3 +1,7 @@
+Version 0.8-7
+released 2011-10-20
+     - Problem with slash in \name field of manual resolved 
+       (requested by B. Ripley)
 Version 0.8-6 
 released 2011-05-18
      - Bug removed which gave incorrect exact power values in case of
