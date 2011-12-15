@@ -26,5 +26,6 @@
 .sampleN0.RatioF: Start value of sample size for ratio of means with normal data 
 on original scale
 }
-\details{These are usually not to be called by the user.}
+\details{These are usually not to be called by the user.\cr
+Due to the necessary NAMESPACE from R14.0 on these functions are no longer exported.}
 \keyword{internal}

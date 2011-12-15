@@ -34,7 +34,9 @@ CVpooled <- function(CVdata, alpha=0.2, robust=FALSE)
         n <- CVdata$n[i]
         if (robust) { 
           CVdata$df[i] <- eval(parse(text=dprop$df2,srcfile=NULL))
-        } else CVdata$df[i] <- eval(parse(text=dprop$df,srcfile=NULL))
+        } else {
+          CVdata$df[i] <- eval(parse(text=dprop$df,srcfile=NULL))
+        }
       } 
     }
   }

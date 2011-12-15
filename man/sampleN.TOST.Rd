@@ -7,9 +7,9 @@ Sample size based on power of TOST
 Calculates the necessary sample size to have at least a given power.
 }
 \usage{
-sampleN.TOST(alpha = 0.05, targetpower = 0.8, logscale = TRUE, theta1, theta2, 
-             theta0, CV, design = "2x2", exact = TRUE, print = TRUE, 
-             details = FALSE, imax=100)
+sampleN.TOST(alpha = 0.05, targetpower = 0.8, logscale = TRUE, 
+             theta1, theta2, theta0, CV, design = "2x2", exact = TRUE, 
+             robust=FALSE, print = TRUE, details = FALSE, imax=100)
 }
 \arguments{
   \item{alpha}{
@@ -52,9 +52,16 @@ Shall the calculations done exact (based on formulas with Owen's Q function) \cr
 or approximately via non-central Student's t-distribution? TRUE or FALSE. \cr
 Defaults to TRUE.
 }
+  \item{robust}{
+Defaults to FALSE. With that value the usual degrees of freedom will be used.\cr
+Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
+(aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
+See \code{known.designs()$df2} for designs covered in this package.\cr
+Has only effect for higher-order crossover designs.
+}
   \item{print}{
 If TRUE (default) the function prints its results.\cr 
-If FALSE only a data.frame with the results will be returned. 
+If FALSE only the data.frame with the results will be returned. 
 }
   \item{details}{
 If TRUE the design characteristics and the steps during
@@ -67,7 +74,10 @@ Defaults to 100. Adaption only in rare cases needed.
 }
 }
 \value{
-A data.frame with the input and results will be returned.
+A data.frame with the input and results will be returned.\cr
+The "Sample size" column contains the \bold{total} sample size in case of the 
+crossover designs and the paired means design.\cr
+It contains the sample size \bold{per group} in case of the parallel group design.
 }
 \references{
 Phillips, K. F. (1990)\cr 

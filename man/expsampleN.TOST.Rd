@@ -9,8 +9,8 @@ variety of study designs used in bioequivalence studies. See known.designs()
 for the study designs covered
 }
 \usage{
-expsampleN.TOST(alpha = 0.05, targetpower = 0.8, theta1 = 0.8, theta2, 
-                theta0 = 0.95, CV, dfCV, alpha2 = 0.05, design = "2x2", 
+expsampleN.TOST(alpha = 0.05, targetpower = 0.8, theta0 = 0.95, theta1 = 0.8, 
+                theta2, CV, dfCV, alpha2 = 0.05, design = "2x2", robust=FALSE,
                 print = TRUE, details = FALSE, imax=100)
 }
 \arguments{
@@ -49,6 +49,12 @@ for CV (for informal purposes only).
 Character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.
 }
+  \item{robust}{
+Defaults to FALSE. With that value the usual degrees of freedom will be used.\cr
+Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
+(aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
+See \code{known.designs()$df2} for designs covered in this package.
+}
   \item{print}{
 If TRUE (default) the function prints its results.\cr
 If FALSE only a data.frame with the results will be returned.
@@ -58,8 +64,9 @@ If TRUE the design characteristics and the steps during
 sample size calculations will be shown.\cr Defaults to FALSE.
 }
   \item{imax}{
-Maximum number of steps in sample size search. \cr 
-Defaults to 100. Adaption only in rare cases needed.
+Maximum number of steps in sample size search.\cr 
+Defaults to 100. Adaption only in very rare cases needed.\cr
+Never seen a need for adaption up to now.
 }
 }
 \details{
@@ -67,7 +74,10 @@ The sample size is calculated based on 'expected' power via Julious formulas
 based on non-central t-distribution.
 }
 \value{
-A data.frame with the input values and the result of the sample size.
+A data.frame with the input values and the result of the sample size estimation.\cr
+The "Sample size" column contains the \bold{total} sample size in case of the 
+crossover designs and the paired means design.\cr
+It contains the sample size \bold{per group} in case of the 2-parallel groups design.
 }
 \references{
 S.A. Julious, R.J. Owen\cr
@@ -78,6 +88,11 @@ Pharmaceutical Statistics (2006), 5, 29-37
 S.A. Julious\cr
 "Sample sizes for Clinical Trials"\cr
 CRC Press, Chapman & Hall, Boca Raton 2010
+
+S. Senn\cr
+"Cross-over Trials in Clinical Research"
+Second edition\cr
+Wiley, Chichester 2002
 }
 \author{
 D. Labes

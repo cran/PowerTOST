@@ -17,45 +17,45 @@ sampleN.RatioF(alpha = 0.025, targetpower = 0.8, theta1 = 0.8, theta2,
 Type I error probability. \cr
 Defaults here to 0.025 because this function is intended for studies
 with clinical endpoints. 
-}
+  }
   \item{targetpower}{
 Power to achieve at least. Must be >0 and <1. Typical values are 0.8 or 0.9.
-}
+  }
   \item{theta1}{
 Lower bioequivalence limit. Typically 0.8 (default).
-}
+  }
   \item{theta2}{
 Upper bioequivalence limit. Typically 1.25.\cr
 Is set to \code{1/theta1} if missing.
-}
+  }
   \item{theta0}{
 True ('null') assumed bioequivalence ratio. Typically set to 0.95.
-}
+  }
   \item{CV}{
 Coefficient of variation as ratio. In case of \code{design="parallel"} this is
 the CV of the total variability, in case of \code{design="2x2"} the intra-subject
 CV (CVw in the reference).
-}
+  }
   \item{CVb}{
 CV of the between-subject variability. Only necessary for \code{design="2x2"}.
-}
+  }
   \item{design}{
 A character string describing the study design. \cr
 \code{design="parallel"} or \code{design="2x2"} allowed for a two-parallel 
 group design or a classical TR/RT crossover design.
-}
+  }
   \item{print}{
 If TRUE (default) the function prints its results. If FALSE only
 a data.frame with the results will be returned. 
-}
+  }
   \item{details}{
 If TRUE the steps during sample size calculations will be shown. \cr 
 Defaults to FALSE.
-}
+  }
   \item{imax}{
 Maximum number of steps in sample size search. \cr 
 Defaults to 100. Adaption only in rare cases needed.
-}
+  }
 }
 \details{
 The sample size is based on exact power calculated using the bivariate 
@@ -66,7 +66,7 @@ via an appropriate ANOVA from the error term and from the difference
 }
 \value{
 A data.frame with the input values and results will be returned.\cr
-The sample size n returned is the \bold{total} sample size for both designs.\cr
+The sample size n returned is the \bold{total} sample size for \bold{both} designs.\cr
 This is different from \code{sampleN.TOST()} where in case of \code{design="parallel"} 
 the number per group is returned.
 }

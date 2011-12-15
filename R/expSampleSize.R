@@ -30,9 +30,10 @@
 # Only for log-transformed data
 # leave upper BE margin (theta2) empty and the function will use 1/lower
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
-expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2, 
-                            theta0=0.95, CV, dfCV, alpha2=0.05,
-                            design="2x2", print=TRUE, details=FALSE, imax=100)
+expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta0=0.95, 
+                            theta1=0.8, theta2, CV, dfCV, alpha2=0.05,
+                            design="2x2", robust=FALSE,
+                            print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check if design is implemented
   d.no <- .design.no(design)
@@ -42,12 +43,16 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2,
   ades   <-.design.props(d.no)
   d.name <- ades$name  # nice name of design
   # get the df for the design as an unevaluated expression
-  dfe    <- parse(text=ades$df,srcfile=NULL) 
+  if (robust) {
+    dfe    <- parse(text=ades$df2,srcfile=NULL) 
+  } else {
+    dfe    <- parse(text=ades$df,srcfile=NULL) 
+  }
   steps  <- ades$steps	# stepsize for sample size search
   bk     <- ades$bk # get design constant
   
   if (missing(CV) | missing(dfCV)) {
-    stop("CV and df must be given!", call.=FALSE)
+    stop("CV and its df must be given!", call.=FALSE)
   }
   
   # calculate pooled data if CV and dfCV are vectors
@@ -65,6 +70,11 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2,
     dfse <- dfCV
     CVp  <- CV
   }
+  if (missing(theta2)) theta2=1/theta1
+  if ( (theta0<=theta1) | (theta0>=theta2) ) {
+    stop("Ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
+        call.=FALSE)
+  }
   # print the configuration:
   if (print) {
     cat("\n++++++++ Equivalence test - TOST ++++++++\n")
@@ -73,15 +83,13 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta1=0.8, theta2,
     cat("Study design: ",d.name,"\n")
     if (details) { 
       cat("Design characteristics:\n")
-      cat("df = ",ades$df,", design const. = ",bk,", step = ",steps,
-          "\n\n",sep="")
+      if (robust & (ades$df2 != ades$df)) {
+        cat("df = ",ades$df2," (robust)", sep="") 
+      } else cat("df = ",ades$df, sep="")
+      cat(", design const. = ", bk, ", step = ", steps,"\n\n",sep="")
     }     
   }
-  if (missing(theta2)) theta2=1/theta1
-  if ( (theta0<=theta1) | (theta0>=theta2) ) {
-    stop("Ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
-         call.=FALSE)
-  }
+
   ltheta1 <- log(theta1)
   ltheta2 <- log(theta2)
   diffm   <- log(theta0)

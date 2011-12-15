@@ -10,7 +10,7 @@
 ##############################################################################
 
 # the multivariate t- and normal distribution with arbitrary corr
-require(mvtnorm)
+# require(mvtnorm)
 
 power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb, 
                          n, design="2x2")
@@ -205,6 +205,5 @@ sampleN.RatioF <- function(alpha=0.025, targetpower=0.8, theta1=0.8, theta2,
   names(res) <-c("Design","alpha","CV","CVb","theta0","theta1","theta2",
                  "Sample size", "Achieved power", "Target power")
   
-  if (print) return(invisible(res)) 
-  else return(res)
+  if (print) return(invisible(res)) else return(res)
 }

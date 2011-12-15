@@ -12,25 +12,27 @@ CVpooled(CVdata, alpha = 0.2, robust = FALSE)
 \arguments{
   \item{CVdata}{
 A data.frame that must contain the columns CV, n and design where CV are the error CVs 
-from the studies, n the number of subjects and design is a character string describing
-the study design.\cr
+from the studies, n the number of subjects\cr 
+and design is a character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.\cr
 If the design column is missing the classical 2x2 crossover is assumed for each study.\cr
 A message is displayed under that circumstances.\cr\cr
 A data.frame that must contain the columns CV and giving the degrees of freedom 
 df directly is also accepted as \code{CVdata}.
-}
+  }
   \item{alpha}{
 Error probability for calculating an upper confidence limit of the pooled CV.\cr
 Recommended 0.2-0.25 for use in subsequent sample size estimation. \cr
 See f.i one of H. Schuetz lectures \url{http://bebac.at/lectures/MU2010-CD2.pdf}
-}
+  }
   \item{robust}{
 Defaults to FALSE.\cr
 Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
-(aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
-See \code{known.designs()$df2} for designs covered in this package.
-}
+(aka Senn's basic estimator). These df's are calculated as \code{n-seq}.\cr
+They are also often more appropriate if the CV comes from a 'true' mixed model 
+evaluation (FDA model for average bioequivalence).\cr
+See \code{known.designs()$df2} for the designs covered in this package.
+  }
   \item{x}{An object of class \code{"CVp"}.}
   \item{digits}{Number of digits for CV.}
   \item{verbose}{Defaults to \code{FALSE}. Prints only the pooled CV and the df.\cr
@@ -54,7 +56,8 @@ A list of class \code{"CVp"} with components
 The class \code{"CVp"} has a S3 methods \code{print.CVp}.
 }
 \references{
-See lectures of H. Schuetz at \url{http://bebac.at/lectures/}.\cr\cr
+See lectures of H. Schuetz about sample size challenges \cr
+at \url{http://bebac.at/lectures.htm}.\cr\cr
 Patterson, Jones\cr
 "Bioequivalence and Statistics in Clinical Pharmacology"\cr
 Chapter 5.7 "Determining Trial Size"\cr
@@ -66,7 +69,7 @@ D. Labes
 \note{
 The calculations are based on the assumption of evaluation via log-transformed values.\cr
 The calculations are further based on a common variance of Test and Reference \cr
-treatments in replicate crossover studies or parallel group study, respectively.
+formulations in replicate crossover studies or parallel group study, respectively.
 }
 \section{Warning}{
 Pooling of CV's from parallel-group and cross-over designs does not make any sense.\cr
@@ -98,4 +101,7 @@ CVpooled(CVsAUC, alpha=0.2, robust=TRUE)
 #print also the upper CL, data example 3
 CVsAUC3 <- subset(CVsAUC,design != "2x2x4")
 print(CVpooled(CVsAUC3, alpha=0.2, robust=TRUE), digits=3, verbose=TRUE)
+# will give the output
+#Pooled CV = 0.235 with 32 degrees of freedom (robust df's)
+#Upper 80\% confidence limit of CV = 0.266
 }

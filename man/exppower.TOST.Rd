@@ -9,7 +9,7 @@ designs used in bioequivalence studies.
 }
 \usage{
 exppower.TOST(alpha = 0.05, theta1 = 0.8, theta2, theta0 = 0.95, 
-              CV, dfCV, n, design = "2x2")
+              CV, dfCV, n, design = "2x2", robust=FALSE)
 }
 \arguments{
   \item{alpha}{
@@ -37,6 +37,12 @@ Number of subjects to be planned.
   \item{design}{
 Character string describing the study design.
 See \code{known.designs()} for designs covered in this package.
+}
+  \item{robust}{
+Defaults to FALSE.\cr
+Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
+(aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
+See \code{known.designs()$df2} for designs covered in this package.
 }
 }
 \details{

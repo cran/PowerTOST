@@ -26,9 +26,11 @@ no  design    df      df2    steps  bk    bkni
  7  2x4x4    3*n-4   n-4      4      1    0.0625      # 1/16
  9  2x3x3    2*n-3   n-3      3      1.5  0.1666667   # 1/6
 10  2x4x2    n-2     n-2      4      8    0.5
+100 paired   n-1     n-1      1      2    0.5
 ")
 # no. 9 is f.i. the partial replicate design TRR/RTR/RRT
 # no. 10 is Balaam's design, a mixture of crossover and parallel group.
+# questionable df2 for Baalams design
 #
 # eventually it would be better to have steps=6 in case of 3x3 (6 seq. design)
 # Jan 2011: 3x6x3 introduced, df for 3x3 corrected (former 2*n-3)
@@ -45,8 +47,9 @@ no  design    df      df2    steps  bk    bkni
   designs$name[designs$no %in% c(5,6,7)] <- 
 		  paste(designs$design[designs$no %in% c(5,6,7)],"replicate crossover")
   
-  designs$name[designs$no==9]  <- "partial replicate design (2x3x3)" 
-  designs$name[designs$no==10] <- "Balaam's design (2x4x2)" 
+  designs$name[designs$no==9]   <- "partial replicate (2x3x3)" 
+  designs$name[designs$no==10]  <- "Balaam's (2x4x2)" 
+  designs$name[designs$no==100] <- "paired means" 
   # degrees of freedom as expression: not possible, 
   # expression in data.frame not allowed 
   return(designs)
