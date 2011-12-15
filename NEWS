@@ -1,3 +1,14 @@
+Version 0.9-0
+released 2011-12-15
+     - paired means design introduced
+     - 'robust' argument added to nearly all functions
+       With robust=TRUE the degrees of freedom for the so-called robust
+       evaluation (df2 in known.designs() output) will be used. 
+       This may be helpful if planning is done for higher order designs 
+       evaluated via mixed model or via intra-subject contrasts 
+       (aka Senn's basic estimator)
+     - Due to the necessary NAMESPACE from R14.0 on the internal functions 
+       (names starting with .) are no longer exported.
 Version 0.8-7
 released 2011-10-20
      - Problem with slash in \name field of manual resolved 

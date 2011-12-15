@@ -9,7 +9,7 @@ procedure for various study designs used in BE studies.
 }
 \usage{
 power.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n, 
-           design = "2x2", exact = TRUE)
+           design = "2x2", exact = TRUE, robust=FALSE)
 }
 \arguments{
   \item{alpha}{
@@ -52,14 +52,24 @@ Shall the calculations done exact (based on formulas with Owen's Q) or
 approximately via non-central Student's t-distribution? \cr 
 TRUE or FALSE. Defaults to TRUE.
   }
+  \item{robust}{
+Defaults to FALSE. With that value the usual degrees of freedom will be used.\cr
+Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
+(aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
+See \code{known.designs()$df2} for designs covered in this package.\cr
+Has only effect for higher-order crossover designs.
+  }
 }
 \details{
 The exact calculations of power are based on Owen's Q-function.\cr
 The approximate power is an implementation of  via non-central 
-t-distribution.
+t-distribution.\cr\cr
+The formulas for the paired means 'design' do not take a correlation parameter 
+into account.\cr 
+They are solely based on the paired t-test (TOST of differences = zero).
 }
 \value{
-Value of power according to the input.
+Value of power according to the input arguments.
 }
 \references{
 Phillips, K. F. (1990) \cr 

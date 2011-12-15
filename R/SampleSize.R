@@ -30,18 +30,22 @@
 # leave upper BE margin (theta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
 sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, 
-                         theta1, theta2, theta0, CV, design="2x2",
-                         exact=TRUE, print=TRUE, details=FALSE, imax=100)
+                         theta1, theta2, theta0, CV, design="2x2", exact=TRUE,
+                         robust=FALSE, print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check
   d.no <- .design.no(design)
-  if (is.na(d.no)) stop("Design not known!", call.=FALSE)
+  if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
   
   # design characteristics
   ades   <- .design.props(d.no)
   d.name <- ades$name  # nice name of design
   # get the df for the design as an unevaluated expression (now with n as var)
-  dfe    <- parse(text=ades$df,srcfile=NULL) 
+  if (robust){
+    dfe    <- parse(text=ades$df2,srcfile=NULL)
+  } else {
+    dfe    <- parse(text=ades$df,srcfile=NULL)
+  }
   steps  <- ades$steps	# stepsize for sample size search
   bk     <- ades$bk # get design constant
   
@@ -55,8 +59,10 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     cat("Study design: ",d.name,"\n")
     if (details) { 
       cat("Design characteristics:\n")
-      cat("df = ",ades$df,", design constant = ",bk,
-          ", step = ",steps,"\n\n",sep="")
+      if (robust & (ades$df2 != ades$df)) {
+        cat("df = ",ades$df2," (robust)", sep="") 
+      } else cat("df = ",ades$df, sep="")
+      cat(", design const. = ", bk, ", step = ", steps,"\n\n",sep="")
     }     
   }
   # handle the log transformation

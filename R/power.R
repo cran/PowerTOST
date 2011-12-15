@@ -100,19 +100,25 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 # leave upper BE margin (ltheta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
 power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
-                       CV, n, design="2x2", exact=TRUE)
+                       CV, n, design="2x2", exact=TRUE, robust=FALSE)
 {
   # check if design is implemented
   d.no <- .design.no(design)
-  if (is.na(d.no)) stop("Unknown design!")
+  if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
   
   # design characteristics
   ades <- .design.props(d.no)
-  dfe  <- parse(text=ades$df[1],srcfile=NULL) #degrees of freedom as expression
-  bk   <- ades$bk                             #design const.
+  #degrees of freedom as expression
+  if (robust){
+    dfe  <- parse(text=ades$df[1],srcfile=NULL) 
+  } else {
+    dfe  <- parse(text=ades$df2[1],srcfile=NULL)
+  }
+  #design const.
+  bk   <- ades$bk
   
   if (missing(CV)) stop("CV must be given!")
-  if (missing(n))  stop("Number of subjects must be given!")
+  if (missing(n))  stop("Number of subjects n must be given!")
   
   # handle log-transformation	
   if (logscale) {
@@ -134,6 +140,8 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   }
   
   df <- eval(dfe)
+  if (df<1) stop("n too small. Degrees of freedom <1!")
+  
   if ( !exact )
     pow <- .approx.power.TOST(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk)
   else
