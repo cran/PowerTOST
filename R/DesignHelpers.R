@@ -13,10 +13,11 @@ known.designs <- function()
 # also without carry over.
 # In case of 2x2x4 design Chen, Chow and Liu used bk=1.1 in a model 
 # with carry over.
+# Dec2011 parallel group design now also for n=ntotal
 des <- ("
-no  design    df      df2    steps  bk    bkni
- 0  parallel 2*(n-1) 2*(n-1)  1      2    NA
- 1  2x2      n-2     n-2      2      2    0.5
+no  design    df     df2    steps    bk   bkni
+ 0  parallel n-2     n-2      2      4    1           #bkni=???
+ 1  2x2      n-2     n-2      2      2    0.5         #bkni=???
  1  2x2x2    n-2     n-2      2      2    0.5
  2  3x3      2*n-4   n-3      3      2    NA
  3  3x6x3    2*n-4   n-6      6      2    NA

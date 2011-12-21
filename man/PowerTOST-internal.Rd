@@ -3,6 +3,7 @@
 \alias{PowerTOSTinternal}
 \alias{.approx.power.TOST}
 \alias{.approx2.power.TOST}
+\alias{.calc.power}
 \alias{.design.no}
 \alias{.design.props}
 \alias{.exppower.TOST}
@@ -15,6 +16,7 @@
 \description{Internal PowerTOST objects: \cr
 .approx.power.TOST: approximate power using non-central t-distribution\cr
 .approx2.power.TOST: approximate power using central 'shifted' t-distribution\cr
+.calc.power: calls the appropriate raw power function according to method
 .design.no: no of design from design literal\cr
 .design.props: design properties (df, bk, step, name)\cr
 .exppower.TOST: expected power\cr

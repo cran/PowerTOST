@@ -23,7 +23,7 @@ Upper bioequivalence limit as ratio.
 If not given \code{theta2} will be calculated as \code{1/theta1}.
 }
   \item{theta0}{
-'True' or assumed bioequivalence ratio. Tpically set to 0.95.
+'True' or assumed bioequivalence ratio. Typically set to 0.95.
 }
   \item{CV}{
 Coefficient of variation as ratio. 
@@ -32,7 +32,7 @@ Coefficient of variation as ratio.
 Degrees of freedom for the CV (error/residual degree of freedom).
 }
   \item{n}{
-Number of subjects to be planned.
+Number of subjects to be planned (ntotal).
 }
   \item{design}{
 Character string describing the study design.

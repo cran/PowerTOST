@@ -77,7 +77,8 @@ based on non-central t-distribution.
 A data.frame with the input values and the result of the sample size estimation.\cr
 The "Sample size" column contains the \bold{total} sample size in case of the 
 crossover designs and the paired means design.\cr
-It contains the sample size \bold{per group} in case of the 2-parallel groups design.
+It contains also the \bold{total} sample size  in case of the 2-parallel groups design
+from package version >0.9-0 on.
 }
 \references{
 S.A. Julious, R.J. Owen\cr

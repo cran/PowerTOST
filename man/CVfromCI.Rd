@@ -22,8 +22,7 @@ Lower confidence limit of the BE ratio.
 Upper confidence limit of the BE ratio.
   }
   \item{n}{
-Total number of subjects under study in case of a crossover study.\cr
-Number of subjects per treatment in case of a parallel-group study.\cr
+Total number of subjects under study for all designs (for package version >0.9-0).
   }
   \item{design}{
 Character string describing the study design.\cr

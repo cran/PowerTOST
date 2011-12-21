@@ -1,24 +1,24 @@
-\name{power.TOST}
-\alias{power.TOST}
+\name{power2.TOST}
+\alias{power2.TOST}
 \title{
-Power of the classical TOST procedure
+Power of the classical TOST procedure with unbalanced (sequence) groups
 }
 \description{
 Calculates the exact or approximate power of the two-one-sided t-tests 
 procedure for various study designs used in BE studies.
-}
+  }
 \usage{
-power.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n, 
+power2.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n, 
            design = "2x2", method="exact", robust=FALSE)
-}
+  }
 \arguments{
   \item{alpha}{
 Type I error probability, significance level. Conventionally mostly set to 0.05.
-}
+  }
   \item{logscale}{
 Should the data used on log-transformed or on original scale? TRUE or FALSE.\cr
 Defaults to TRUE.
-}
+  }
   \item{theta1}{
 Lower bioequivalence limit.\cr
 In case of \code{logscale=TRUE} it is given as ratio, otherwise as diff. to 1.\cr
@@ -41,8 +41,8 @@ In case of cross-over studies this is the within-subject CV, \cr
 in case of a parallel-group design the CV of the total variability.
 }
   \item{n}{
-Number of subjects under study.\cr 
-This is is from package version >0.9-0 the total number of subjects.
+Number of subjects in the (sequence) groups under study.\cr
+Must be a vector of length = (sequence) groups.
 }
   \item{design}{
 Character string describing the study design.\cr
@@ -68,13 +68,9 @@ Has only effect for higher-order crossover designs.
 }
 \details{
 The exact calculations of power are based on Owen's Q-function.\cr
-The approximate power is implemented via non-central t-distribution\cr
-or via 'shifted' central t-distribution.\cr\cr
-The formulas used assume balanced studies, i.e. equal number of subjects in
-the (sequence) groups.\cr\cr
-The formulas for the paired means 'design' do not take a correlation parameter 
-into account.\cr 
-They are solely based on the paired t-test (TOST of differences = zero).
+The approximate power is implemented via non-central t-distribution \cr
+or via 'shifted' central t-distribution.\cr
+This function does'nt make many sense in case of \code{design="paired"}.
 }
 \value{
 Value of power according to the input arguments.
@@ -89,18 +85,24 @@ Diletti D., Hauschke D., and Steinijans V. W. (1991) \cr
 Confidence Intervals" \cr 
 Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29, 1-8 
 
-See here for a short description:\cr
-\url{../doc/BE_power_sample_size_excerpt.pdf}.
 }
 \author{
 D. Labes
 }
 \seealso{
- \code{\link{sampleN.TOST}, \link{known.designs}}
+ \code{\link{power.TOST}, \link{known.designs}}
 }
 \examples{
-# power for the 2x2 cross-over design with 24 subjects
+# power for the 2x2 cross-over design with 24 subjects balanced
 # using all the other default values
 # should give: [1] 0.7391155
+power2.TOST(CV=0.25, n=c(12,12))
+# the same result 
 power.TOST(CV=0.25, n=24)
+
+# power for the 2x2 cross-over design with 24 subjects and
+# 2 dropouts in the same sequence group
+# should give: [1] 0.6912935
+power2.TOST(CV=0.25, n=c(10,12))
+
 }

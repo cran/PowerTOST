@@ -26,9 +26,9 @@ CVfromCI <- function(point, lower, upper, n, design="2x2", alpha=0.05, robust=FA
   }
 
   tval <- qt(1-alpha,eval(dfe))
-  s1 <- (log(point)-log(lower))/sqrt(desi$bk/n)/tval
-  s2 <- (log(upper)-log(point))/sqrt(desi$bk/n)/tval
-  sw <- 0.5*(s1+s2)
+  s1   <- (log(point)-log(lower))/sqrt(desi$bk/n)/tval
+  s2   <- (log(upper)-log(point))/sqrt(desi$bk/n)/tval
+  sw   <- 0.5*(s1+s2)
   # both estimates very different?
   if (abs(s1-s2)/sw > 0.1) warning("sw1, sw2 very different. Check input.")
   return(se2CV(sw))

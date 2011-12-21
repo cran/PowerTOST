@@ -67,8 +67,6 @@ via an appropriate ANOVA from the error term and from the difference
 \value{
 A data.frame with the input values and results will be returned.\cr
 The sample size n returned is the \bold{total} sample size for \bold{both} designs.\cr
-This is different from \code{sampleN.TOST()} where in case of \code{design="parallel"} 
-the number per group is returned.
 }
 \references{
 Hauschke D., Kieser M., Diletti E. and Burke M.\cr

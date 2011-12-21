@@ -29,8 +29,8 @@
 # diff if empty is set to 0.95 or 0.05 depending on logscale
 # leave upper BE margin (theta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
-sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, 
-                         theta1, theta2, theta0, CV, design="2x2", exact=TRUE,
+sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta1,
+                         theta2, theta0, CV, design="2x2", method="exact",
                          robust=FALSE, print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check
@@ -65,6 +65,10 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
       cat(", design const. = ", bk, ", step = ", steps,"\n\n",sep="")
     }     
   }
+  
+  # regularize the method giving
+  method <- .powerMethod(method)
+  
   # handle the log transformation
   if (logscale) {
     if (missing(theta1) & missing(theta2)) theta1 <- 0.8
@@ -104,12 +108,13 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   # start value from large sample approx. (hidden func.)
   n  <- .sampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, bk)
   df <- eval(dfe)
-  if (exact) 
-    pow <- .power.TOST(alpha, ltheta1, ltheta2, diffm, se, n=n, df, bk) else
-    pow <- .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n=n, df, bk)
+  
+  pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
+
   if (details) {
-    cat("\nSample size search\n")
-    if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
+    cat("\nSample size search (ntotal)\n")
+    # parallel group design is now in terms of ntotal
+    #if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
     cat(" n     power\n")
     # do not print first too high
     # this is for cases with only one step-down and than step up
@@ -129,9 +134,8 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down if start power is to high
     iter <- iter+1
     df   <- eval(dfe)
-    if (exact)
-      pow  <- .power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk) else
-      pow  <- .approx.power.TOST(alpha,ltheta1,ltheta2,diffm,se,n,df,bk)
+    pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
+    
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -143,9 +147,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    if (exact)
-      pow  <- .power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk) else
-      pow  <- .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk)
+    pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
@@ -156,17 +158,24 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   }
   
   if (print && !details) {
-    cat("\nSample size\n")
-    if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
+    cat("\nSample size (total)\n")
+    #if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
     cat(" n     power\n")
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
   }
   if (details && print) {
-    if (exact) cat("\nExact power calculation with\nOwen's Q functions.\n")
+    if (method=="exact") 
+      cat("\nExact power calculation with\nOwen's Q functions.\n")
   }
   # always print if approx.
-  if (print && !exact) 
-    cat("\nApproximate power calculation with\nnon-central t-distribution.\n")
+  if (print && method!="exact"){
+    approx <- switch(
+      method,
+      noncentral="Approximate power calculation with\nnon-central t-distribution.",
+      shifted="Approximate power calculation with\nshifted central t-distribution."
+      )
+    cat("\n",approx,"\n",sep="")
+  } 
   if (print) cat("\n")
   
   #return results as data.frame

@@ -38,9 +38,7 @@ CV of the between-subject variability. Only necessary for \code{design="2x2"}.
 }
   \item{n}{
 Number of subjects to be planned.\cr
-Attention! n is for both designs the total number of subjects.\cr
-This is different to the other power functions within this package where in 
-case of \code{design="parallel"} the number of subjects per group has to be used.
+n is for both designs the \bold{total} number of subjects.\cr
 }
   \item{design}{
 A character string describing the study design.\cr 

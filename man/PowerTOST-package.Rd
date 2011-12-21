@@ -21,17 +21,19 @@ These functions are intended for studies with clinical endpoints.
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 0.9-0\cr
-Date: \tab 2011-12-15\cr
-License: \tab GPL-2\cr
+Version: \tab 0.9-2\cr
+Date: \tab 2011-12-24\cr
+License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
+LazyData: \tab yes
 }
 Main functions are \code{sampleN.TOST()} and \code{power.TOST()} for usual 
 power and sample size calculations.\cr
 If you prefer sample size based on 'expected' power see the functions
 \code{expsampleN.TOST()} and \code{exppower.TOST()}.\cr
 The main functions for equivalence of the ratio of means with normality on the
-original scale are \code{power.RatioF()} and \code{sampleN.RatioF()}.
+original scale are \code{power.RatioF()} and \code{sampleN.RatioF()}.\cr\cr
+The package contains further some utility functions (see Index).
 }
 \author{
 D. Labes \cr
