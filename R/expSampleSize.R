@@ -120,8 +120,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta0=0.95,
   df  <- eval(dfe)
   pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
   if (details) {
-    cat("\nSample size search\n")
-    if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
+    cat("\nSample size search (ntotal)\n")
+    #parallel group design is now handled also in terms of ntotal
+    #if (d.no == 0) cat("(n is sample size per group)\n") 
     cat(" n    exp. power\n")
     # do not print first too high
     if (pow<=targetpower) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
@@ -155,8 +156,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, theta0=0.95,
     if (iter>imax) break 
   }
   if (print && !details) {
-    cat("\nSample size\n")
-    if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
+    cat("\nSample size (ntotal)\n")
+    # parallel group design is now also handled in terms of ntotal
+    #if (d.no == 0) cat("(n is sample size per group)\n") 
     cat(" n    exp. power\n")
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
   }

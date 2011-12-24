@@ -8,7 +8,7 @@ Calculates the necessary sample size to have at least a given power.
 }
 \usage{
 sampleN.TOST(alpha = 0.05, targetpower = 0.8, logscale = TRUE, 
-             theta1, theta2, theta0, CV, design = "2x2", exact = TRUE, 
+             theta1, theta2, theta0, CV, design = "2x2", method="exact", 
              robust=FALSE, print = TRUE, details = FALSE, imax=100)
 }
 \arguments{
@@ -39,45 +39,53 @@ In case of \code{logscale=TRUE} it must be given as ratio, otherwise as
 difference to 1. See examples.\cr
 Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}.\cr
 Note that this argument was named \code{diff} in former versions.
-}
+  }
   \item{CV}{
 Coefficient of variation as ratio.
-}
+  }
   \item{design}{
 Character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.
-}
-  \item{exact}{
-Shall the calculations done exact (based on formulas with Owen's Q function) \cr
-or approximately via non-central Student's t-distribution? TRUE or FALSE. \cr
-Defaults to TRUE.
-}
+  }
+  \item{method}{
+Defaults to "exact" in which case the calculation is done based on formulas 
+with Owen's Q.\cr
+The exact calculation can also be choosen with \code{method="owenq"}
+Approximate calculations can be choosen via \code{method="noncentral"} or 
+\code{method="nct"} for the approximation using the non-central t-distribution\cr
+or via \code{method="central"} or \code{method="shifted"} for the 
+approximation via 'shifted' central t-distribution.\cr
+The strings for \code{method} may be abbreviated.
+  }
   \item{robust}{
 Defaults to FALSE. With that value the usual degrees of freedom will be used.\cr
 Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
 (aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
 See \code{known.designs()$df2} for designs covered in this package.\cr
 Has only effect for higher-order crossover designs.
-}
+  }
   \item{print}{
 If TRUE (default) the function prints its results.\cr 
 If FALSE only the data.frame with the results will be returned. 
-}
+  }
   \item{details}{
 If TRUE the design characteristics and the steps during
 sample size calculations will be shown. \cr 
 Defaults to FALSE.
-}
+  }
   \item{imax}{
 Maximum number of steps in sample size search. \cr 
 Defaults to 100. Adaption only in rare cases needed.
-}
+  }
 }
 \value{
 A data.frame with the input and results will be returned.\cr
-The "Sample size" column contains the \bold{total} sample size in case of the 
+The "Sample size" column contains the total sample size in case of the 
 crossover designs and the paired means design.\cr
-It contains the sample size \bold{per group} in case of the parallel group design.
+It contains the from version >0.9-0 also the \bold{ntotal} in case of the parallel group design.
+}
+\note{Of course it is recommended to use method="exact" :-). There is no reason 
+beside testing purposes to use an approximation if the exact method is available.
 }
 \references{
 Phillips, K. F. (1990)\cr 

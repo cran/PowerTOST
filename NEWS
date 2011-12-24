@@ -1,12 +1,26 @@
+Version 0.9-2
+released 2011-12-24
+     - Function power2.TOST() added to allow power calculations for 
+       studies with unbalanced (sequence) groups.
+     - Argument exact replaced by method in power.TOST(), sampleN.TOST().
+       See help for these functions.
+     - Attention! The sample size for the parallel group design is now
+       the TOTAL sample size (to be consistent across all functions).
+     - Sample size tables added for the 2x2 crossover and for the parallel 
+       group design to alleviate validation/qualification of the package. 
+       See data(package="PowerTOST").
+     - Scripts added in the \test sub-directory that create the sample size 
+       tables from the data section.
+     - Updated BE_power_sample_size_excerpt.pdf in the doc sub-directory.
 Version 0.9-0
 released 2011-12-15
-     - paired means design introduced
-     - 'robust' argument added to nearly all functions
+     - Paired means design introduced
+     - 'robust' argument added to nearly all functions.
        With robust=TRUE the degrees of freedom for the so-called robust
        evaluation (df2 in known.designs() output) will be used. 
        This may be helpful if planning is done for higher order designs 
        evaluated via mixed model or via intra-subject contrasts 
-       (aka Senn's basic estimator)
+       (aka Senn's basic estimator).
      - Due to the necessary NAMESPACE from R14.0 on the internal functions 
        (names starting with .) are no longer exported.
 Version 0.8-7

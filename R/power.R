@@ -5,6 +5,19 @@ CV2se <- function(CV) return(sqrt(log(1.0 + CV^2)))
 # reverse helper function
 se2CV <- function(se) return(sqrt(exp(se*se)-1))
 #------------------------------------------------------------------------------
+# helper function to allow partial match of the method
+.powerMethod <- function(method){
+  meth <- tolower(method[1])
+  if (method=="") method <- "exact"
+  methods <- c("exact","owenq","noncentral","nct","shifted","central")
+  #                         ^ = match at start
+  meth <- methods[grep(paste("^",meth,sep=""), methods)]
+  if (length(meth)==0) meth <- tolower(method)
+  if (length(meth)>1)  meth <- "nct" # happens if only "n" is given
+  
+  return(meth)
+}
+#------------------------------------------------------------------------------
 # 'raw' power function without any error checks,
 # does not vectorize propperly!
 # to be used in sampleN.TOST avoiding overhead of redundant calculations
@@ -35,22 +48,20 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
   }
   if (df[1]>10000 & df[1]<=50000) {
     # approximation via non-central t-distribution
-    return(
-      .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk)
-    )
+    return(.approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk))
   }
   
   # attempt to vectorize (it vectorizes properly if diffm is a vector
-  # OR se is a vector OR n,df) 
+  # OR se OR n,df are vectors) 
   nel <- length(delta1)
   dl <- length(tval)
-  p1 <-c(1:nel)	
+  p1 <- c(1:nel)	
   p2 <- p1
   for (i in seq_along(delta1)) {
-  	if (dl>1) {ddf <- df[i]; ttt <- tval[i]} 
-  	  else {ddf <- df[1]; ttt <- tval[1]}
-  	p1[i] <- OwensQ(ddf,  ttt, delta1[i], 0, R[i])
-  	p2[i] <- OwensQ(ddf, -ttt, delta2[i], 0, R[i])
+    if (dl>1) {ddf <- df[i]; ttt <- tval[i]} 
+    else {ddf <- df[1]; ttt <- tval[1]}
+    p1[i] <- OwensQ(ddf,  ttt, delta1[i], 0, R[i])
+    p2[i] <- OwensQ(ddf, -ttt, delta2[i], 0, R[i])
   }
   return( p2-p1 )
 }
@@ -72,7 +83,7 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 }
 #------------------------------------------------------------------------------
 # 'raw' power function without any error checks, 
-# approximation based on central 'shifted' t distribution
+# approximation based on central 'shifted' central t distribution
 # according to Chow, Liu "Design and Analysis of Bioavailability ..."
 # Chapter 9.6 and implemented in PASS 2008
 # where does this all come from?
@@ -80,13 +91,30 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
                                 se, n, df, bk=2)
 {
 	tval <- qt(1 - alpha, df, lower.tail = TRUE)
-	delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
+  delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
 	delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
 	
 	pow <- pt(-delta2-tval,df) - pt(tval-delta1,df)
 	pow[pow<0] <- 0 # this is to avoid neg. power due to approx. (vector form)
 	
 	return(pow)
+}
+# function merging the various power calculations
+.calc.power <- function(alpha=0.05, ltheta1, ltheta2, diffm, se, n, df, bk, 
+                        method="exact")
+{
+  pow <- switch(
+      method,
+      exact=.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
+      owenq=.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
+      nct=  .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
+      noncentral=.approx.power.TOST(alpha, ltheta1, ltheta2, diffm, 
+                                    se, n, df, bk),
+      shifted=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
+      central=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
+      stop("Method ", method, " unknown!", .call=TRUE)
+  ) 
+  return(pow)
 }
 #------------------------------------------------------------------------------
 # Power of two-one-sided-t-tests using OwensQ or approx. using non-central t
@@ -100,7 +128,7 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 # leave upper BE margin (ltheta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
 power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
-                       CV, n, design="2x2", exact=TRUE, robust=FALSE)
+                       CV, n, design="2x2", method="exact", robust=FALSE)
 {
   # check if design is implemented
   d.no <- .design.no(design)
@@ -114,11 +142,15 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   } else {
     dfe  <- parse(text=ades$df2[1],srcfile=NULL)
   }
-  #design const.
-  bk   <- ades$bk
-  
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
+  
+  #design const.
+  bk    <- ades$bk
+  steps <- ades$steps
+  
+  # regularize the method giving
+  method <- .powerMethod(method)
   
   # handle log-transformation	
   if (logscale) {
@@ -140,12 +172,7 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   }
   
   df <- eval(dfe)
-  if (df<1) stop("n too small. Degrees of freedom <1!")
-  
-  if ( !exact )
-    pow <- .approx.power.TOST(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk)
-  else
-    pow <- .power.TOST(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk)
-	
+  if (any(df<1)) stop("n too small. Degrees of freedom <1!")
+  pow <- .calc.power(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk)
   return( pow )
 }

@@ -1,10 +1,29 @@
 # Export all names except those beginning with .
-exportPattern("^[^\\.]")
+# exportPattern("^[^\\.]")
+# Export explicitly by name
+# print.CVp is defined under S3method
+export(
+   CV2se
+  , CVfromCI
+  , CVpooled
+  , exppower.TOST
+  , expsampleN.TOST
+  , known.designs
+  , OwensQ
+  , power.RatioF
+  , power.TOST
+  , power2.TOST
+  , sampleN.RatioF
+  , sampleN.TOST
+  , se2CV
+  
+)         
 
 # Import all packages listed as Imports or Depends
 import(
   stats,
   mvtnorm
 )
+
 # Define S3 methods
 S3method(print, CVp)
