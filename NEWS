@@ -1,3 +1,10 @@
+Version 0.9-3
+Released 2012-02-13
+     - Bug in power.TOST removed which prevented calculation of Power
+       according to method ^= "exact".
+     - Sample size tables for replicate design 2x2x3 in data sub-directory added.
+     - Sample size tables for replicate design 2x4x4 in data sub-directory added.
+     - Scripts in the /test sub-directory made available.
 Version 0.9-2
 released 2011-12-24
      - Function power2.TOST() added to allow power calculations for 
@@ -9,7 +16,7 @@ released 2011-12-24
      - Sample size tables added for the 2x2 crossover and for the parallel 
        group design to alleviate validation/qualification of the package. 
        See data(package="PowerTOST").
-     - Scripts added in the \test sub-directory that create the sample size 
+     - Scripts added in the \tests sub-directory that create the sample size 
        tables from the data section.
      - Updated BE_power_sample_size_excerpt.pdf in the doc sub-directory.
 Version 0.9-0

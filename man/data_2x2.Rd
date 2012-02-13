@@ -15,7 +15,7 @@ ct5.1 is Table 5.1 from\cr
 Hauschke D., Steinijans V. and Pigeot I.\cr
 "Bioequivalence studies in Drug Development"\cr
 John Wiley & Sons, Chichester (2007)\cr
-Multiplicative model, theta1=0.8, theta2=1.25(1/theta1), exact\cr
+Multiplicative model, theta1=0.8, theta2=1.25 (1/theta1), exact\cr
 
 ct5.2 is Table 5.2 from the same source\cr
 Multiplicative model, theta1=0.75, theta2=1.3333 (1/theta1), exact\cr

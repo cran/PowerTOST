@@ -51,7 +51,9 @@ power <- c(0.8, 0.9)
 cat("Table 5.1 2x2, BEL 0.8-1.25, multiplicative model, exact\n")
 t5.1 <- sampsiz(power=power, CV=CVs, GMR=GMRs, logscale=TRUE, theta1=0.8,
                 method="exact", design="2x2")
-
+# You can compare the result to the data object ct5.1
+# for validation purposes
+            
 # Table 5.2
 # Sample size for 2x2 design, multiplicative model
 # theta1=0.75, theta2=1.3333(1/theta1)

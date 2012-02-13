@@ -93,16 +93,19 @@ D. Labes
  \code{\link{power.TOST}, \link{known.designs}}
 }
 \examples{
-# power for the 2x2 cross-over design with 24 subjects balanced
-# using all the other default values
+# power for the 2x2 cross-over design with 24 subjects balanced,
+# CV=25\% using all the other default values
 # should give: [1] 0.7391155
 power2.TOST(CV=0.25, n=c(12,12))
 # the same result 
 power.TOST(CV=0.25, n=24)
 
-# power for the 2x2 cross-over design with 24 subjects and
-# 2 dropouts in the same sequence group
+# power for the 2x2 cross-over study with 24 subjects, same CV 
+# and 2 drop-outs in the same sequence group
 # should give: [1] 0.6912935
 power2.TOST(CV=0.25, n=c(10,12))
-
+# not the same compared to
+power.TOST(CV=0.25,n=22)
+power2.TOST(CV=0.25,n=c(11,11))
+# both should give: [1] 0.6953401
 }
