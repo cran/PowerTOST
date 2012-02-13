@@ -102,7 +102,7 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 # function merging the various power calculations
 .calc.power <- function(alpha=0.05, ltheta1, ltheta2, diffm, se, n, df, bk, 
                         method="exact")
-{
+{ 
   pow <- switch(
       method,
       exact=.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
@@ -112,7 +112,7 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
                                     se, n, df, bk),
       shifted=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
       central=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
-      stop("Method ", method, " unknown!", .call=TRUE)
+      stop("Method '", method, "' unknown!\n", call.=TRUE)
   ) 
   return(pow)
 }
@@ -151,7 +151,7 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   
   # regularize the method giving
   method <- .powerMethod(method)
-  
+
   # handle log-transformation	
   if (logscale) {
     if (missing(theta0)) theta0 <- 0.95
@@ -173,6 +173,7 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   
   df <- eval(dfe)
   if (any(df<1)) stop("n too small. Degrees of freedom <1!")
-  pow <- .calc.power(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk)
+  pow <- .calc.power(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk, 
+                     method=method)
   return( pow )
 }
