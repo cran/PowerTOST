@@ -1,13 +1,13 @@
-b236419ede5c43458f87cadf6008be37 *DESCRIPTION
+6f1879396c689cfda1f286a95610f923 *DESCRIPTION
 50e07d9156eead5eb28936e562fdf47a *NAMESPACE
-80011d37590f9f20e46ed4ab24748ec1 *NEWS
+2b07a520dcdde56be05e33712da6f02d *NEWS
 567bada502f9789f3a6271610b71b864 *R/CVfromCI.R
 3788df2c5b8823ee037d6ac86504ba9d *R/CVpMethods.R
 489600a6e23cb4d5e299ef9bfcc623fd *R/CVpooled.R
 ad2fa46c295c964d7137226fe34a5df8 *R/DesignHelpers.R
 5a59f01d400b817b6d65e6bce4500d79 *R/Fieller.R
 9399c0ade1184225ff2c4dc96a92a219 *R/OwensQ.R
-e09ea0ddd71cc23f9f98adbe5dcb6779 *R/SampleSize.R
+f0aa68edd1e8e02406356b89a7144090 *R/SampleSize.R
 5a7e9235d5aa3162951440504d560e89 *R/expSampleSize.R
 b9cb2b690e5529b0fe0452be1d1a8a84 *R/exppower.R
 d0880936a999d3a04e81967788966daf *R/power.R
@@ -28,7 +28,7 @@ e0fc68cfab7e6ddbd6f1813b37978ce2 *man/CVfromCI.Rd
 62d8d84b7e61090cae115f0536e6c006 *man/CVpooled.Rd
 cb45061e8c24ad687bc8decadf26e0d5 *man/OwensQ.Rd
 990c88db35f561ebae47643362124b54 *man/PowerTOST-internal.Rd
-3e93117d2546aa27f7b57c7a94e10fa2 *man/PowerTOST-package.Rd
+2e330646b2ccf7c8e23bd5344a1e969c *man/PowerTOST-package.Rd
 0ef89f289f862e5edce39dc1ea2ec740 *man/data_2x2.Rd
 41944083f6551b7f97c3a97aeefc3bf0 *man/data_2x2x3.Rd
 4cb082103c400fad72ff9d0d36d0e636 *man/data_2x4x4.Rd

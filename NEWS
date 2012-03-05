@@ -1,3 +1,8 @@
+Version 0.9-4
+Released 2012-03-05
+     - Little bug in sampleN.TOST removed which causes extra doubled ouput
+       of n and power if n=4. Thanks to Ben:
+       http://forum.bebac.at/mix_entry.php?id=8206&page=0&category=0&order=last_answer&descasc=DESC#p8206
 Version 0.9-3
 Released 2012-02-13
      - Bug in power.TOST removed which prevented calculation of Power
