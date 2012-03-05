@@ -128,7 +128,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta1,
   # --- loop until power <= target power, step-down
   while (pow>targetpower) {
     if (n<=4) { # min number
-      if (print & iter==0) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
+      if (details & iter==0) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
       break
     }
     n    <- n-steps     # step down if start power is to high
