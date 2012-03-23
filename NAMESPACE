@@ -10,9 +10,11 @@ export(
   , expsampleN.TOST
   , known.designs
   , OwensQ
+  , power.noninf
   , power.RatioF
   , power.TOST
   , power2.TOST
+  , sampleN.noninf
   , sampleN.RatioF
   , sampleN.TOST
   , se2CV

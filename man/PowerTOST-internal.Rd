@@ -8,10 +8,12 @@
 \alias{.design.props}
 \alias{.exppower.TOST}
 \alias{.expsampleN0}
+\alias{.power.inf}
 \alias{.power.TOST}
 \alias{.power.RatioF}
 \alias{.Q.integrand}
 \alias{.sampleN0}
+\alias{.sampleN0.inf}
 \alias{.sampleN0.RatioF}
 \description{Internal PowerTOST objects: \cr
 .approx.power.TOST: approximate power using non-central t-distribution\cr
@@ -21,10 +23,12 @@
 .design.props: design properties (df, bk, step, name)\cr
 .exppower.TOST: expected power\cr
 .expsampleN0: start value of n for sample size based on exp. power.\cr
+.power.inf: power of non-inferiority test (working horse)\cr
 .power.TOST: power of classical TOST (working horse)\cr
 .power.RatioF: power of ratio of means with normal data on original scale (working horse)\cr
 .Q.integrand: Integrand for Owen's Q function \cr
 .sampleN0: Start value of sample size\cr
+.sampleN0.inf: Start value of sample size for the non-inferiority case\cr
 .sampleN0.RatioF: Start value of sample size for ratio of means with normal data 
 on original scale
 }

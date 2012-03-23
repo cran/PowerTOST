@@ -108,7 +108,6 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta1,
   # start value from large sample approx. (hidden func.)
   n  <- .sampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, bk)
   df <- eval(dfe)
-  
   pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
 
   if (details) {

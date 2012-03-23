@@ -78,6 +78,11 @@ Maximum number of steps in sample size search. \cr
 Defaults to 100. Adaption only in rare cases needed.
   }
 }
+\details{
+The sample size is calculated via iterative evaluation of \code{power.TOST()}.\cr
+Start value for the sample size search is taken from a large sample approximation.\cr
+The sample size is bound to 4 as minimum.
+}
 \value{
 A data.frame with the input and results will be returned.\cr
 The "Sample size" column contains the total sample size in case of the 
@@ -86,6 +91,10 @@ It contains the from version >0.9-0 also the \bold{ntotal} in case of the parall
 }
 \note{Of course it is recommended to use method="exact" :-). There is no reason 
 beside testing purposes to use an approximation if the exact method is available.
+}
+\section{Warning }{
+The function does not vectorize properly.\cr
+If you need sample sizes with varying CV's f.i. use for-loops or the apply-family.
 }
 \references{
 Phillips, K. F. (1990)\cr 

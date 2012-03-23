@@ -4,8 +4,8 @@
 \alias{ctSJ.VIII.20}
 \alias{ctCW.III}
 \title{Sample size tables for the parallel group design}
-\description{These datasets give sample size tables calculated with 
-\code{sampleN.TOST()} for the parallel group design}
+\description{These data.frames give sample size tables calculated with 
+\code{sampleN.TOST()} for the parallel group design (2 groups).}
 \details{
 The data.frame's can be accessed by their names or by \code{data("name")}.\cr
 
@@ -32,7 +32,7 @@ Additive model, theta1=-0.2, theta2=+0.2 (BE limits 0.80 - 1.20), exact.\cr
 Seems the last reference is not very reliable (compare to the Table in the paper).
 }
 \note{Scripts for creation of these data.frame's can be found in the \\test
-sub-directory of the package.
+sub-directory of the package.\cr
 Comparing the results of that scripts to the corresponding data.frames can 
-be used for validation purposes}
+be used for validation purposes.}
 \author{PowerTOST}
