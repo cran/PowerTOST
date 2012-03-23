@@ -79,6 +79,11 @@ They are solely based on the paired t-test (TOST of differences = zero).
 \value{
 Value of power according to the input arguments.
 }
+\section{Warning }{
+The function does not vectorize if design is a vector.\cr
+The function vectorize properly if n or CV or theta0 are vectors.\cr
+Other vector input is not tested yet.
+}
 \references{
 Phillips, K. F. (1990) \cr 
 "Power of the Two One-Sided Tests Procedure in Bioequivalence" \cr

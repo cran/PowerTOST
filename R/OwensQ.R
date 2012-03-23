@@ -8,6 +8,7 @@ OwensQ <- function (nu, t, delta, a, b)
 {
 	if (length(nu)>1 | length(t)>1 | length(delta)>1 | length(a)>1 | 
       length(b)>1) stop("Input must be scalars!")
+  if (nu<1) stop("nu must be >=1!")
   # Observation: for 'really' large df (nu>2000) and large delta/b the  
 	# density function is zero over nearly all its range! Q than returned 
 	# sometimes falsly as =0! See documentation ?integrate for that.

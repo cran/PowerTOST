@@ -15,14 +15,18 @@ Moreover the package contains functions for power and sample size based on
 Added are functions for the power and sample size for the ratio of 
 two means with normally distributed data on the original scale 
 (based on Fieller's confidence (fiducial) interval).\cr 
-These functions are intended for studies with clinical endpoints.
+These functions are intended for studies with clinical endpoints.\cr\cr
+Contains further functions for power and sample size calculations based on 
+non-inferiority t-test. \cr 
+This is not a TOST procedure but eventually useful if the question of 
+'non-superiority' must be evaluated within a BE study.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 0.9-4\cr
-Date: \tab 2012-03-05\cr
+Version: \tab 0.9-6\cr
+Date: \tab 2012-03-26\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes
@@ -33,7 +37,9 @@ If you prefer sample size based on 'expected' power see the functions
 \code{expsampleN.TOST()} and \code{exppower.TOST()}.\cr
 The main functions for equivalence of the ratio of means with normality on the
 original scale are \code{power.RatioF()} and \code{sampleN.RatioF()}.\cr\cr
-The package contains further some utility functions (see Index).
+The package contains further some utility functions (see Index).\cr\cr
+The functions for calculating power and sample size for the non-inferiority case
+are \code{power.noninf()} and \code{sampleN.noninf()}. 
 }
 \author{
 D. Labes \cr
