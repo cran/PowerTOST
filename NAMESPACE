@@ -3,22 +3,25 @@
 # Export explicitly by name
 # print.CVp is defined under S3method
 export(
-   CV2se
+    CV2se
   , CVfromCI
   , CVpooled
+  , exppower.noninf
   , exppower.TOST
+  , expsampleN.noninf
   , expsampleN.TOST
   , known.designs
-  , OwensQ
   , power.noninf
   , power.RatioF
   , power.TOST
   , power2.TOST
+  , OwensQ
+  , OwensQOwen
+  , OwensT
   , sampleN.noninf
   , sampleN.RatioF
   , sampleN.TOST
   , se2CV
-  
 )         
 
 # Import all packages listed as Imports or Depends

@@ -5,8 +5,9 @@ Power for equivalence of the ratio of two means with normality on original scale
 }
 \description{
 Calculates the power of the test of equivalence of the ratio of two means 
-with normality on original scale.\cr This test is based on Fieller's confidence
-('fiducial') interval and Sasabuchi's test (again a TOST procedure).
+with normality on original scale.\cr 
+This test is based on Fieller's confidence ('fiducial') interval and Sasabuchi's 
+test (again a TOST procedure).
 }
 \usage{
 power.RatioF(alpha = 0.025, theta1 = 0.8, theta2, theta0 = 0.95, CV, CVb, n,   
@@ -38,7 +39,7 @@ CV of the between-subject variability. Only necessary for \code{design="2x2"}.
 }
   \item{n}{
 Number of subjects to be planned.\cr
-n is for both designs the \bold{total} number of subjects.\cr
+n is for both designs implemented the \bold{total} number of subjects.\cr
 }
   \item{design}{
 A character string describing the study design.\cr 

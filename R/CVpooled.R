@@ -7,7 +7,7 @@
 # Accepts a data.frame with columns CV, n, design  or CV, df
 # if both n and df are present the df given take precedence
 # returns a list with the components CV, df, CVupper, alpha
-CVpooled <- function(CVdata, alpha=0.2, robust=FALSE)
+CVpooled <- function(CVdata, alpha=0.2, logscale=TRUE, robust=FALSE)
 {
   if (nrow(CVdata)==0) {
     warning("No data in subset!")
@@ -41,15 +41,18 @@ CVpooled <- function(CVdata, alpha=0.2, robust=FALSE)
     }
   }
   # calculate se from CV
-  CVdata$se  <- CV2se(CVdata$CV)
+  CVdata$se  <- CVdata$CV
+  if (logscale) CVdata$se  <- CV2se(CVdata$CV)
   # pooling of variance = se^2
   CVdata$se2 <- CVdata$se^2
   dftot      <- sum(CVdata$df, na.rm=TRUE)
   pooledse2  <- sum(CVdata$df*CVdata$se2, na.rm=TRUE)/dftot
-  CVpooled   <- se2CV(sqrt(pooledse2))
+  CVpooled   <- sqrt(pooledse2)
+  if (logscale) CVpooled   <- se2CV(sqrt(pooledse2))
   # upper CL for CV
   chi        <- qchisq(alpha,dftot)
-  CLCV       <- se2CV(sqrt(pooledse2*dftot/chi))
+  CLCV       <- sqrt(pooledse2*dftot/chi)
+  if (logscale) CLCV <- se2CV(CLCV)
   ret        <- list(CV=CVpooled, df=dftot, CVupper=CLCV, alpha=alpha, 
                      robust=robust)
   class(ret) <- "CVp"

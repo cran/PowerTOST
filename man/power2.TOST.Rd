@@ -5,7 +5,8 @@ Power of the classical TOST procedure with unbalanced (sequence) groups
 }
 \description{
 Calculates the exact or approximate power of the two-one-sided t-tests 
-procedure for various study designs used in BE studies.
+procedure for various study designs used in BE studies in case of unbalanced 
+number of subjects in the (sequence) groups.
   }
 \usage{
 power2.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n, 
@@ -51,8 +52,8 @@ See \code{known.designs()} for designs covered in this package.
   \item{method}{
 Defaults to "exact" in which case the calculation is done based on formulas 
 with Owen's Q.\cr
-The exact calculation can also be choosen with \code{method="owenq"}
-Approximate calculations can be choosen via \code{method="noncentral"} or 
+The exact calculation can also be chosen with \code{method="owenq"}.\cr
+Approximate calculations can be chosen via \code{method="noncentral"} or 
 \code{method="nct"} for the approximation using the non-central t-distribution\cr
 or via \code{method="central"} or \code{method="shifted"} for the 
 approximation via 'shifted' central t-distribution.\cr
@@ -68,12 +69,22 @@ Has only effect for higher-order crossover designs.
 }
 \details{
 The exact calculations of power are based on Owen's Q-function.\cr
-The approximate power is implemented via non-central t-distribution \cr
-or via 'shifted' central t-distribution.\cr
-This function does'nt make many sense in case of \code{design="paired"}.
+The approximate power is implemented via non-central t-distribution
+or via 'shifted' central t-distribution.\cr\cr
+In case of parallel group design and higher order crossover designs 
+(replicate crossover or crossover with more than two treatments) the calculations 
+are based on the assumption of equal variances for Test and Reference products
+under consideration.
 }
 \value{
 Value of power according to the input arguments.
+}
+\note{
+Using this function in case of \code{design="paired"} does'nt make many sense 
+because we can't have imbalance here.\cr\cr
+Of course it is highly recommended to use the default \code{method="exact"} :-)). \cr
+There is no reason beside testing and comparative purposes to use an 
+approximation if the exact method is available at no extra costs.
 }
 \references{
 Phillips, K. F. (1990) \cr 

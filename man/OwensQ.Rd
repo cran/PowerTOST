@@ -13,8 +13,8 @@
 \details{
 Uses integrate() from package stats to perform the numerical evaluation of the  
 definite integral in Owen's Q. \cr
-See \url{../doc/BE_power_sample_size_excerpt.pdf} in the package subdirectory /doc for the 
-definition of Owen's Q. \cr
+See \url{../doc/BE_power_sample_size_excerpt.pdf} in the package sub-directory /doc 
+for the definition of Owen's Q. \cr
 The arguments to the function must be scalars. No vectors allowed.
 }
 \value{
@@ -34,6 +34,6 @@ But may be useful for others.
 \examples{
 # This function is intended for internal use.
 OwensQ(10,2.5,5,0,2)
-#[1] 9.388137e-06 
+#should give [1] 9.388137e-06 
 }
 

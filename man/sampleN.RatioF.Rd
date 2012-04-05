@@ -5,7 +5,7 @@ Sample size for equivalence of the ratio of two means with normality on original
 }
 \description{
 Calculates the necessary sample size to have at least a given power based on 
-Fieller's confidence (fiducial) interval.
+Fieller's confidence ('fiducial') interval.
 }
 \usage{
 sampleN.RatioF(alpha = 0.025, targetpower = 0.8, theta1 = 0.8, theta2, 

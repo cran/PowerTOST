@@ -29,8 +29,8 @@
 # diff if empty is set to 0.95 or 0.05 depending on logscale
 # leave upper BE margin (theta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
-sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta1,
-                         theta2, theta0, CV, design="2x2", method="exact",
+sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0, 
+                         theta1, theta2, CV, design="2x2", method="exact",
                          robust=FALSE, print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check
