@@ -22,17 +22,15 @@ power2.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
   
-  nc <- n # for use in call of the raw functions since n is overwritten
   bk <- ades$bkni
   steps <- ades$steps
   if (is.na(bk)) stop("Not able to handle unbalanced ",design," design!")
   if (design=="parallel") {
-    dfe   <- parse(text="n-2",srcfile=NULL)# for total
+    dfe   <- parse(text="n-2", srcfile=NULL)# for total
     steps <- 2
   }
   # check the correct length due to design
   # must be length==number of (sequence) groups, that is coded in steps
-  # except for the parallel group design
   if (length(n)!= steps){
      stop("Length of n vector must be ",steps,"!")
   }

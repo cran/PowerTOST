@@ -1,14 +1,29 @@
-Version 0.9-6
+Version 0.9-8
+Released 2012-04-05 (Easter egg)
+     - Functions added for 'expected' power and sample size calculations based 
+       on it for the non-inferiority test for sake of completeness.
+     - Functions CVpooled(), exppower.TOST() and expsampleN.TOST() now
+       also implemented for logscale=FALSE, i.e. contain that argument in 
+       their calls.
+     - Function OwensQOwen() made public. This is an implementation of the 
+       algorithm given by Owen itself in the original paper (Biometrica 1965) 
+       via repeated integration by parts. 
+       This function is only for comparative purposes.
+     - Function OwensT() made public. It is needed internal in OwensQOwen()
+       but may be useful for other purposes.   
+Version 0.9-6/7
 Released 2012-03-26
-     - functions added for power and sample size calculations based on 
+     - version 0.9-7 is a small bug fix version required from CRAN. 
+       Contains the old version number 0.9-6 in the package man page.
+     - Functions added for power and sample size calculations based on 
        non-inferiority t-test. This is not a TOST procedure but eventually 
        useful if the question of 'non-superiority' within a BE study must be 
        evaluated.
-       Hint: Hint: Evaluation of Fluctuation in the EMA MR NfG (1999) between 
+       Hint: Evaluation of Fluctuation in the EMA MR NfG (1999) between 
        modified release formulation and immediate release product.
 Version 0.9-4
 Released 2012-03-05
-     - Little bug in sampleN.TOST removed which causes extra doubled ouput
+     - Little bug in sampleN.TOST removed which causes extra doubled output
        of n and power if n=4. Thanks to Ben:
        http://forum.bebac.at/mix_entry.php?id=8206
 Version 0.9-3

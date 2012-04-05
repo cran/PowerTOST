@@ -1,23 +1,17 @@
 # Sample size based on 'expected' power
-# taking into account the uncertainty of CV
+# taking into account the uncertainty of CV for the non-inferiority
+# t-test
 # 
 # Author: dlabes
 #------------------------------------------------------------------------------
 # sample size start for Julious 'expected' power
-.expsampleN0 <- function(alpha=0.05, targetpower, ltheta1, ltheta2, diffm, 
-                         se, dfse, steps=2, bk=2)
+.expsampleN0.noninf <- function(alpha, targetpower, lmargin, diffm, 
+                                se, dfse, steps=2, bk=2)
 {
   Z1 <- qnorm(1-alpha)
-  if (abs(diffm)>0.02) tinv <- qt(targetpower, dfse, Z1)  else {
-    tinv <- qt(1-(1-targetpower)/2, dfse, Z1) 
-    diffm <- 0
-  }
-  
+  tinv <- qt(targetpower, dfse, Z1)
   # factor 2 in Julious = bk
-  n01  <- bk*(se*tinv/(ltheta1-diffm))^2
-  n02  <- bk*(se*tinv/(ltheta2-diffm))^2
-  # print(n01);print(n02)
-  n0 <- ceiling(max(n01,n02))
+  n0 <- ceiling(bk*(se*tinv/(diffm - lmargin))^2)
   #make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
   if (n0<4) n0 <- 4   # minimum sample size
@@ -28,12 +22,11 @@
 # Sample size for a desired "expected" power according to Julious: 
 # see known.designs() for covered experimental designs
 # Only for log-transformed data
-# leave upper BE margin (theta2) empty and the function will use 1/lower
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
-expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, 
-                            theta0, theta1, theta2, CV, dfCV, alpha2=0.05, 
-                            design="2x2", robust=FALSE,
-                            print=TRUE, details=FALSE, imax=100)
+expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
+                              theta0, margin, CV, dfCV, alpha2=0.05,
+                              design="2x2", robust=FALSE,
+                              print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check if design is implemented
   d.no <- .design.no(design)
@@ -44,9 +37,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   d.name <- ades$name  # nice name of design
   # get the df for the design as an unevaluated expression
   if (robust) {
-    dfe    <- parse(text=ades$df2,srcfile=NULL) 
+    dfe  <- parse(text=ades$df2,srcfile=NULL) 
   } else {
-    dfe    <- parse(text=ades$df,srcfile=NULL) 
+    dfe  <- parse(text=ades$df,srcfile=NULL) 
   }
   steps  <- ades$steps	# stepsize for sample size search
   bk     <- ades$bk # get design constant
@@ -60,8 +53,6 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     if (length(dfCV)!=length(CV)) {
       stop("CV and df must have equal number of entries!", call.=FALSE)
     }
-    # how should we formulate this in case of logscale=FALSE ?
-    # CV = weighted mean of the CV or CV*CV 
     dfse <- sum(dfCV)
     if (logscale) {
       CVp  <- CV2se(CV)^2 #need s-squared
@@ -71,7 +62,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     CVp  <- CVp * dfCV
     CVp  <- sum(CVp)/dfse
     CVp  <- sqrt(CVp)
-    if(logscale) CVp  <- se2CV(CVp)
+    if(logscale) CVp  <- se2CV(CVp) 
   } else {
     dfse <- dfCV
     CVp  <- CV
@@ -79,9 +70,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   
   # print the configuration:
   if (print) {
-    cat("\n+++++++++ Equivalence test - TOST +++++++++\n")
-    cat("    Sample size est. with uncertain CV\n")
-    cat("-------------------------------------------\n")
+    cat("\n+++++++++++ Non-inferiority test +++++++++++\n")
+    cat("     Sample size est. with uncertain CV\n")
+    cat("--------------------------------------------\n")
     cat("Study design: ",d.name,"\n")
     if (details) { 
       cat("Design characteristics:\n")
@@ -91,46 +82,42 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
       cat(", design const. = ", bk, ", step = ", steps,"\n\n",sep="")
     }     
   }
-  
+
+  # handle the log transformation
   if (logscale) {
+    if (missing(margin)) margin <- 0.8
     if (missing(theta0)) theta0 <- 0.95
-    if (missing(theta1)) theta1 <- 0.8
-    if (missing(theta2)) theta2 <- 1/theta1
-    if ( (theta0<=theta1) | (theta0>=theta2) ) {
-      stop("Ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
+    if ( (theta0<=margin) & (margin<1) ) {
+      stop("Null ratio ",theta0," must be above margin ",margin,"!", 
           call.=FALSE)
     }
-    ltheta1 <- log(theta1)
-    ltheta2 <- log(theta2)
+    if ( (theta0>=margin) & (margin>1) ) {
+      stop("Null ratio ",theta0," must be below margin ",margin,"!", 
+          call.=FALSE)
+    }
+    lmargin <- log(margin)
     diffm   <- log(theta0)
     se      <- CV2se(CVp)
-    if (print) {
-      cat("log-transformed data (multiplicative model)\n\n")
-    }  
+    if (print) cat("log-transformed data (multiplicative model)\n\n")
   } else {
-    if (missing(theta0)) theta0 <- 0.05
-    if (missing(theta1)) theta1 <- -0.2
-    if (missing(theta1) & missing(theta2)) theta1 <- -0.2
-    if (missing(theta0)) theta0 <- 0.05
-    if (missing(theta2)) theta2=-theta1
-    if ( (theta0<=theta1) | (theta0>=theta2) ) {
-      stop("Null diff. ",theta0," not between margins ",theta1," / ",theta2,"!", 
-          call.=FALSE)
+    if (missing(margin)) margin <- -0.2
+    if (missing(theta0)) theta0 <- -0.05
+    if ( (theta0<=margin) & (margin<0) ) {
+      stop("Null diff. ",theta0," must be above margin ",margin,"!", call.=FALSE)
     }
-    ltheta1 <- theta1
-    ltheta2 <- theta2
+    if ( (theta0>=margin) & (margin>0) ) {
+      stop("Null diff. ",theta0," must be below margin ",margin,"!", call.=FALSE)
+    }
+    lmargin <- margin
     diffm   <- theta0
-    se      <- CV
-    if (print) {
-      cat("untransformed data (additive model)\n\n")
-    }  
+    se      <- CVp
+    if (print) cat("untransformed data (additive model)\n\n")
   }
   
   if (print) {
     cat("alpha = ",alpha,", target power = ", targetpower,"\n", sep="")
-    cat("BE margins         =",theta1,"...", theta2,"\n")
-    if (logscale) cat("Null (true) ratio  = ",theta0,",  CV = ",CV,"\n", sep="")
-    else          cat("Null (true) diff.  = ",theta0,",  CV = ",CV,"\n", sep="")
+    cat("Non-inf. margin    = ", margin, "\n", sep="")
+    cat("Null (true) ratio  = ",theta0,"\n", sep="")
     # can use lower.tail=FALSE and 1-0.05 in qchisq, H. Schütz in his lectures
     seupper <- dfse*se^2/qchisq(alpha2, dfse)
     seupper <- sqrt(seupper)
@@ -146,21 +133,21 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   }
   
   #start value from large sample approx. 
-  n   <- .expsampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, 
-                      se, dfse, steps, bk)
+  n   <- .expsampleN0.noninf(alpha, targetpower, lmargin, diffm, 
+                             se, dfse, steps, bk)
   df  <- eval(dfe)
-  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
+  pow <- .exppower.noninf(alpha, lmargin, diffm, se, dfse, n, df, bk) 
   if (details) {
     cat("\nSample size search (ntotal)\n")
     #parallel group design is now handled also in terms of ntotal
     #if (d.no == 0) cat("(n is sample size per group)\n") 
-    cat(" n   exp. power\n")
+    cat(" n    exp. power\n")
     # do not print first too high
     if (pow<=targetpower) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
   }
   # --- loop until power >= target power
   iter <- 0
-  # iter>100 is an emergency brake
+  # iter>50 is emergency brake
   # this is eventually not necessary, depends on quality of sampleN0
   # in experimentation I have seen max of six steps
   # starting with too high power should be rare sinsce the large sample
@@ -173,7 +160,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down 
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.TOST(alpha,ltheta1,ltheta2,diffm,se,dfse,n,df,bk) 
+    pow  <- .exppower.noninf(alpha, lmargin, diffm, se, dfse, n, df, bk) 
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -182,7 +169,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
+    pow <- .exppower.noninf(alpha, lmargin, diffm, se, dfse, n, df, bk) 
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
@@ -190,7 +177,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     cat("\nSample size (ntotal)\n")
     # parallel group design is now also handled in terms of ntotal
     #if (d.no == 0) cat("(n is sample size per group)\n") 
-    cat(" n   exp. power\n")
+    cat(" n    exp. power\n")
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
   }
   
@@ -198,9 +185,8 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   
   #return results as data.frame
   res <- data.frame(design=design, alpha=alpha, CV=CV, dfCV=dfse, theta0=theta0, 
-                    theta1=theta1, theta2=theta2, n=n, power=pow, 
-                    targetpower=targetpower)
-  names(res) <-c("Design","alpha","CV","df of CV","theta0","theta1","theta2",
+                    margin=margin, n=n, power=pow, targetpower=targetpower)
+  names(res) <-c("Design","alpha","CV","df of CV","theta0","Margin",
                  "Sample size", "Achieved power", "Target power")
   
   if (print) return(invisible(res)) 

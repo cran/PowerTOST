@@ -4,7 +4,7 @@
 Power of the classical TOST procedure
 }
 \description{
-Calculates the exact or approximate power of the two-one-sided t-tests 
+Calculates the exact or approximate power of the two-one-sided t-tests (TOST)
 procedure for various study designs used in BE studies.
 }
 \usage{
@@ -41,8 +41,7 @@ In case of cross-over studies this is the within-subject CV, \cr
 in case of a parallel-group design the CV of the total variability.
 }
   \item{n}{
-Number of subjects under study.\cr 
-This is is from package version >0.9-0 the total number of subjects.
+Number of subjects under study. 
 }
   \item{design}{
 Character string describing the study design.\cr
@@ -71,13 +70,22 @@ The exact calculations of power are based on Owen's Q-function.\cr
 The approximate power is implemented via non-central t-distribution\cr
 or via 'shifted' central t-distribution.\cr\cr
 The formulas used assume balanced studies, i.e. equal number of subjects in
-the (sequence) groups.\cr\cr
+the (sequence) groups.\cr
+In case of parallel group design and higher order crossover designs 
+(replicate crossover or crossover with more than two treatments) the calculations 
+are based on the assumption of equal variances for Test and Reference products
+under consideration.\cr\cr
 The formulas for the paired means 'design' do not take a correlation parameter 
 into account.\cr 
 They are solely based on the paired t-test (TOST of differences = zero).
 }
 \value{
 Value of power according to the input arguments.
+}
+\note{
+Of course it is highly recommended to use the default \code{method="exact"} :-)). \cr
+There is no reason beside testing and comparative purposes to use an 
+approximation if the exact method is available.
 }
 \section{Warning }{
 The function does not vectorize if design is a vector.\cr

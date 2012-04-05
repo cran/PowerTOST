@@ -20,7 +20,7 @@ Should the data used on log-transformed or on original scale? TRUE or FALSE.\cr
 Defaults to TRUE.
 }
   \item{margin}{
-Non-inferiority margin.
+Non-inferiority margin.\cr
 In case of \code{logscale=TRUE} it must be given as ratio, otherwise as diff. to 1.\cr
 Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
 }
@@ -28,7 +28,7 @@ Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
 'True' or assumed bioequivalence ratio or difference. \cr
 In case of \code{logscale=TRUE} it must be given as ratio, \cr
 otherwise as difference to 1. See examples.\cr
-Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}
+Defaults to 0.95 if \code{logscale=TRUE} or to -0.05 if \code{logscale=FALSE}.
 }
   \item{CV}{
 Coefficient of variation as ratio.\cr
@@ -77,7 +77,7 @@ formulation and immediate release product.
 }
 
 \seealso{
-\code{\link{known.designs}}, \code{\link{sampleN.noninf}}
+\code{\link{known.designs}, \link{sampleN.noninf}}
 }
 \examples{
 # using all the defaults: margin=0.8, theta0=0.95, alpha=0.025

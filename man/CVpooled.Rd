@@ -6,24 +6,28 @@
 This function calculates a pooled CV from CV's from several studies.
 }
 \usage{
-CVpooled(CVdata, alpha = 0.2, robust = FALSE)
+CVpooled(CVdata, alpha = 0.2, logscale=TRUE, robust = FALSE)
 \method{print}{CVp}(x, digits=4, verbose=FALSE, \dots)
 }
 \arguments{
   \item{CVdata}{
-A data.frame that must contain the columns CV, n and design where CV are the error CVs 
-from the studies, n the number of subjects\cr 
+A data.frame that must contain the columns \code{CV}, \code{n} and \code{design} 
+where CV are the error CVs from the studies, n the number of subjects 
 and design is a character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.\cr
 If the design column is missing the classical 2x2 crossover is assumed for each study.\cr
 A message is displayed under that circumstances.\cr\cr
-A data.frame that must contain the columns CV and giving the degrees of freedom 
-df directly is also accepted as \code{CVdata}.
+A data.frame that contains the columns \code{CV} and giving the degrees of freedom 
+\code{df} directly is also accepted as \code{CVdata}.
   }
   \item{alpha}{
 Error probability for calculating an upper confidence limit of the pooled CV.\cr
 Recommended 0.2-0.25 for use in subsequent sample size estimation. \cr
 See f.i one of H. Schuetz lectures \url{http://bebac.at/lectures/MU2010-CD2.pdf}
+  }
+  \item{logscale}{
+Defaults to TRUE.\cr
+Should the calculations be done for log-transformed data?  
   }
   \item{robust}{
 Defaults to FALSE.\cr
@@ -45,7 +49,9 @@ The pooled CV is obtained from the weighted average of the error variances obtai
 the CV's of the single studies, weights are the df (degrees of freedom).\cr
 If only \code{n} is given in the input \code{CVdata}, the df's are calculated via
 the formulas given in \code{known.designs()}. If both \code{n} and \code{df} are given
-the \code{df} column precedes.
+the \code{df} column precedes.\cr\cr
+If \code{logscale=TRUE} the error variances are obtained via function \code{CV2se()}.
+Otherwise the pooled CV is obtained via pooling the CV^2.
 }
 \value{
 A list of class \code{"CVp"} with components
@@ -56,7 +62,7 @@ A list of class \code{"CVp"} with components
 The class \code{"CVp"} has a S3 methods \code{print.CVp}.
 }
 \references{
-See lectures of H. Schuetz about sample size challenges \cr
+H. Schuetz lectures about sample size challenges \cr
 at \url{http://bebac.at/lectures.htm}.\cr\cr
 Patterson, Jones\cr
 "Bioequivalence and Statistics in Clinical Pharmacology"\cr
@@ -67,16 +73,17 @@ Chapman & Hall/CRC, Boca Raton 2006
 D. Labes
 }
 \note{
-The calculations are based on the assumption of evaluation via log-transformed values.\cr
-The calculations are further based on a common variance of Test and Reference \cr
-formulations in replicate crossover studies or parallel group study, respectively.
+The calculations for \code{logscale=FALSE} are not described in the references.
+They are implemented by analogy to the case via log-transformed data.\cr
+The calculations are based on a common variance of Test and Reference formulations\cr
+in replicate crossover studies or parallel group study, respectively.
 }
 \section{Warning}{
 Pooling of CV's from parallel-group and cross-over designs does not make any sense.\cr
 Also the function does not throw an error if you do so.
 }
 \seealso{
- \code{\link{known.designs}, \link{CVfromCI} }
+  \code{\link{known.designs}, \link{CVfromCI} }
 }
 \examples{
 # some data:
@@ -95,13 +102,13 @@ close(txtcon)
 
 # evaluation of the AUC CV's
 CVsAUC <- subset(CVdata,PKmetric=="AUC")
-CVpooled(CVsAUC, alpha=0.2)
+CVpooled(CVsAUC, alpha=0.2, logscale=TRUE)
 # df of the 'robust' evaluation   
-CVpooled(CVsAUC, alpha=0.2, robust=TRUE)
+CVpooled(CVsAUC, alpha=0.2, logscale=TRUE, robust=TRUE)
 #print also the upper CL, data example 3
 CVsAUC3 <- subset(CVsAUC,design != "2x2x4")
 print(CVpooled(CVsAUC3, alpha=0.2, robust=TRUE), digits=3, verbose=TRUE)
-# will give the output
+# will give the output:
 #Pooled CV = 0.235 with 32 degrees of freedom (robust df's)
 #Upper 80\% confidence limit of CV = 0.266
 }

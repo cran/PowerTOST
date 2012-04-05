@@ -22,7 +22,7 @@ Lower confidence limit of the BE ratio.
 Upper confidence limit of the BE ratio.
   }
   \item{n}{
-Total number of subjects under study for all designs (for package version >0.9-0).
+Total number of subjects under study.
   }
   \item{design}{
 Character string describing the study design.\cr
@@ -41,11 +41,11 @@ if the CI was evaluated via mixed model or via intra-subject contrasts
   }
 }
 \details{
-See Helmut Schuetz lectures at www.bebac.at/lectures.htm for a description
+See Helmut Schuetz lectures at \url{www.bebac.at/lectures.htm} for a description
 of the algebra underlying this function.
 }
 \value{
-Returns the value of the CV as ratio.
+Numeric value of the CV as ratio.
 }
 \author{D. Labes}
 \note{
@@ -61,7 +61,7 @@ unbalanced studies.
 \examples{
 # Given a 90\% confidence interval (without point estimator) 
 # from a classical 2x2 crossover with 22 subjects
-CVfromCI(lower=0.91,upper=1.15,n=22,design="2x2")
+CVfromCI(lower=0.91, upper=1.15, n=22, design="2x2")
 # will give 
 # [1] 0.2279405 i.e a CV ~ 23%
 }

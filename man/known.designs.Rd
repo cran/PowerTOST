@@ -14,28 +14,30 @@ for obtaining characteristics of the designs used in calculation formulas.
 }
 \value{
 Returns a data.frame with \cr
-  no     = number of the design, \cr
-  design = character string for identifying the design, \cr
-  df     = degrees of freedom of the design,\cr
-  df2    = 'robust' degrees of freedom of the design,\cr
-  steps  = step width in the iterative sample size estimation, \cr
-  bk     = so-called design constant (here in terms of total n)\cr\cr
-The design character string has to be used in the functions call for power and sample size.
+\describe{
+  \item{\code{no}}{= number of the design}
+  \item{\code{design}}{= character string for identifying the design}
+  \item{\code{df}}{= degrees of freedom of the design}
+  \item{\code{df2}}{= 'robust' degrees of freedom of the design}
+  \item{\code{steps}}{= step width in the iterative sample size estimation}
+  \item{\code{bk}}{= so-called design constant in terms of total n}
+  \item{\code{bkni}}{= design constant in terms of number of subjects in (sequence) groups}
+  }
+The design character string has to be used in the functions calls for power and sample size.
 }
 \note{
 The design string for higher order crossover designs is named as:\cr
 \code{treatments x sequences x periods} in case of replicate designs and\cr
-\code{treatments x periods} in case of crossover designs for more then 2 treatments.\cr
-\cr
+\code{treatments x periods} in case of crossover designs for more then 2 treatments 
+with number of sequences equal number of treatments.\cr\cr
 The df for the replicate crossover designs are those without carry-over in the model.\cr
 Chen, Chow and Liu used models with carry-over, i.e. one df lower than here.\cr\cr
-The design constant in case of design 2x2x4 is here bk=1.\cr
+The design constant bk in case of design 2x2x4 is here bk=1.\cr
 Chen, Chow and Liu used bk=1.1 due to carry-over in the model.\cr\cr
-n is the total number of subjects in case of cross-over designs and paired means.\cr
-n is the number per treatment group in case of parallel group design.\cr\cr
+n is the \bold{total} number of subjects for all designs implemented.\cr
 df2 = degrees of freedom for the so-called 'robust' analysis (aka Senn's basic estimator).\cr
 These degrees of freedom are often also more appropriate in case of evaluation via a 'true' 
-mixed model (FDA model for replicate designs)
+mixed model (FDA model for replicate designs).
 }
 
 \references{

@@ -1,12 +1,13 @@
-# Calculation of Owens Q-function by the algo given by Owen itself
+# Calculation of Owens Q-function by the algo given by Owen itself:
 # repeated integration by parts
 # 
 # Author: dlabes Mar 2012
 ##############################################################################
 
-# Owen's T-function 
+# Owen's T-function: 
 # Calculates integral 0 to a of exp(-0.5*h^2*(1+x^2))/(1+x^2)/(2*pi)
-# consider eventually a numerical algo with high precision
+# most simple implementation via integrate()
+# TODO: consider eventually a numerical algo with high precision
 # according to M. PATEFIELD, D. TANDY
 OwensT <- function(h, a)
 { 
@@ -17,6 +18,11 @@ OwensT <- function(h, a)
 
 # Owen's Q-function
 # Calculates Owen's Q-function via repeated integration by parts
+# formulas as given in 
+# Owen, D. B. (1965)
+# "A Special Case of a Bivariate Non-central t-Distribution"
+# Biometrika Vol. 52, p437-446.
+
 OwensQOwen <- function(nu, t, delta, a=0, b)
 {
   if (nu<1) stop("nu must be >=1!")
@@ -26,12 +32,12 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
   B   <- nu/(nu + t*t)
   upr <- nu-2           # upper index of integration by parts
   # the coefficients a(k)
-  av  <- vector(mode="numeric",length=nu)
+  av  <- vector(mode="numeric", length=nu)
   for (k in seq_along(av)){
     if (k==1 | k==2) av[k] <- 1 else av[k] <- 1/((k-2)*av[k-1])
   }
   ll <- ifelse((upr-1)>0, upr-1, 0)
-  L  <- vector(mode="numeric",length=ll)
+  L  <- vector(mode="numeric", length=ll)
   # k-1 of the formulas transformes to k here
   for (k in seq_along(L)){
     if (k==1) L[1] <- 0.5*A*B*b*dnorm(b)*dnorm(A*b-delta)
@@ -45,7 +51,7 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
     if (k==1) H[1] <- - dnorm(b)*pnorm(A*b-delta)
         else  H[k] <- av[k+1]*b*H[k-1]
   }
-  M    <- vector(mode="numeric",length=ll)
+  M    <- vector(mode="numeric", length=ll)
   sB   <- sqrt(B)
   # k+1 in the formulas transformes to k here
   for (k in seq_along(M)){
