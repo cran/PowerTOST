@@ -2,8 +2,8 @@ Package: PowerTOST
 Type: Package
 Title: Power and Sample size based on two one-sided t-tests (TOST) for
         (bio)equivalence studies
-Version: 0.9-8
-Date: 2012-04-05
+Version: 0.9-9
+Date: 2012-07-18
 Author: Detlew Labes
 Maintainer: D. Labes <DetlewLabes@gmx.de>
 Description: Contains functions to calculate power and sample size for
@@ -25,6 +25,6 @@ Depends: stats, mvtnorm
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2012-04-05 06:01:35 UTC; dlabes
+Packaged: 2012-07-18 12:56:00 UTC; dlabes
 Repository: CRAN
-Date/Publication: 2012-04-05 06:27:16
+Date/Publication: 2012-07-18 13:13:39

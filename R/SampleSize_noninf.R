@@ -10,7 +10,7 @@
 { 
   n0 <- bk*se^2*(qnorm(targetpower)+ qnorm(1-alpha))^2 / (d0 - lmargin)^2
   n0 <- steps*trunc(n0/steps)
-  if (n0<4) n0 <- 4   # minimum sample size
+  #if (n0<4) n0 <- 4   # minimum sample size will be tested outside
   return(n0)
 }
 # --------------------------------------------------------------------------
@@ -19,6 +19,8 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
                            margin, theta0, CV, design="2x2", robust=FALSE,
                            details=FALSE, print=TRUE, imax=100)
 { 
+  if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  
   #number of the design and check
   d.no <- .design.no(design)
   if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
@@ -34,8 +36,13 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   }
   steps  <- ades$steps	# stepsize for sample size search
   bk     <- ades$bk    # get design constant
-  
-  if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  # minimum sample size
+  df <- 0; n <- 0
+  while (df<1){
+    n  <- n + 1
+    df <- eval(dfe)
+  }
+  nmin <- n
   
   if (print) {
     cat("\n++++++++++++ Non-inferiority test +++++++++++++\n")
@@ -88,6 +95,7 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   }
   # start value of 'brute force'
   n   <- .sampleN0.noninf(alpha, targetpower, lmargin, d0=diffm, se, steps, bk)
+  if (n<nmin) n <- nmin
   df  <- eval(dfe)
   pow <- .power.noninf(alpha, lmargin, diffm, se, n, df, bk)
   if (details){
@@ -99,7 +107,7 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   }
   iter <- 0
   while (pow>targetpower){
-    if (n<=4) { # min number
+    if (n<=nmin) {
       if (details & iter==0) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
       break
     }
@@ -126,6 +134,7 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     cat("\nSample size (total)\n")
     cat(" n     power\n")
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
+    if (is.na(n)) cat("Sample size search failed!\n")
   }
   # return value: a data.frame
   res <- data.frame(design=design, alpha=alpha, CV=CV, theta0=theta0, 

@@ -1,5 +1,5 @@
 #-- The functions of normal-, t-distributions and integrate() ------------------
-require(stats) #this is usually not necessary within a standard installation
+#require(stats) #this is usually not necessary within a standard installation
 #-------------------------------------------------------------------------------
 # Owen's Q-function 
 # a, b must be a scalar numeric
@@ -20,27 +20,45 @@ OwensQ <- function (nu, t, delta, a, b)
   # Craig Zupke's observations:
   # power.TOST(0.410,FALSE,-5.97,5.97,8.5448,1,14,"parallel",TRUE)
   # gives an Error; high b/delta
+  # Jul 2012: Helmuts observation
+  # n=4, CV=1E-5(=se) gives power=1 (delta1=24303.3, delta2=-38811.23, R=b=15283.88
+  #      CV=1E-6 gives power=0      (      243033          -388112.3   R  152838.8
+  #      CV=0    gives power=1             Inf              -Inf       Inf
+  if (b>1E6) b <- Inf
   if (is.finite(b)){ # in case of alpha=0.5 b is infinite
-  	if (nu >= 1000 || abs(delta*b) > 30){
-  		# try to shorten the integration range
-      h <- (b-a)/749 # 750 steps
-  		x <- seq(a, b, by=h)
-      # next is paranoia
-      x[750] <- b
-  		dens <- .Q.integrand(x, nu, t, delta)
-  		x <- x[dens > 0] 
-      # or better > .Machine$double.xmin^0.5  approx. 1.5e-154 ?
-      #             .Machine$double.xmin^0.25 approx. 1.22e-77
-  		n <- length(x)
-      if (n > 0) {# if any >0
-        # also paranoia: range step h greater than those with dens >0
-  			low <- max(x[1]-h, a)  # lower: xon-step if this is > a
-        up  <- min(x[n]+h, b)  # upper: xoff+step if this is < b
-      } else {
-        # all == 0, thus return integral as zero
-        return(0.0)
+  	if (nu >= 1000 || abs(delta*b) > 30 || b>50){
+      # try to shorten the range via interval halving:
+      # upper integration limit
+      ab <- b-a
+      x  <- b
+      dens <- .Q.integrand(x, nu, t, delta)
+      #cat("Upper search\n")
+      #cat("x=",x,"dens=",dens,"\n")
+      while (dens==0){
+        ab   <- ab*0.5
+        x    <- x - ab
+        dens <- .Q.integrand(x, nu, t, delta)
+        #cat("x=",x,"dens=",dens,"\n")
+        if (ab < 1E-10) break
       }
-  	}
+      if (dens>0) up <- min(x + ab, b) else return(0)
+      #cat("up=",up,"\n")
+      # lower limit
+      ab  <- up - a
+      x   <- a
+      dens <- .Q.integrand(x, nu, t, delta)
+      #cat("Lower search\n")
+      #cat("x=",x,"dens=",dens,"\n")
+      while (dens==0){
+        ab   <- ab*0.5 
+        x    <- x + ab
+        dens <- .Q.integrand(x, nu, t, delta)
+        #cat("x=",x,"dens=",dens,"\n")
+        if (ab<1E-10) break
+      }
+      if (dens>0)  low <- max(x - ab, a) else return(0)
+      #cat("low=",low,"\n")
+    }  
   }
 	# result of integrate() is a list, see ?integrate
 	# .Machine$double.eps^.5 = 1.490116e-08 on my machine
@@ -60,9 +78,6 @@ OwensQ <- function (nu, t, delta, a, b)
 .Q.integrand <- function(x, nu, t, delta)
 { #version without for - loop, it works without
 	lnQconst <- -((nu/2.0)-1.0)*log(2.0) - lgamma(nu/2.)
-# original code in first release:
-#  dens <- pnorm( t*x/sqrt(nu) - delta, mean = 0, sd = 1, log = FALSE) * 
-#          exp( (nu-1)*log(x) - 0.5*x^2 + lnQconst )
 # what if x<0? Should here not possible, but ...
 # simple x^(nu-1) doesnt work for high nu because  = inf 
 # and then exp( -0.5*x^2 + lnQconst )*x^(nu-1) -> NaN
@@ -70,5 +85,5 @@ OwensQ <- function (nu, t, delta, a, b)
           pnorm( t*x/sqrt(nu) - delta, mean = 0, sd = 1, log.p = FALSE) * 
           exp( (nu-1)*log(abs(x)) - 0.5*x^2 + lnQconst )
       
-	return(dens)
+	dens
 }
