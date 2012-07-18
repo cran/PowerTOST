@@ -17,7 +17,7 @@
   n0 <- ceiling(max(n01,n02))
   #make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
-  if (n0<4) n0 <- 4   # minimum sample size
+  #if (n0<4) n0 <- 4   # minimum sample size will be checked outside
 	
   return(n0)
 }
@@ -33,6 +33,8 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
                          theta1, theta2, CV, design="2x2", method="exact",
                          robust=FALSE, print=TRUE, details=FALSE, imax=100)
 {
+  if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  
   #number of the design and check
   d.no <- .design.no(design)
   if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
@@ -48,8 +50,14 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   }
   steps  <- ades$steps	# stepsize for sample size search
   bk     <- ades$bk # get design constant
-  
-  if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  # minimum n
+  df <- 0
+  n <- 0
+  while (df<1){
+    n  <- n + 1
+    df <- eval(dfe)
+  }
+  nmin <- n
   
   # print the configuration:
   if (print) {
@@ -107,6 +115,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   
   # start value from large sample approx. (hidden func.)
   n  <- .sampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, bk)
+  if (n<nmin) n <- nmin
   df <- eval(dfe)
   pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
 
@@ -126,7 +135,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   # reformulation with only one loop does not shorten the code considerable
   # --- loop until power <= target power, step-down
   while (pow>targetpower) {
-    if (n<=4) { # min number
+    if (n<=nmin) { 
       if (details & iter==0) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
       break
     }
@@ -161,6 +170,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
     #if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
     cat(" n     power\n")
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
+    if (is.na(n)) cat("Sample size search failed!\n")
   }
   if (details && print) {
     if (method=="exact") 

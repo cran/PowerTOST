@@ -58,8 +58,11 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
   p1 <- c(1:nel)	
   p2 <- p1
   for (i in seq_along(delta1)) {
-    if (dl>1) {ddf <- df[i]; ttt <- tval[i]} 
-    else {ddf <- df[1]; ttt <- tval[1]}
+    if (dl>1) {
+      ddf <- df[i]; ttt <- tval[i]
+    } else {
+      ddf <- df[1]; ttt <- tval[1]
+    }
     p1[i] <- OwensQ(ddf,  ttt, delta1[i], 0, R[i])
     p2[i] <- OwensQ(ddf, -ttt, delta2[i], 0, R[i])
   }
@@ -90,7 +93,7 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 .approx2.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
                                 se, n, df, bk=2)
 {
-	tval <- qt(1 - alpha, df, lower.tail = TRUE)
+	tval   <- qt(1 - alpha, df, lower.tail = TRUE)
   delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
 	delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
 	

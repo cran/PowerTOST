@@ -20,7 +20,7 @@
   n0 <- ceiling(max(n01,n02))
   #make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
-  if (n0<4) n0 <- 4   # minimum sample size
+  #if (n0<4) n0 <- 4   # minimum sample size will be tested outside
   
   return(n0)
 }
@@ -50,6 +50,14 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   }
   steps  <- ades$steps	# stepsize for sample size search
   bk     <- ades$bk # get design constant
+  # minimum sample size
+  df <- 0
+  n <- 0
+  while (df<1){
+    n  <- n + 1
+    df <- eval(dfe)
+  }
+  nmin <- n
   
   if (missing(CV) | missing(dfCV)) {
     stop("CV and its df must be given!", call.=FALSE)
@@ -148,6 +156,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   #start value from large sample approx. 
   n   <- .expsampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, 
                       se, dfse, steps, bk)
+  if (n<nmin) n <- nmin
   df  <- eval(dfe)
   pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
   if (details) {
@@ -166,7 +175,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   # starting with too high power should be rare sinsce the large sample
   # approximation should give too low sample size
   while (pow>targetpower) {
-    if (n<=4) { # min number
+    if (n<=nmin) { # min number
       if (print & iter==0) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
       break
     }
@@ -186,12 +195,19 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
+  
+  if (pow<targetpower) {
+    n <- NA
+    if (details) cat("Sample size search failed!\n")
+  }
+  
   if (print && !details) {
     cat("\nSample size (ntotal)\n")
     # parallel group design is now also handled in terms of ntotal
     #if (d.no == 0) cat("(n is sample size per group)\n") 
     cat(" n   exp. power\n")
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
+    if (is.na(n)) cat("Sample size search failed!\n")
   }
   
   if (print) cat("\n")

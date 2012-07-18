@@ -1,3 +1,8 @@
+Version 0.9-9
+Released 2012-07-18
+     - Workaround introduced to handle numeric problems in integrate()
+       if CV<5.3E-6. Thanks to Helmut Schuetz.
+     - Minimum sample size adapted to design used (f.i. n=2 if design="paired")  
 Version 0.9-8
 Released 2012-04-05 (Easter egg)
      - Functions added for 'expected' power and sample size calculations based 
