@@ -52,13 +52,14 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   bk     <- ades$bk # get design constant
   # minimum n
   df <- 0
-  n <- 0
+  n  <- 0
   while (df<1){
     n  <- n + 1
     df <- eval(dfe)
   }
-  nmin <- n
-  
+  # make a multiple of steps
+  nmin <- as.integer(steps*trunc(n/steps)) 
+  nmin <- nmin + steps*(nmin<n)
   # print the configuration:
   if (print) {
     cat("\n+++++++++++ Equivalence test - TOST +++++++++++\n")

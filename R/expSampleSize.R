@@ -51,13 +51,14 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   steps  <- ades$steps	# stepsize for sample size search
   bk     <- ades$bk # get design constant
   # minimum sample size
-  df <- 0
-  n <- 0
+  df <- 0; n <- 0
   while (df<1){
     n  <- n + 1
     df <- eval(dfe)
   }
-  nmin <- n
+  # make a multiple of steps
+  nmin <- as.integer(steps*trunc(n/steps)) 
+  nmin <- nmin + steps*(nmin<n)
   
   if (missing(CV) | missing(dfCV)) {
     stop("CV and its df must be given!", call.=FALSE)

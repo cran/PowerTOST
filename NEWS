@@ -1,3 +1,9 @@
+Version 0.9-10
+Released 2012-07-20
+     - Bug-fix in internal function .Q.integrand()
+     - Bug fix in nmin - must be a multiple of steps to assure balance
+       in sequence groups
+       Again thanks to Helmut Schuetz for detecting both.
 Version 0.9-9
 Released 2012-07-18
      - Workaround introduced to handle numeric problems in integrate()

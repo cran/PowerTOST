@@ -17,17 +17,10 @@ OwensQ <- function (nu, t, delta, a, b)
 	# Idea: adapt upper and/or lower integration limit to account for that
 	low <- a; up <- b
   # May 2011: shrink  interval depending on delta*b 
-  # Craig Zupke's observations:
-  # power.TOST(0.410,FALSE,-5.97,5.97,8.5448,1,14,"parallel",TRUE)
-  # gives an Error; high b/delta
-  # Jul 2012: Helmuts observation
-  # n=4, CV=1E-5(=se) gives power=1 (delta1=24303.3, delta2=-38811.23, R=b=15283.88
-  #      CV=1E-6 gives power=0      (      243033          -388112.3   R  152838.8
-  #      CV=0    gives power=1             Inf              -Inf       Inf
   if (b>1E6) b <- Inf
   if (is.finite(b)){ # in case of alpha=0.5 b is infinite
   	if (nu >= 1000 || abs(delta*b) > 30 || b>50){
-      # try to shorten the range via interval halving:
+      # try to shorten the range via interval halving: Jul 2012
       # upper integration limit
       ab <- b-a
       x  <- b
@@ -44,8 +37,8 @@ OwensQ <- function (nu, t, delta, a, b)
       if (dens>0) up <- min(x + ab, b) else return(0)
       #cat("up=",up,"\n")
       # lower limit
-      ab  <- up - a
-      x   <- a
+      ab   <- up - a
+      x    <- a
       dens <- .Q.integrand(x, nu, t, delta)
       #cat("Lower search\n")
       #cat("x=",x,"dens=",dens,"\n")
@@ -74,16 +67,46 @@ OwensQ <- function (nu, t, delta, a, b)
 }
 #-------------------------------------------------------------------------------
 # Integrand of the definit integral in Owen's Q. Used in the call of integrate()
-# Not useful alone, I think ? Leading . hides this function    
+# Not useful alone, I think ? Leading . hides this function 
+# function must give a vectorized answer in respect to x
 .Q.integrand <- function(x, nu, t, delta)
 { #version without for - loop, it works without
 	lnQconst <- -((nu/2.0)-1.0)*log(2.0) - lgamma(nu/2.)
+
 # what if x<0? Should here not possible, but ...
-# simple x^(nu-1) doesnt work for high nu because  = inf 
+# simple x^(nu-1) doesnt work for high nu because  = Inf 
 # and then exp( -0.5*x^2 + lnQconst )*x^(nu-1) -> NaN
-  dens <- sign(x)^(nu-1) *
-          pnorm( t*x/sqrt(nu) - delta, mean = 0, sd = 1, log.p = FALSE) * 
-          exp( (nu-1)*log(abs(x)) - 0.5*x^2 + lnQconst )
+# (nu-1)*log(abs(x)) is NaN if nu=1, x=0! 0*(-Inf) -> NaN
+  
+  dens <- x  # assures that dens=0 if x=0
+  dens[x!=0] <- sign(x)^(nu-1) *
+      pnorm( t*x/sqrt(nu) - delta, mean = 0, sd = 1, log.p = FALSE) * 
+      exp( (nu-1)*log(abs(x)) - 0.5*x^2 + lnQconst )
       
 	dens
 }
+
+# Test cases:
+# Craig Zupke's observations:
+# power.TOST(0.410,FALSE,-5.97,5.97,8.5448,1,14,"parallel",TRUE) #!old call
+# power.TOST(0.410,FALSE,-5.97,5.97,8.5448,1,14,"parallel","exact")
+# gave an error; high b/delta
+# should give: 2.335633e-07
+
+# Jul 2012: Helmuts observation
+# n=4, CV=1E-5(=se) gives power=1 (delta1=24303.3, delta2=-38811.23, R=b=15283.88
+#      CV=1E-6 gives power=0      (      243033          -388112.3   R  152838.8
+#      CV=0    gives power=1             Inf              -Inf       Inf
+# tval=2.919986
+# for CV=1e-6: erroneous in versions pre 0.9-9. 2. call gave =0
+# OwensQ(nu=2, t= 2.919986, delta= 243033,   0, 152838.8) ==0
+# OwensQ(nu=2, t=-2.919986, delta=-388112.3, 0, 152838.8) ==1
+# for CV=0
+# OwensQ(nu=2, t=2.919986, delta=Inf, 0, Inf)  ==0
+# OwensQ(nu=2, t=-2.919986, delta=-Inf, 0,Inf) ==1
+# 
+# Helmuts cases (ver 0.9-9) Jul 2012
+# sampleN.TOST(theta0=1, CV=0.02, design="2x2", print=TRUE) # Ok
+# #next gave an error due to 0*-Inf in .Q.integrand()
+# sampleN.TOST(theta0=1, CV=0.01, design="2x2", print=TRUE) 
+

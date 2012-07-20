@@ -42,7 +42,9 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     n  <- n + 1
     df <- eval(dfe)
   }
-  nmin <- n
+  # make a multiple of steps
+  nmin <- as.integer(steps*trunc(n/steps)) 
+  nmin <- nmin + steps*(nmin<n)
   
   if (print) {
     cat("\n++++++++++++ Non-inferiority test +++++++++++++\n")
