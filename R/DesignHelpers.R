@@ -24,7 +24,7 @@ no  design    df    df2  steps  bk   bknif
  5  2x2x3    2*n-3  n-2    2    1.5  3/8   
  6  2x2x4    3*n-4  n-2    2    1    1/4   
  7  2x4x4    3*n-4  n-4    4    1    1/16  
- 9  2x3x3    2*n-3  n-3    3    1.5  1/6   
+ 9  2x3x3    2*n-3  n-3    3    1.5  1/6   # partial replicate
 10  2x4x2    n-2    n-2    4    8    1/2   # Balaam's design 
 100 paired   n-1    n-1    1    2    1/2   
 ")

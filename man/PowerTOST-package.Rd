@@ -27,8 +27,8 @@ performed via 'expected' power in case of uncertain (estimated) variability.
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 0.9-9\cr
-Date: \tab 2012-07-18\cr
+Version: \tab 0.9-10\cr
+Date: \tab 2012-07-20\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes
