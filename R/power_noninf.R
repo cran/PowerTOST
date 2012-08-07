@@ -27,9 +27,9 @@ power.noninf <- function(alpha=0.025,  logscale=TRUE, margin, theta0, CV, n,
   ades <- .design.props(d.no)
   #degrees of freedom as expression
   if (robust){
-    dfe  <- parse(text=ades$df[1],srcfile=NULL) 
+    dfe  <- parse(text=ades$df2[1],srcfile=NULL) 
   } else {
-    dfe  <- parse(text=ades$df2[1],srcfile=NULL)
+    dfe  <- parse(text=ades$df[1],srcfile=NULL)
   }
   bk <- ades$bk
   

@@ -1,3 +1,8 @@
+Version 0.9-11
+Released 2012-08-07
+     - Bug fix in power.TOST(),  power2.TOST() and power.noninf() to use the 
+       right df depending on argument robust. robust=FALSE had used the 
+       robust df's. Thanks to Ben.
 Version 0.9-10
 Released 2012-07-20
      - Bug-fix in internal function .Q.integrand()

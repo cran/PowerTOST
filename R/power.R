@@ -141,9 +141,9 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   ades <- .design.props(d.no)
   #degrees of freedom as expression
   if (robust){
-    dfe  <- parse(text=ades$df[1],srcfile=NULL) 
+    dfe  <- parse(text=ades$df2[1],srcfile=NULL) 
   } else {
-    dfe  <- parse(text=ades$df2[1],srcfile=NULL)
+    dfe  <- parse(text=ades$df[1],srcfile=NULL)
   }
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
