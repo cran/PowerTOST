@@ -7,23 +7,21 @@
 power2.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
                         CV, n, design="2x2", method="exact", robust=FALSE)
 {
+  if (missing(CV)) stop("CV must be given!")
+  if (missing(n))  stop("Number of subjects n must be given!")
   # check if design is implemented
   d.no <- .design.no(design)
   if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
   
   # design characteristics
-  ades <- .design.props(d.no)
+  ades  <- .design.props(d.no)
   #degrees of freedom as expression
-  if (robust){
-    dfe  <- parse(text=ades$df2[1],srcfile=NULL) 
-  } else {
-    dfe  <- parse(text=ades$df[1],srcfile=NULL)
-  }
-  if (missing(CV)) stop("CV must be given!")
-  if (missing(n))  stop("Number of subjects n must be given!")
-  
-  bk <- ades$bkni
+  dfe   <- .design.df(ades, robust=robust)
+  # design const. based on # of subjects in sequences
+  bk    <- ades$bkni
+  # stepsize needed?
   steps <- ades$steps
+  # no bkni known
   if (is.na(bk)) stop("Not able to handle unbalanced ",design," design!")
   if (design=="parallel") {
     dfe   <- parse(text="n-2", srcfile=NULL)# for total

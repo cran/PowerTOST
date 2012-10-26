@@ -1,3 +1,10 @@
+Version 1.0-00
+     - Bugfix in power.noninf() to get the correct power if theta0 is below
+       margin (if margin <1) or theta0 is above margin (if margin >1).
+       power.noninf() calculated up to now the power of an inferiority test.
+       Thanks to Helmut Schuetz.
+     - New helper functions CV2mse() amd mse2CV.
+     - New function CVCI() to calculate a confidence interval of a CV.   
 Version 0.9-11
 Released 2012-08-07
      - Bug fix in power.TOST(),  power2.TOST() and power.noninf() to use the 

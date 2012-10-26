@@ -7,10 +7,13 @@
 # --------------------------------------------------------------------------
 # internal functions:
 # power function (working horse)
-.power.noninf <- function(alpha=0.025, lmargin, diffm, se, n, df, bk=2)
+.power.noninf <- function(alpha, lmargin, diffm, se, n, df, bk=2)
 {
-  tval <- qt(1-alpha,df)
-  tau  <- abs( (diffm-lmargin)*sqrt(n)/sqrt(bk*se^2) )
+  tval <- qt(1-alpha, df)
+  # the original abs() function has the effect that in case of diffm<lmargin
+  # if lmargin<0 the power of inferiority! is calculated
+  tau  <- (diffm-lmargin)*sqrt(n)/sqrt(bk*se^2)
+  if (lmargin>0) tau <- -tau
   return(1 - pt(tval, df, tau))
 }
 
@@ -26,11 +29,8 @@ power.noninf <- function(alpha=0.025,  logscale=TRUE, margin, theta0, CV, n,
   # design characteristics
   ades <- .design.props(d.no)
   #degrees of freedom as expression
-  if (robust){
-    dfe  <- parse(text=ades$df2[1],srcfile=NULL) 
-  } else {
-    dfe  <- parse(text=ades$df[1],srcfile=NULL)
-  }
+  dfe  <- .design.df(ades, robust=robust)
+  # design constant
   bk <- ades$bk
   
   if (missing(CV)) stop("CV must be given!")

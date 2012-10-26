@@ -23,7 +23,8 @@ Numeric value of the definite integral.
 D. Labes
 }
 \note{
-This function is only needed in \code{OwensQOwen()}.
+This function is only needed in \code{OwensQOwen()}.\cr
+But may be useful for others.
 }
 \seealso{
 \code{\link{OwensQOwen}, \link{OwensQ}}

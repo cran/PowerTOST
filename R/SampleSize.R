@@ -43,13 +43,9 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   ades   <- .design.props(d.no)
   d.name <- ades$name  # nice name of design
   # get the df for the design as an unevaluated expression (now with n as var)
-  if (robust){
-    dfe    <- parse(text=ades$df2,srcfile=NULL)
-  } else {
-    dfe    <- parse(text=ades$df,srcfile=NULL)
-  }
+  dfe    <- .design.df(ades, robust=robust)
   steps  <- ades$steps	# stepsize for sample size search
-  bk     <- ades$bk # get design constant
+  bk     <- ades$bk     # get design constant
   # minimum n
   df <- 0
   n  <- 0
