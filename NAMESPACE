@@ -3,7 +3,9 @@
 # Export explicitly by name
 # print.CVp is defined under S3method
 export(
-    CV2se
+    CVCL
+  , CV2se
+  , CV2mse
   , CVfromCI
   , CVpooled
   , exppower.noninf
@@ -22,11 +24,11 @@ export(
   , sampleN.RatioF
   , sampleN.TOST
   , se2CV
+  , mse2CV
 )         
 
 # Import all packages listed as Imports or Depends
 import(
-  stats,
   mvtnorm
 )
 

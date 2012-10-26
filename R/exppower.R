@@ -29,12 +29,7 @@ exppower.TOST <- function(alpha=0.05, logscale=TRUE, theta0, theta1, theta2,
   # design characteristics
   ades <- .design.props(d.no)
   #df as expression
-  if (robust){ 
-    # 'robust' evaluation df's
-    dfe  <- parse(text=ades$df2[1], srcfile=NULL) 
-  } else {
-    dfe  <- parse(text=ades$df[1], srcfile=NULL) 
-  }
+  dfe  <- .design.df(ades, robust=robust)
   #design const.
   bk   <- ades$bk
   

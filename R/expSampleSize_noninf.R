@@ -33,16 +33,12 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   if (is.na(d.no)) stop("Design ",design," not known!", call.=FALSE)
   
   # design characteristics
-  ades   <-.design.props(d.no)
+  ades   <- .design.props(d.no)
   d.name <- ades$name  # nice name of design
   # get the df for the design as an unevaluated expression
-  if (robust) {
-    dfe  <- parse(text=ades$df2,srcfile=NULL) 
-  } else {
-    dfe  <- parse(text=ades$df,srcfile=NULL) 
-  }
+  dfe    <- .design.df(ades, robust=robust)
   steps  <- ades$steps	# stepsize for sample size search
-  bk     <- ades$bk # get design constant
+  bk     <- ades$bk     # get design constant
   # minimum sample size
   df <- 0; n <- 0
   while (df<1){

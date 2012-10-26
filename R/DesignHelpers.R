@@ -12,7 +12,7 @@ known.designs <- function()
 # bkni is the design constantin terms of n per sequence, also without carry over.
 # In case of 2x2x4 design Chen, Chow and Liu used bk=1.1 (bkni=11/40) 
 # in a model with carry over.
-# Dec2011: parallel group design now also for n=ntotal
+# Dec 2011: parallel group design now also for n=ntotal
 des <- ("
 no  design    df    df2  steps  bk   bknif 
  0  parallel n-2    n-2    2    4    1/1             
@@ -82,3 +82,12 @@ no  design    df    df2  steps  bk   bknif
 	return (des)
 }	
 
+.design.df <- function(des.props, robust)
+{
+  if (robust){
+    dfe  <- parse(text=des.props$df2[1], srcfile=NULL)
+  } else {
+    dfe  <- parse(text=des.props$df[1], srcfile=NULL)
+  }
+  return(dfe)
+}  

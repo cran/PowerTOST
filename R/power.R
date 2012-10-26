@@ -1,9 +1,6 @@
 # Author: dlabes
 #------------------------------------------------------------------------------
-# helper function to calculate std err from CV of lognormal data
-CV2se <- function(CV) return(sqrt(log(1.0 + CV^2)))
-# reverse helper function
-se2CV <- function(se) return(sqrt(exp(se*se)-1))
+
 #------------------------------------------------------------------------------
 # helper function to allow partial match of the method
 .powerMethod <- function(method){
@@ -133,6 +130,8 @@ se2CV <- function(se) return(sqrt(exp(se*se)-1))
 power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
                        CV, n, design="2x2", method="exact", robust=FALSE)
 {
+  if (missing(CV)) stop("CV must be given!")
+  if (missing(n))  stop("Number of subjects n must be given!")
   # check if design is implemented
   d.no <- .design.no(design)
   if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
@@ -140,16 +139,10 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   # design characteristics
   ades <- .design.props(d.no)
   #degrees of freedom as expression
-  if (robust){
-    dfe  <- parse(text=ades$df2[1],srcfile=NULL) 
-  } else {
-    dfe  <- parse(text=ades$df[1],srcfile=NULL)
-  }
-  if (missing(CV)) stop("CV must be given!")
-  if (missing(n))  stop("Number of subjects n must be given!")
-  
+  dfe  <- .design.df(ades, robust=robust)
   #design const.
   bk    <- ades$bk
+  # step size = no of sequences
   steps <- ades$steps
   
   # regularize the method giving
