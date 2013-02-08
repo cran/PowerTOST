@@ -1,4 +1,15 @@
+Version 1.0-01
+Released 2012-12-24
+     - upper one-sided CL of the CV and therefore argument alpha2 removed from
+       expsampleN.noninf() and expsampleN.TOST() because it lead to some
+       confusion in users thinking this had to do with the algorithm via
+       expected power
+     - CI2CV() as alias to CVfromCI() introduced because my self always typed 
+       this name if aimed to calculate the CV from a given CI
+     - Function CVCL() now returns a 2 element vector also if an one sided
+       interval is requested.   
 Version 1.0-00
+Released 2012-10-26
      - Bugfix in power.noninf() to get the correct power if theta0 is below
        margin (if margin <1) or theta0 is above margin (if margin >1).
        power.noninf() calculated up to now the power of an inferiority test.

@@ -21,14 +21,17 @@ non-inferiority test. \cr
 This is not a TOST procedure (but rather OOST ;-)) but eventually useful if the 
 question of 'non-superiority' must be evaluated within a BE study.\cr
 The power and sample size calculations based on non-inferiority test may also 
-performed via 'expected' power in case of uncertain (estimated) variability.
+performed via 'expected' power in case of uncertain (estimated) variability.\cr\cr
+Contains now functions power.scABEL() and sampleN.scABEL() to calculate 
+power and sample size for the BE decision via scaled (widened) BE acceptance 
+limits based on simulations.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 1.0-00\cr
-Date: \tab 2012-10-26\cr
+Version: \tab 1.1-00\cr
+Date: \tab 2013-02-08\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes
@@ -81,7 +84,8 @@ Hauschke D., Steinijans V. and Pigeot I.\cr
 John Wiley & Sons, Chichester (2007)\cr
 Chapter 5 and 10.3
 
-BEBAC forum: categories 'Power/Sample size' and 'R for BE/BA'\cr
+BEBAC forum: \cr
+categories 'Power/Sample size' and 'R for BE/BA'\cr
 \url{http://forum.bebac.at}
 }
 \keyword{ package }

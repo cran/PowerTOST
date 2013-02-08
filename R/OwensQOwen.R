@@ -1,8 +1,9 @@
+#-----------------------------------------------------------------------------
 # Calculation of Owens Q-function by the algo given by Owen itself:
 # repeated integration by parts
 # 
 # Author: dlabes Mar 2012
-##############################################################################
+#-----------------------------------------------------------------------------
 
 # Owen's T-function: 
 # Calculates integral 0 to a of exp(-0.5*h^2*(1+x^2))/(1+x^2)/(2*pi)

@@ -1,4 +1,4 @@
-##############################################################################
+#------------------------------------------------------------------------------
 # power / sample size of ratio of means with normality on original scale
 # (based on Fieller's CI and Sasabuchi's test)
 # Hauschke D., Kieser M., Diletti E. and Burke M.
@@ -7,7 +7,7 @@
 # Stat. Med. 18(1) p93-105 (1999) 
 # 
 # Author: dlabes, started coding Jul 2010
-##############################################################################
+#------------------------------------------------------------------------------
 
 # the multivariate t- and normal distribution with arbitrary corr
 # require(mvtnorm)

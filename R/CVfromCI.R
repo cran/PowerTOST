@@ -1,10 +1,11 @@
-##############################################################################
+#------------------------------------------------------------------------------
 # function to calculate the CV from given 90% confidence interval
 # 
 # Author: dlabes
-##############################################################################
+#------------------------------------------------------------------------------
 
-CVfromCI <- function(point, lower, upper, n, design="2x2", alpha=0.05, robust=FALSE)
+CVfromCI <- function(point, lower, upper, n, design="2x2", alpha=0.05, 
+                     robust=FALSE)
 {
   if (missing(lower) | missing(upper)) {
     stop("Lower and upper CL must be given!", call.=FALSE) 
@@ -32,5 +33,17 @@ CVfromCI <- function(point, lower, upper, n, design="2x2", alpha=0.05, robust=FA
   # both estimates very different?
   if (abs(s1-s2)/sw > 0.1) warning("sw1, sw2 very different. Check input.")
   return(se2CV(sw))
+}
+
+# alias to CVfromCI
+CI2CV <- function(point, lower, upper, n, design="2x2", alpha=0.05, 
+                  robust=FALSE)
+{
+  if (missing(lower) | missing(upper)) {
+    stop("Lower and upper CL must be given!", call.=FALSE) 
+  }
+  if (missing(point)) point <- sqrt(lower*upper) 
+  CVfromCI(point=point, lower, upper, n, design=design, alpha=alpha, 
+           robust=robust)
 }
 

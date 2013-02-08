@@ -1,3 +1,4 @@
+#------------------------------------------------------------------------------
 # Sample size based on 'expected' power
 # taking into account the uncertainty of CV
 # 
@@ -31,7 +32,7 @@
 # leave upper BE margin (theta2) empty and the function will use 1/lower
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, 
-                            theta0, theta1, theta2, CV, dfCV, alpha2=0.05, 
+                            theta0, theta1, theta2, CV, dfCV,  
                             design="2x2", robust=FALSE,
                             print=TRUE, details=FALSE, imax=100)
 {
@@ -137,8 +138,6 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     if (logscale) cat("Null (true) ratio  = ",theta0,",  CV = ",CV,"\n", sep="")
     else          cat("Null (true) diff.  = ",theta0,",  CV = ",CV,"\n", sep="")
     # can use lower.tail=FALSE and 1-0.05 in qchisq, H. Schütz in his lectures
-    seupper <- dfse*se^2/qchisq(alpha2, dfse)
-    seupper <- sqrt(seupper)
     if (length(CV)>1){
       cat("Variability data\n")
       print(data.frame(CV=CV,df=dfCV), row.names = FALSE)
@@ -146,8 +145,6 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     } else {
       cat("CV                 = ", CVp, " with ", dfse," df\n", sep="")
     }   
-    cat("one-sided upper CL = ",se2CV(seupper)," (level = ",
-        100*(1-alpha2),"%)\n",sep="")
   }
   
   #start value from large sample approx. 

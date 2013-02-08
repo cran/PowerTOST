@@ -18,7 +18,9 @@ CVCL(CV, df, side = c("upper", "lower", "2-sided"), alpha = 0.05)
   \item{alpha}{Type I error probability, aka significance level}
 }
 \value{
-Numeric value or numeric vector of the confidence limits.
+Numeric vector of the confidence limits named as 'lower CL' and 'upper CL'.\cr
+In case of the one-sided upper confidence limit the 'lower CL' is = 0.\cr 
+In case of the one-sided lower confidence limit the 'upper CL' is = Inf. 
 }
 \author{D. Labes}
 \examples{
@@ -26,5 +28,7 @@ Numeric value or numeric vector of the confidence limits.
 # from a study with df=22 (f.i. a 2x2 crossover with n=24)
 # side="upper" is standard if not explicitly given
 CVCL(0.3, df=22)
-# should give 0.4075525
+# should give:
+# lower CL  upper CL 
+#0.0000000 0.4075525 
 }

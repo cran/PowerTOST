@@ -10,7 +10,7 @@ See \code{known.designs()} for the study designs covered.
 }
 \usage{
 expsampleN.noninf(alpha = 0.025, targetpower = 0.8, logscale=TRUE,
-                  theta0, margin, CV, dfCV, alpha2 = 0.05, design = "2x2",
+                  theta0, margin, CV, dfCV, design = "2x2",
                   robust=FALSE, print = TRUE, details = FALSE, imax=100)
 }
 \arguments{
@@ -42,10 +42,6 @@ their df (degrees of freedom) as weights.
 }
   \item{dfCV}{
 Degrees of freedom for the CV's. Must be a vector of same length as CV.
-}
-  \item{alpha2}{
-Significance level for the calculation of an upper confidence interval
-for CV (for informal purposes only).
 }
   \item{design}{
 Character string describing the study design.\cr
