@@ -13,12 +13,14 @@ mse2CV <- function(mse) sqrt(exp(mse)-1)
 # function to calculate confidence limits of given CV 
 CVCL <- function(CV, df, side=c("upper", "lower","2-sided"), alpha=0.05)
 {
-  ssintra <- log(1.0 + CV^2)*df
+  ssintra <- log(1.0 + CV^2)*df  #s2*df
   side    <- match.arg(side)
-  if(side=="upper") return(sqrt(exp(ssintra/qchisq(alpha,df))-1))
-  if(side=="lower") return(sqrt(exp(ssintra/qchisq(1-alpha,df))-1))
-  if(side=="2-sided") {
-    limits <- c(ssintra/qchisq(1-alpha/2,df),ssintra/qchisq(alpha/2,df))
-    return(sqrt(exp(limits)-1))
-  }  
+  
+  limits <- switch(EXPR=side,
+      upper= c(0, ssintra/qchisq(alpha,df)),
+      lower= c(ssintra/qchisq(1-alpha,df), Inf),
+      c(ssintra/qchisq(1-alpha/2,df), ssintra/qchisq(alpha/2,df)))
+  limits <-(sqrt(exp(limits)-1))
+  names(limits) <- c("lower CL", "upper CL")
+  return(limits)
 }

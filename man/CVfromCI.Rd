@@ -1,5 +1,6 @@
 \name{CVfromCI}
 \alias{CVfromCI}
+\alias{CI2CV}
 \title{CV from a given Confidence interval}
 \description{
 Calculates the CV (coefficient of variation) from a known confidence interval
@@ -8,6 +9,7 @@ Useful if no CV but the 90\% CI was given in literature.
 }
 \usage{
 CVfromCI(point, lower, upper, n, design = "2x2", alpha = 0.05, robust=FALSE)
+CI2CV(point, lower, upper, n, design = "2x2", alpha = 0.05, robust=FALSE)
 }
 \arguments{
   \item{point}{
@@ -55,7 +57,8 @@ treatments in replicate crossover studies or parallel group study, respectively.
 It is assumed that the sequence groups in a crossover study or the 
 treatment arms in a parallel-group study are balanced.\cr
 The estimated CV is conservative (i.e. greater than actually observed) in case of 
-unbalanced studies.
+unbalanced studies.\cr\cr
+\code{CV2CI()} is simply an alias to \code{CVfromCI()}.
 }
 
 \examples{

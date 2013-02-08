@@ -1,6 +1,8 @@
+#-------------------------------------------------------------------------------
+# author: dlabes
+#------------------------------------------------------------------------------
 #-- The functions of normal-, t-distributions and integrate() ------------------
 #require(stats) #this is usually not necessary within a standard installation
-#-------------------------------------------------------------------------------
 # Owen's Q-function 
 # a, b must be a scalar numeric
 # nu, t and delta also, no vectors allowed

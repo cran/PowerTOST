@@ -25,6 +25,7 @@
 .expsampleN0: start value of n for sample size based on exp. power.\cr
 .power.inf: power of non-inferiority test (working horse)\cr
 .power.TOST: power of classical TOST (working horse)\cr
+.power.scABEL: working horse for the power via scaled ABEL by simulations\cr
 .power.RatioF: power of ratio of means with normal data on original scale (working horse)\cr
 .Q.integrand: Integrand for Owen's Q function \cr
 .sampleN0: Start value of sample size\cr

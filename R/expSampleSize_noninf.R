@@ -1,3 +1,4 @@
+#------------------------------------------------------------------------------
 # Sample size based on 'expected' power
 # taking into account the uncertainty of CV for the non-inferiority
 # t-test
@@ -24,9 +25,8 @@
 # Only for log-transformed data
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
-                              theta0, margin, CV, dfCV, alpha2=0.05,
-                              design="2x2", robust=FALSE,
-                              print=TRUE, details=FALSE, imax=100)
+                              theta0, margin, CV, dfCV, design="2x2", 
+                              robust=FALSE, print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check if design is implemented
   d.no <- .design.no(design)
@@ -122,9 +122,6 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     cat("alpha = ",alpha,", target power = ", targetpower,"\n", sep="")
     cat("Non-inf. margin    = ", margin, "\n", sep="")
     cat("Null (true) ratio  = ",theta0,"\n", sep="")
-    # can use lower.tail=FALSE and 1-0.05 in qchisq, H. Schütz in his lectures
-    seupper <- dfse*se^2/qchisq(alpha2, dfse)
-    seupper <- sqrt(seupper)
     if (length(CV)>1){
       cat("Variability data\n")
       print(data.frame(CV=CV,df=dfCV), row.names = FALSE)
@@ -132,8 +129,6 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     } else {
       cat("CV                 = ", CVp, " with ", dfse," df\n", sep="")
     }   
-    cat("one-sided upper CL = ",se2CV(seupper)," (level = ",
-        100*(1-alpha2),"%)\n",sep="")
   }
   
   #start value from large sample approx. 

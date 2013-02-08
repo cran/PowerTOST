@@ -2,8 +2,8 @@ Package: PowerTOST
 Type: Package
 Title: Power and Sample size based on two one-sided t-tests (TOST) for
         (bio)equivalence studies
-Version: 1.0-00
-Date: 2012-10-26
+Version: 1.1-00
+Date: 2013-02-08
 Author: Detlew Labes
 Maintainer: D. Labes <DetlewLabes@gmx.de>
 Description: Contains functions to calculate power and sample size for
@@ -20,11 +20,14 @@ Description: Contains functions to calculate power and sample size for
         eventually useful if the question of 'non-superiority' must be
         evaluated.  The power and sample size calculations based on
         non-inferiority test may also performed via 'expected' power in
-        case of uncertain (estimated) variability.
+        case of uncertain (estimated) variability.  ----- Contains now
+        functions power.scABEL() and sampleN.scABEL() to calculate
+        power and sample size for the BE decision via scaled (widened)
+        BE acceptance limits based on simulations
 Depends: mvtnorm
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2012-10-26 07:43:27 UTC; dlabes
+Packaged: 2013-02-08 10:36:38 UTC; dlabes
 Repository: CRAN
-Date/Publication: 2012-10-26 09:32:57
+Date/Publication: 2013-02-08 12:15:09

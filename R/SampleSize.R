@@ -1,15 +1,18 @@
+#-----------------------------------------------------------------------------
 # Author: dlabes
-# ----- helper functions for sampleN.TOST -------------------------------------
+#-----------------------------------------------------------------------------
+
+# ----- helper functions for sampleN.TOST ------------------------------------
 # Sample size for a desired power, large sample approx.
 # bk = design constant, see known.designs()
-.sampleN0 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, se, 
-		                  steps=2, bk=2)
+.sampleN0 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
+                      se, steps=2, bk=2)
 {
   z1 <- qnorm(1-alpha)
   # value 0.04 corresponds roughly to log(0.96)
   # with lower values there are many steps around between 0.95 and 1
   if (abs(diffm)>0.04) z2 <- qnorm(targetpower) else {
-    z2 <- qnorm(1-(1-targetpower)/2) # diffm ~0 (log: theta0=1)
+    z2 <- qnorm(1-(1-targetpower)/2) # for diffm ~0 (log: theta0=1)
     diffm <- 0
   }
   n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
@@ -170,15 +173,17 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
     if (is.na(n)) cat("Sample size search failed!\n")
   }
   if (details && print) {
-    if (method=="exact") 
+    if (method=="exact" || method=="owenq") 
       cat("\nExact power calculation with\nOwen's Q functions.\n")
   }
   # always print if approx.
   if (print && method!="exact"){
     approx <- switch(
       method,
+      nct="Approximate power calculation with\nnon-central t-distribution.",
       noncentral="Approximate power calculation with\nnon-central t-distribution.",
-      shifted="Approximate power calculation with\nshifted central t-distribution."
+      shifted="Approximate power calculation with\nshifted central t-distribution.",
+      central="Approximate power calculation with\nshifted central t-distribution."
       )
     cat("\n",approx,"\n",sep="")
   } 
