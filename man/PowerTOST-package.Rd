@@ -22,16 +22,18 @@ This is not a TOST procedure (but rather OOST ;-)) but eventually useful if the
 question of 'non-superiority' must be evaluated within a BE study.\cr
 The power and sample size calculations based on non-inferiority test may also 
 performed via 'expected' power in case of uncertain (estimated) variability.\cr\cr
-Contains now functions power.scABEL() and sampleN.scABEL() to calculate 
-power and sample size for the BE decision via scaled (widened) BE acceptance 
-limits based on simulations.
+Contains functions to calculate power and sample size for the BE decision 
+via scaled (widened) BE acceptance limits based on simulations.\cr
+Contains further functions to calculate power and sample size for the 
+BE decision via reference scaled ABE criterion according to the FDA 
+favored procedure based on simulations.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 1.1-00\cr
-Date: \tab 2013-02-08\cr
+Version: \tab 1.1-02\cr
+Date: \tab 2013-02-28\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes
@@ -43,9 +45,15 @@ If you prefer sample size based on 'expected' power see the functions
 The main functions for equivalence of the ratio of means with normality on the
 original scale are \code{power.RatioF()} and \code{sampleN.RatioF()}.\cr\cr
 The functions for calculating power and sample size for the non-inferiority case
-are \code{power.noninf()} and \code{sampleN.noninf()}.\cr
+are \code{power.noninf()} and \code{sampleN.noninf()}.\cr\cr
 The functions for calculating 'expected' power and sample size for the 
 non-inferiority case are \code{exppower.noninf()} and \code{expsampleN.noninf()}.\cr\cr
+The functions for calculating 'empirical' power and sample size for scaled
+average bioequivalence are \code{power.scABEL()} and \code{sampleN.scABEL()}
+for the EMA adopted method via widened BE acceptance limits or 
+\code{power.RSABE()} and \code{sampleN.RSABE()} for the FDA favored method via
+linearized scaled ABE criterion, respectively. These functions are based on
+simulations.\cr\cr
 The package contains further some utility functions (see Index).
 }
 \author{
@@ -83,6 +91,18 @@ Hauschke D., Steinijans V. and Pigeot I.\cr
 "Bioequivalence studies in Drug Development"\cr
 John Wiley & Sons, Chichester (2007)\cr
 Chapter 5 and 10.3
+
+FDA "Draft Guidance on Progesterone"
+Recommended Apr 2010; Revised Feb 2011
+http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM209294.pdf
+
+Laszlo Tothfalusi and Laszlo Endrenyi
+"Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
+J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
+
+Tothfalusi L., Endrenyi L. and A. Garcia Arieta\cr
+"Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average Bioequivalence"\cr
+Clin. Pharmacokin. 48/11, 725-743 (2009)
 
 BEBAC forum: \cr
 categories 'Power/Sample size' and 'R for BE/BA'\cr

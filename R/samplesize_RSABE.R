@@ -5,10 +5,10 @@
 # Author: dlabes
 #---------------------------------------------------------------------------
 
-sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
-                           theta2, CV, design=c("2x3x3", "2x2x4"), 
-                           regulator=c("EMA", "FDA"), nsims=1E5,
-                           nstart, print=TRUE, details=TRUE, setseed=TRUE)
+sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
+                           theta2, CV, design=c("2x3x3", "2x2x4"),
+                           regulator = c("FDA", "EMA"), nsims=1E5, nstart, 
+                           print=TRUE, details=TRUE, setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta0)) theta0 <- 0.95
@@ -17,20 +17,13 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     stop("Null ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
          call.=FALSE)
   }
-  if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  if (missing(CV)) stop("CV(s) must be given!", call.=FALSE)
   
+  CVswitch  <- 0.3
   regulator <- match.arg(regulator)
-  if (regulator=="FDA"){
-    CVcap    <- Inf
-    CVswitch <- 0.3
-    r_const  <- log(1.25)/0.25
-  } else {
-    # regulatory settings for EMA
-    CVcap    <- 0.5
-    CVswitch <- 0.3
-    r_const  <- 0.760
-  }
-  
+  if (regulator=="FDA") r_const <- log(1.25)/0.25 # or better log(theta2)/0.25?
+  if (regulator=="EMA") r_const <- 0.76 # or better log(theta2)/CV2se(0.3)
+
   # check design
   design <- match.arg(design)
   # we are treating only balanced designs
@@ -42,28 +35,17 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     # due to the fact that the described analysis in the
     # progesterone guidance is based in the intrasubject contrasts
     # T-R and R-R with df=n-seqs
-    if (regulator=="FDA"){
-      dfe   <- parse(text="n-3", srcfile=NULL)
-      dfRRe <- parse(text="n-3", srcfile=NULL)
-    } else {
-      dfe   <- parse(text="2*n-3", srcfile=NULL)
-      dfRRe <- parse(text="n-2", srcfile=NULL)
-    }
+    dfe   <- parse(text="n-3", srcfile=NULL)
+    dfRRe <- parse(text="n-3", srcfile=NULL)
   }
   if (design=="2x2x4") {
     bk <- 1.0; seqs <- 2
-    if (regulator=="FDA"){
-      dfe   <- parse(text="n-2", srcfile=NULL)
-      dfRRe <- parse(text="n-2", srcfile=NULL)
-    } else {
-      # EMA settings
-      dfe   <- parse(text="3*n-4", srcfile=NULL)
-      dfRRe <- parse(text="n-3", srcfile=NULL)
-    }
+    dfe   <- parse(text="n-2", srcfile=NULL)
+    dfRRe <- parse(text="n-2", srcfile=NULL)
   }
   # for later enhancement taking into account the 
   # subject-by-formulation interaction
-  sD2  <- 0  
+  sD2  <- 0 
   CVwT <- CV[1]
   if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
   s2WT <- log(1.0 + CVwT^2)
@@ -73,8 +55,8 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   mlog <- log(theta0)
   
   if (print){
-    cat("\n+++++++++++ scaled (widened) ABEL +++++++++++\n")
-    cat("            Sample size estimation\n")
+    cat("\n++++++++ Reference scaled ABE crit. +++++++++\n")
+    cat("           Sample size estimation\n")
     cat("---------------------------------------------\n")
     cat("Study design: ",design,"\n")
     cat("log-transformed data (multiplicative model)\n")
@@ -85,46 +67,29 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     cat("ABE limits / PE constraints =",theta1,"...", theta2,"\n")
     cat("Regulatory settings:",regulator,"\n")
     if (details) { 
-      cat("- CVswitch = ", CVswitch)
-      if (is.finite(CVcap)){
-        cat(", cap on ABEL if CV > ", CVcap,"\n",sep="")
-      } else {
-        cat(", no cap on ABEL\n",sep="")
-      }  
+      cat("- CVswitch = ", CVswitch, "\n")
       cat("- Regulatory constant =",r_const,"\n")
     }     
   }
   
   # -----------------------------------------------------------------
   # nstart? from sampleN0 with widened limits
-  # does'nt fit really good if theta0>=1.2! ways out?
-  ltheta1 <- -sqrt(s2WR)*r_const
+  # does'nt fit really good if theta0>=1.2 or <=0.85! ways out?
+  ltheta1 <- -r_const*sqrt(s2WR)
   ltheta2 <- -ltheta1
+  # this if does not function in case of CVwR=0.3 for the original code
+  # calculating s2WR and back-calculating CVwR from that
+  # numerical problem?
   if (CVwR <= CVswitch){
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
   }
-  if (CVwR > CVcap){
-    ltheta1 <- -sqrt(log(1.0 + CVcap^2))*r_const
-    ltheta2 <- -ltheta1
-  }
   if (missing(nstart)){
     n <- .sampleN0(alpha=alpha, targetpower, ltheta1, ltheta2, diffm=mlog, 
                    se=sqrt(sd2), steps=seqs, bk=bk)
-  } else n <- seqs*round(nstart/seqs)           
-# empirical corrections not released because they are not unique
-# for all settings
-# next is an empirical observation for the EMA settings
-# both together give n=2*n in case of CVwR>0.5
-# TODO: check this if CVwR != CVwT
-#  if (targetpower<0.9){
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.45) n <- 1.5*n
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.5)  n <- 1.3333*n
-#  } else {
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.45) n <- 1.4*n
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.5)  n <- 1.8*n
-#  } 
-#  n <- seqs*round(n/seqs, 0)
+    # empirical corrections not released because they are not unique
+    # for all settings.
+  } else n <- seqs*round(nstart/seqs)
   # iterate until pwr>=targetpower
   # we are simulating for balanced designs
   fact <- bk/n
@@ -134,9 +99,9 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   dfRR <- eval(dfRRe)
   
   if(setseed) set.seed(123456)
-  p <- .power.scABEL(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
-                     ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                     CVswitch, r_const, CVcap, alpha=alpha)
+  p <- .power.RSABE(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
+                    ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
+                    CVswitch, r_const, alpha=alpha)
   pwr <- as.numeric(p["BE"]);
   
   if (details) {
@@ -146,8 +111,8 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     # this is for cases with only one step-down and than step up
     if (pwr<=targetpower) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
   }
-  iter <- 0; imax=100
-  nmin <- 6
+  iter <- 0; imax <- 100
+  nmin <- 6 # fits 2x3x3 and 2x2x4
   # iter>100 is emergency brake
   # --- loop until power <= target power, step-down
   while (pwr>targetpower) {
@@ -157,7 +122,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     }
     n  <- n-seqs     # step down if start power is to high
     iter <- iter + 1
-# rising the stepsize does not function stepsize too big in some cases    
+#    does not function stepsize too big in some cases    
 #    if (abs(pwr-targetpower)>0.03) n  <- n-seqs
     fact <- bk/n
     # sd of the sample mean T-R (point estimator)
@@ -166,19 +131,20 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
-                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                       CVswitch, r_const, CVcap, alpha=alpha)
+    p <- .power.RSABE(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
+                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
+                      CVswitch, r_const, alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
+    # do not print first step down
     if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
     if (iter>imax) break  
     # loop results in n with power too low
     # must step one up again. is done in the next loop
   }
   while (pwr<targetpower) {
-    n    <- n+seqs   # step-up
-#    does not function stepsize too big in some cases    
+    n    <- n+seqs  # step up
+# doubling the steps does not function stepsize too big in some cases    
 #    if (abs(pwr-targetpower)>0.03) n  <- n+seqs
     iter <- iter+1
     fact <- bk/n
@@ -187,9 +153,9 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
-                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                       CVswitch, r_const, CVcap, alpha=alpha)
+    p <- .power.RSABE(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
+                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
+                      CVswitch, r_const, alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
     if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
