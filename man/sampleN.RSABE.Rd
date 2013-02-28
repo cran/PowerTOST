@@ -1,16 +1,16 @@
-\name{sampleN.scABEL}
-\alias{sampleN.scABEL}
+\name{sampleN.RSABE}
+\alias{sampleN.RSABE}
 \title{
-Sample size estimation for BE decision via scaled (widened) BE acceptance limits
+Sample size estimation for BE decision via linearized scaled ABE criterion
 }
 \description{
 This function performs the Sample size estimation for the BE decision via 
-scaled (widened) BE acceptance limits based on simulations.
+linearized scaled ABE criterion based on simulations.
 }
 \usage{
-sampleN.scABEL(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, 
-               CV, design = c("2x3x3", "2x2x4"), regulator = c("EMA", "FDA"), 
-               nsims = 1e+05, nstart, print = TRUE, details = TRUE, setseed = TRUE)
+sampleN.RSABE(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, 
+              CV, design = c("2x3x3", "2x2x4"), regulator = c("FDA", "EMA"),
+              nsims = 1e+05, nstart, print = TRUE, details = TRUE, setseed=TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -48,13 +48,14 @@ Design of the study to be planned.\cr
 Defaults to \code{design="2x3x3"}
 }
   \item{regulator}{
-Regulatory body settings for the widening of the BE acceptance limits.\cr
-Defaults to \code{design="EMA"}.
+Regulatory body settings for the scaled ABE criterion.\cr
+Defaults to \code{design="FDA"}.\cr
+Also the scaled ABE criterion is usually calculated with the FDA constant
+r_const=log(1.25)/0.25 you can override this behavior to use the EMA setting
+r_const=0.76 to avoid the discontinuity at CV=30\% and be more stringent.
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the (empirical) power.
-The default value 100 000 = 1e+5 is usually sufficient. Consider to rise 
-this value if theta0<=0.85 or >=1.25. But see the warning section.
 }
   \item{nstart}{
 Set this to a start for the sample size if a previous run failed.
@@ -68,22 +69,32 @@ If set to \code{TRUE}, the default, the steps during sample size search are show
 }
   \item{setseed}{
 Simulations are dependent on the starting point of the (pseudo) random number 
-generator. To avoid differences in power for different runs a \code{set.seed(123456)} 
+generator. To avoid differences in power for different runs a set.seed() 
 is issued if \code{setseed=TRUE}, the default. 
 }
 }
 \details{
+The linearized scaled ABE criterion is calculated according to the SAS code
+given in the FDA progesterone guidance.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL. For more details see
-the man page of \code{power.scABEL()}.
+the man page of \code{power.RSABE()}.
 }
 \value{
 Returns the numerical value of the sample size.
 }
 \references{
+FDA "Draft Guidance on Progesterone"\cr
+Recommended Apr 2010; Revised Feb 2011\cr
+http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM209294.pdf
+
 Laszlo Tothfalusi and Laszlo Endrenyi\cr
 "Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
 J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
+
+Tothfalusi L., Endrenyi L. and A. Garcia Arieta\cr
+"Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average Bioequivalence"\cr
+Clin. Pharmacokin. 48/11, 725-743 (2009)
 }
 \author{
 D. Labes
@@ -91,13 +102,7 @@ D. Labes
 \note{
 We are doing the sample size estimation only for balanced designs since the 
 break down of the total subject number in case of unbalanced sequence groups
-is not unique. Moreover the formulas used are only for balanced designs.\cr
-In case of \code{regulator="FDA"} the sample size is only approximate since
-the BE decision method is not exactly what is expected by the FDA. But the two
-Laszlos state that the scABEL method should be 'operational' equivalent to the
-FDA method. Thus the sample size should be comparable.\cr
-Consider in case of \code{regulator="FDA"} to use the function 
-\code{sampleN.RSABE()}. 
+is not unique. Moreover the formulas used are only for balanced designs.
 }
 
 \section{Warning }{
@@ -108,25 +113,18 @@ a target power >0.8 and your CV is >0.5.\cr
 If you really need sample sizes in that range be prepared to restart the
 sample size estimation via the argument nstart.\cr
 Since the dependence of power from n is very flat in the mentioned region you
-may also consider to rise the number of simulations not to pad in the
+may also consider to adapt the number of simulations not to tap in the
 simulation error trap.
 }
 
 \seealso{
-\code{\link{power.scABEL}}, \code{\link{sampleN.RSABE}}
+\code{\link{power.RSABE}}, \code{\link{power.scABEL}}
 }
 \examples{
-# using all the defaults
-# partial replicate design, targetpower=80\%,
-# true assumed ratio = 0.95, 1E+5 simulated studies
+# using all the defaults:
+# design=2x3x3 (partial replicate design), theta0=0.95, 
 # ABE limits, PE constraint 0.8 - 1.25
-# EMA regulatory settings
-sampleN.scABEL(CV=0.3)
-# results in a sample size n=27, power=0.81746
-
-# for the full replicate design, target power = 90\%
-# true assumed ratio = 0.9, FDA regulatory settings
-sampleN.scABEL(CV=0.4, targetpower=0.9, theta0=0.9, design="2x2x4", regulator="FDA")
-# should result in a sample size n=32, power=0.91251
-
+# targetpower=80\%, alpha=0.05, 1E5 sims
+sampleN.RSABE(CV=0.3)
+# results in a sample size n=27, power=0.84132
 }

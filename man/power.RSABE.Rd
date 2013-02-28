@@ -1,16 +1,16 @@
-\name{power.scABEL}
-\alias{power.scABEL}
+\name{power.RSABE}
+\alias{power.RSABE}
 \title{
-(Empirical) Power for BE decision via scaled (widened) BE acceptance limits
+(Empirical) Power for BE decision via linearized scaled ABE criterion
 }
 \description{
 This function performs the power calculation of the BE decision via 
-scaled (widened) BE acceptance limits by simulations.
+linearized scaled ABE criterion by simulations.
 }
 \usage{
-power.scABEL(alpha = 0.05, theta1, theta2, theta0, CV, n, 
-             design = c("2x3x3", "2x2x4"), regulator = c("EMA", "FDA"), 
-             nsims = 1e+05, details = FALSE, setseed = TRUE)
+power.RSABE(alpha = 0.05, theta1, theta2, theta0, CV, n, 
+            design = c("2x3x3", "2x2x4"), regulator = c("FDA", "EMA"),
+            nsims = 1e+05, details = FALSE, setseed=TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -51,19 +51,22 @@ Design of the study to be planned.\cr
 Defaults to \code{design="2x3x3"}
 }
   \item{regulator}{
-Regulatory body settings for the widening of the BE acceptance limits.\cr
-Defaults to \code{design="EMA"}
+Regulatory body settings for the scaled ABE criterion.\cr
+Defaults to \code{design="FDA"}.\cr
+Also the scaled ABE criterion is usually calculated with the FDA constant
+r_const=log(1.25)/0.25 you can override this behavior to use the EMA setting
+r_const=0.76 to avoid the discontinuity at CV=30\% and be more stringent.
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the empirical power.
-Defaults to 100 000 = 1e+05.
+Defaults to 100 000 = 1e+5.
 }
   \item{details}{
 If set to \code{TRUE} the computational time is shown as well as the components
 for the BE decision.\cr
-p(BE-wABEL) is the probability that the CI is within widened limits.\cr
-p(BE-PE) is the probability that the point estimate is within theta1 ... theta2.\cr
 p(BE-ABE) is the simulated probability for the conventional ABE test.
+p(BE-SABEc) is the probability that the 95\% CI of the ABE criterion is <0.\cr
+p(BE-PE) is the probability that the point estimate is within theta1 ... theta2.\cr
 }
   \item{setseed}{
 Simulations are dependent on the starting point of the (pseudo) random number 
@@ -72,19 +75,10 @@ is issued if \code{setseed=TRUE}, the default.
 }
 }
 \details{
-The methods rely on the analysis of log-transformed data, i.e. assume a 
-log-normal distribution on the original scale.\cr\cr
-The widened BE acceptance limits will be calculated by the formula\cr
-\code{[lBEL,uBEL] =exp(-+ r_const*sWR)}\cr
-with r_const the regulatory constant and sWR the standard deviation of the within
-subjects variability of the Reference. r_const=0.76 is used in case of 
-\code{regulator="EMA"} and in case of \code{regulator="FDA"} 
-r_const=0.89257...=log(1.25)/0.25. If the CVwr of the Reference is < CVswitch=0.3 
-the conventional ABE limits apply (mixed procedure). In case of 
-\code{regulator="EMA"} a cap is placed on the widened limits if CVwr>0.5, i.e.
-the widened limits are held at value calculated at CVwr=0.5.\cr\cr
+The linearized scaled ABE criterion is calculated according to the SAS code
+given in the FDA progesterone guidance.\cr\cr
 The simulations are done via the distributional properties of the statistical
-quantities necessary for deciding BE based on widened ABEL.\cr
+quantities necessary for deciding BE based on scaled ABE criterion.\cr
 The sample mean difference T-R is assumed normally distributed with 
 mean=log(theta0) and sd=sqrt(bkni*sum(1/ni)*sqrt(s2D + (s2WT + s2WR)/2). 
 s2WT and s2WR are obtained from the corresponding CV's via s2..=log(CV^2+1).
@@ -102,37 +96,37 @@ population (true) value of the within-subject variance of the Reference.
 Returns the value of the empirical power.
 }
 \references{
+FDA "Draft Guidance on Progesterone"\cr
+Recommended Apr 2010; Revised Feb 2011\cr
+http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM209294.pdf
+
 Laszlo Tothfalusi and Laszlo Endrenyi\cr
 "Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
 J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
+
+Tothfalusi L., Endrenyi L. and A. Garcia Arieta\cr
+"Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average Bioequivalence"\cr
+Clin. Pharmacokin. 48/11, 725-743 (2009)
 }
 \author{
 D. Labes
 }
-\note{
-In case of \code{regulator="FDA"} the (empirical) power is only approximate since
-the BE decision method is not exactly what is expected by the FDA. But the two
-Laszlos state that the scABEL method should be 'operational' equivalent to the
-FDA method.\cr
-To get the power for the FDA favored method via linearized scaled ABE criterion
-use function \code{power.RSABE()}.
-}
 \seealso{
-\code{\link{sampleN.scABEL}}, \code{\link{power.RSABE}}
+\code{\link{sampleN.RSABE}}, \code{\link{power.scABEL}}
 }
 \examples{
 # using all the defaults:
-# design="2x3x3", EMA regulatory settings
-# PE constraint 0.8-1.25, cap on widening if CV>0.5
-# true ratio =0.95, 1E+6 simulations
-power.scABEL(CV=0.4, n=29)
-# Unbalanced design. n(i)=10/10/9 assumed.
-# [1] 0.81104
-# with details=TRUE to view the computational time
-power.scABEL(CV=0.5, n=54, theta0=1.15, details=TRUE)
+# design="2x3x3" -> partial replicate
+# ABE limits, PE constraint 0.8-1.25
+# true ratio =0.95, 1E+5 simulations
+power.RSABE(CV=0.4, n=24)
 # should give
-# 1e+05 sims. Time elapsed (sec):
-#    user  system elapsed 
-#    0.09    0.03    0.12 
-# p(BE-ABE)= 0.27539 ; p(BE-wABEL)= 0.81649 ; p(BE-PE)= 0.85385 
-# [1] 0.80604}
+# [1] 0.0.80864
+#
+# to explore the simulation error due to the state of the
+# random number generator
+power.RSABE(CV=0.4, n=24, setseed=FALSE)
+# will give something like
+# [1] 0.8081
+
+}

@@ -23,10 +23,9 @@
 # 2x2x4  dfRR = n-2
 
 
-
 power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
                          design=c("2x3x3", "2x2x4"), regulator=c("EMA","FDA"),
-                         nsims=1E6, details=FALSE)
+                         nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
@@ -82,12 +81,16 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   
   # for later enhancement taking into account the 
   # subject-by-formulation interaction
-  sD2  <- 0  
-  sWT2 <- log(1.0 + CV[1]^2)
-  if (length(CV)==2) sWR2 <- log(1.0 + CV[2]^2) else sWR2 <-sWT2
-  
+  sD2  <- 0 
+  CVwT <- CV[1]
+  if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
+  s2WT <- log(1.0 + CVwT^2)
+  s2WR <- log(1.0 + CVwR^2)
+  # sd^2 (variance) of the differences T-R from their components
+  sd2  <- (sD2 + (s2WT + s2WR)/2) # is this correct for partial replicate?
+
   # sd^2 of the differences T-R from their components
-  sd2  <- (sD2 + (sWT2 + sWR2)/2) # is this correct for partial replicate?
+  sd2  <- (sD2 + (s2WT + s2WR)/2) # is this correct for partial replicate?
   
   if (length(n)==1){
     # for unbalanced designs we divide the ns by ourself
@@ -114,7 +117,8 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   df   <- eval(dfe)
   dfRR <- eval(dfRRe)
   
-  p <- .power.scABEL(mlog, sdm, fact, sd2, df, sWR2, dfRR, nsims, 
+  if(setseed) set.seed(123456)
+  p <- .power.scABEL(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
                      CVswitch, r_const, CVcap, alpha=alpha)
     
@@ -128,7 +132,7 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   as.numeric(p["BE"])
 }
 
-.power.scABEL <- function(mlog, sdm, fact, sd2, df, sWR2, dfRR, nsims, 
+.power.scABEL <- function(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
                            CVswitch=0.3, r_const=0.760, CVcap=0.5,
                            ln_lBEL=log(0.8), ln_uBEL=log(1.25), alpha=0.05)
 {
@@ -148,12 +152,12 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     means  <- rnorm(nsi, mean=mlog, sd=sdm)
     # simulate sample sd2 via chi-square distri
     sd2s   <- sd2*rchisq(nsi, df)/df
-    # simulate sample value sWR2 via chi-square distri
-    sWR2s  <- sWR2*rchisq(nsi, dfRR)/dfRR
-    CVwr   <- sqrt(exp(sWR2s)-1)
+    # simulate sample value s2WR via chi-square distri
+    s2WRs  <- s2WR*rchisq(nsi, dfRR)/dfRR
+    CVwr   <- sqrt(exp(s2WRs)-1)
     # EMA limits in log-domain
-    lABEL   <- -sqrt(sWR2s)*r_const
-    uABEL   <- +sqrt(sWR2s)*r_const
+    lABEL   <- -sqrt(s2WRs)*r_const
+    uABEL   <- +sqrt(s2WRs)*r_const
     lABEL[CVwr<=CVswitch] <- ln_lBEL
     uABEL[CVwr<=CVswitch] <- ln_uBEL
     # cap

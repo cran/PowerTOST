@@ -95,7 +95,7 @@
   delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
 	delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
 	
-	pow <- pt(-delta2-tval,df) - pt(tval-delta1,df)
+	pow <- pt(-tval-delta2,df) - pt(tval-delta1,df)
 	pow[pow<0] <- 0 # this is to avoid neg. power due to approx. (vector form)
 	
 	return(pow)
