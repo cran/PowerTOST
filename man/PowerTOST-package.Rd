@@ -25,15 +25,15 @@ performed via 'expected' power in case of uncertain (estimated) variability.\cr\
 Contains functions to calculate power and sample size for the BE decision 
 via scaled (widened) BE acceptance limits based on simulations.\cr
 Contains further functions to calculate power and sample size for the 
-BE decision via reference scaled ABE criterion according to the FDA 
+BE decision via linearized reference scaled ABE criterion according to the FDA 
 favored procedure based on simulations.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 1.1-02\cr
-Date: \tab 2013-02-28\cr
+Version: \tab 1.1-03\cr
+Date: \tab 2013-05-03\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes
@@ -61,7 +61,7 @@ D. Labes \cr
 with inspirations from Kem Phillips function \code{power.equivalence.md()} 
 in package MBESS.
 
-Maintainer: D. Labes <DetlewLabes at gmx.de>
+Maintainer: Detlew Labes <DetlewLabes at gmx.de>
 }
 \references{
 Phillips, K. F. (1990)\cr
@@ -92,11 +92,11 @@ Hauschke D., Steinijans V. and Pigeot I.\cr
 John Wiley & Sons, Chichester (2007)\cr
 Chapter 5 and 10.3
 
-FDA "Draft Guidance on Progesterone"
-Recommended Apr 2010; Revised Feb 2011
+FDA "Draft Guidance on Progesterone"\cr
+Recommended Apr 2010; Revised Feb 2011\cr
 http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM209294.pdf
 
-Laszlo Tothfalusi and Laszlo Endrenyi
+Laszlo Tothfalusi and Laszlo Endrenyi\cr
 "Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
 J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
 

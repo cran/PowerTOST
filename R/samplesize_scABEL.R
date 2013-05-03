@@ -19,6 +19,16 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   }
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
   
+  # for later enhancement taking into account the 
+  # subject-by-formulation interaction
+  # can we incorporate this? EMA method doesn't have such a term.
+  s2D  <- 0  
+  CVwT <- CV[1]
+  # should we allow different variabilities in the EMA method?
+  if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
+  s2wT <- log(1.0 + CVwT^2)
+  s2wR <- log(1.0 + CVwR^2)
+  
   regulator <- match.arg(regulator)
   if (regulator=="FDA"){
     CVcap    <- Inf
@@ -38,38 +48,22 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # expressions for the df's
   if (design=="2x3x3") {
     bk <- 1.5; seqs <- 3
-    # in case of the FDA we are using the 'robust' df's
-    # due to the fact that the described analysis in the
-    # progesterone guidance is based in the intrasubject contrasts
-    # T-R and R-R with df=n-seqs
-    if (regulator=="FDA"){
-      dfe   <- parse(text="n-3", srcfile=NULL)
-      dfRRe <- parse(text="n-3", srcfile=NULL)
-    } else {
-      dfe   <- parse(text="2*n-3", srcfile=NULL)
-      dfRRe <- parse(text="n-2", srcfile=NULL)
-    }
+    dfe   <- parse(text="2*n-3", srcfile=NULL)
+    dfRRe <- parse(text="n-2", srcfile=NULL)
+    #sd2  <- s2D + (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02
+    # simulations with s2D=0 show:
+    Emse  <- (s2wT + 2.0*s2wR)/3
+    cvec  <- c(1, 2) # for sim of mses from s2wT and s2wR
   }
   if (design=="2x2x4") {
     bk <- 1.0; seqs <- 2
-    if (regulator=="FDA"){
-      dfe   <- parse(text="n-2", srcfile=NULL)
-      dfRRe <- parse(text="n-2", srcfile=NULL)
-    } else {
-      # EMA settings
-      dfe   <- parse(text="3*n-4", srcfile=NULL)
-      dfRRe <- parse(text="n-3", srcfile=NULL)
-    }
+    # only EMA settings
+    dfe   <- parse(text="3*n-4", srcfile=NULL)
+    dfRRe <- parse(text="n-2", srcfile=NULL)
+    # sd^2 (variance) of the differences T-R from their components
+    Emse  <- (s2wT + s2wR)/2
+    cvec  <- c(1, 1)
   }
-  # for later enhancement taking into account the 
-  # subject-by-formulation interaction
-  sD2  <- 0  
-  CVwT <- CV[1]
-  if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
-  s2WT <- log(1.0 + CVwT^2)
-  s2WR <- log(1.0 + CVwR^2)
-  # sd^2 (variance) of the differences T-R from their components
-  sd2  <- (sD2 + (s2WT + s2WR)/2) # is this correct for partial replicate?
   mlog <- log(theta0)
   
   if (print){
@@ -98,7 +92,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # -----------------------------------------------------------------
   # nstart? from sampleN0 with widened limits
   # does'nt fit really good if theta0>=1.2! ways out?
-  ltheta1 <- -sqrt(s2WR)*r_const
+  ltheta1 <- -sqrt(s2wR)*r_const
   ltheta2 <- -ltheta1
   if (CVwR <= CVswitch){
     ltheta1 <- log(theta1)
@@ -110,33 +104,20 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   }
   if (missing(nstart)){
     n <- .sampleN0(alpha=alpha, targetpower, ltheta1, ltheta2, diffm=mlog, 
-                   se=sqrt(sd2), steps=seqs, bk=bk)
+                   se=sqrt(Emse), steps=seqs, bk=bk)
   } else n <- seqs*round(nstart/seqs)           
-# empirical corrections not released because they are not unique
-# for all settings
-# next is an empirical observation for the EMA settings
-# both together give n=2*n in case of CVwR>0.5
-# TODO: check this if CVwR != CVwT
-#  if (targetpower<0.9){
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.45) n <- 1.5*n
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.5)  n <- 1.3333*n
-#  } else {
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.45) n <- 1.4*n
-#    if ((theta0>=1.2 | theta0<=0.833) & CVwR>=0.5)  n <- 1.8*n
-#  } 
-#  n <- seqs*round(n/seqs, 0)
   # iterate until pwr>=targetpower
   # we are simulating for balanced designs
-  fact <- bk/n
+  C2 <- bk/n
   # sd of the sample mean T-R (point estimator)
-  sdm  <- sqrt(sd2*fact)
+  sdm  <- sqrt(Emse*C2)
   df   <- eval(dfe)
   dfRR <- eval(dfRRe)
   
   if(setseed) set.seed(123456)
-  p <- .power.scABEL(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
-                     ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                     CVswitch, r_const, CVcap, alpha=alpha)
+  p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT,
+                     nsims, CVswitch, r_const, CVcap, 
+                     ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
   pwr <- as.numeric(p["BE"]);
   
   if (details) {
@@ -159,16 +140,16 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     iter <- iter + 1
 # rising the stepsize does not function stepsize too big in some cases    
 #    if (abs(pwr-targetpower)>0.03) n  <- n-seqs
-    fact <- bk/n
+    C2 <- bk/n
     # sd of the sample mean T-R (point estimator)
-    sdm  <- sqrt(sd2*fact)
+    sdm  <- sqrt(Emse*C2)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
     
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
-                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                       CVswitch, r_const, CVcap, alpha=alpha)
+    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT,
+                       nsims, CVswitch, r_const, CVcap, 
+                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
     if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
@@ -181,15 +162,15 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
 #    does not function stepsize too big in some cases    
 #    if (abs(pwr-targetpower)>0.03) n  <- n+seqs
     iter <- iter+1
-    fact <- bk/n
-    sdm  <- sqrt(sd2*fact)
+    C2 <- bk/n
+    sdm  <- sqrt(Emse*C2)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
     
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
-                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                       CVswitch, r_const, CVcap, alpha=alpha)
+    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, 
+                       nsims, CVswitch, r_const, CVcap, 
+                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
     if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")

@@ -1,3 +1,16 @@
+Version 1.1-03
+Released 2012-05-03
+     - Flaw in implementing the sims of 2x3x3 design with different intra-subject
+       variabilities in functions power.RSABE() and sampleN.RSABE() as well as
+       in functions power.scABEL() and sampleN.scABEL() disposed.
+     - Methods and implementation details of the simulations for scaled ABE 
+       documented in a PDF file in the /doc subdirectory of the package.
+     - Simulation method for the EMA scaled ABEL changed to conform better
+       with power values from simulations via subject data.  
+     - Warning section in the help file of power.scABEL() introduced to
+       appoint the fact that simulations via subject data and via the
+       methods implemented in power.scABEL() gave empirical power values
+       that are only approximately in agreement.   
 Version 1.1-02
 Released 2012-02-28
      - Functions power.RSABE() and sampleN.RSABE() introduced to calculate
