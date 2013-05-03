@@ -5,8 +5,8 @@
 #---------------------------------------------------------------------------
 
 # degrees of freedom for the TR/RR  analysis: 
-# Using the intrasubject contrasts T-R and R-R and analyze them by sequence 
-# groups the df's = n-seq.
+# Using the intrasubject contrasts T-R and R-R and analyze them  
+# by sequence groups the df's = n-seq.
 # 2x3x3  dfRR = n-3
 # 2x2x4  dfRR = n-2
 
@@ -23,6 +23,14 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   
   ptm <- proc.time()
   
+  # for later enhancement taking into account the 
+  # subject-by-formulation interaction
+  s2D  <- 0 
+  CVwT <- CV[1]
+  if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
+  s2wT <- log(1.0 + CVwT^2)
+  s2wR <- log(1.0 + CVwR^2)
+
   CVswitch  <- 0.3
   regulator <- match.arg(regulator)
   if (regulator=="FDA") r_const <- log(1.25)/0.25 # or better log(theta2)/0.25?
@@ -30,33 +38,26 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   
   design <- match.arg(design)
   if (design=="2x3x3") {
-    seqs <- 3
-    bkni <- 1/6
-    bk   <- 1.5
+    seqs  <- 3
     dfe   <- parse(text="n-3", srcfile=NULL)
     dfRRe <- parse(text="n-3", srcfile=NULL)
+    #sd2  <- s2D + (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02
+    # according to McNally et al.
+    # verified via simulations:
+    Emse  <- s2D + s2wT + s2wR/2
   }
   if (design=="2x2x4") {
-    seqs <- 2
-    bkni <- 1/4
-    bk   <- 1
+    seqs  <- 2
     dfe   <- parse(text="n-2", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
+    # sd^2 of the differences T-R from their components
+    Emse  <- (s2D + (s2wT + s2wR)/2) 
   }
   
-  # for later enhancement taking into account the 
-  # subject-by-formulation interaction
-  sD2  <- 0 
-  CVwT <- CV[1]
-  if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
-  s2WT <- log(1.0 + CVwT^2)
-  s2WR <- log(1.0 + CVwR^2)
-  # sd^2 of the differences T-R from their components
-  sd2  <- (sD2 + (s2WT + s2WR)/2) # is this correct for partial replicate?
-  
   if (length(n)==1){
+    # then we assume n=ntotal
     # for unbalanced designs we divide the ns by ourself
-    # to have only little imbalance
+    # to have only small imbalance
     ni <- round(n/seqs,0)
     nv <- rep.int(ni, times=seqs-1)
     nv <- c(nv, n-sum(nv))
@@ -64,40 +65,42 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
       message("Unbalanced design. n(i)=", paste(nv, collapse="/"),
               " assumed.")
     } 
-    fact <- sum(1/nv)*bkni
-    n <- sum(nv)
+    C3 <- sum(1/nv)/seqs^2
+    n  <- sum(nv)
   } else {
+    # then we assume n = vector of n's in sequences
     # check length
     if (length(n)!=seqs) stop("n must be a vector of length=",seqs,"!")
     
-    fact <- sum(1/n)*bkni
-    n <- sum(n)
+    C3 <- sum(1/n)/seqs^2
+    n  <- sum(n)
   }
   # sd of the mean T-R (point estimator)
-  sdm  <- sqrt(sd2*fact)
+  sdm  <- sqrt(Emse*C3)
   mlog <- log(theta0)
   df   <- eval(dfe)
   dfRR <- eval(dfRRe)
   
   if(setseed) set.seed(123456)
-  p <- .power.RSABE(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
-                    ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                    CVswitch, r_const, alpha=alpha)
+  p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
+                    CVswitch, r_const, 
+                    ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
   if (details) {
     cat(nsims,"sims. Time elapsed (sec):\n")
     print(proc.time()-ptm)
     cat("p(BE-ABE)=", p["BEabe"],"; p(BE-SABEc)=", p["BEul"],
-        "; p(BE-PE)=", p["BEpe"],"\n\n")
+        "; p(BE-PE)=", p["BEpe"],"\n")
+    cat("\n")
   }
   # return the 'power'
   as.numeric(p["BE"])
 }
 
-.power.RSABE <- function(mlog, sdm, fact, sd2, df, s2WR, dfRR, nsims, 
+# working horse of RSABE
+.power.RSABE <- function(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
                          CVswitch=0.3, r_const=0.892574, 
-                         ln_lBEL=log(0.8), ln_uBEL=log(1.25),
-                         alpha=0.05)
+                         ln_lBEL=log(0.8), ln_uBEL=log(1.25), alpha=0.05)
 {
   tval     <- qt(1-alpha,df)
   chisqval <- qchisq(1-alpha, dfRR)
@@ -113,16 +116,16 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     chunks <- round(nsims/1E7,0)
     nsi    <- 1E7
   } 
-  for (iter in 1:chunks){
+  for (iter in 1:chunks) {
     # simulate sample mean via its normal distribution
     means  <- rnorm(nsi, mean=mlog, sd=sdm)
-    # simulate sample sd2 via chi-square distri
-    sd2s   <- sd2*rchisq(nsi, df)/df
-    # simulate sample value s2WR via chi-square distri
-    s2WRs  <- s2WR*rchisq(nsi, dfRR)/dfRR
+    # simulate sample sd2s via chi-square distri
+    sd2s   <- Emse*C3*rchisq(nsi, df)/df
+    # simulate sample value s2wRs via chi-square distri
+    s2wRs  <- s2wR*rchisq(nsi, dfRR)/dfRR
     
-    SEs <- sqrt(sd2s*fact)
-    # conventional 90% CIs for T-R
+    SEs <- sqrt(sd2s)
+    # conventional (1-2*alpha) CI's for T-R
     hw  <- tval*SEs
     lCL <- means - hw 
     uCL <- means + hw
@@ -130,7 +133,7 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # upper 95% CI linearized SABE criterion
     # with -SEs^2 the 'unknown' x from the progesterone guidance
     Em <- means^2 - SEs^2  
-    Es <- r2const*s2WRs
+    Es <- r2const*s2wRs
     Cm <- (abs(means) + hw)^2
     Cs <- Es*dfRR/chisqval    
     SABEc95 <- Em - Es + sqrt((Cm-Em)^2 + (Cs-Es)^2)
@@ -138,16 +141,16 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     rm(SEs, hw, Em, Es, Cm, Cs)
     
     # conventional ABE
-    BEABE <- ( ln_lBEL<=lCL & uCL<=ln_uBEL )
-    # 95% upper CI <=0 if CVwR>0.3
+    BEABE <- ((ln_lBEL<=lCL) & (uCL<=ln_uBEL))
+    # 95% upper CI of criterion <=0 if CVwR>CVswitch
     # else use conventional ABE (mixed procedure)
-    BE    <- ifelse(s2WRs>s2switch, SABEc95<=0, BEABE)
+    BE    <- ifelse(s2wRs>s2switch, SABEc95<=0, BEABE)
     # point est. constraint true?
     BEpe  <- ( means>=ln_lBEL & means<=ln_uBEL )
     #debug print
 #    print(data.frame(pe=exp(means),lCL=exp(lCL), uCL=exp(uCL), 
 #                     crit=SABEc95, CV=CVwr, CVgt0.3=CVwr>CVswitch, 
-#                     BEABE=BE, BE=BE))
+#                     BEABE=BEABE, BE=BE, BE_PE=BEpe))
     
     counts["BEabe"] <- counts["BEabe"] + sum(BEABE)
     counts["BEpe"]  <- counts["BEpe"]  + sum(BEpe)

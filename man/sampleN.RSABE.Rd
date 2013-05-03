@@ -77,8 +77,8 @@ is issued if \code{setseed=TRUE}, the default.
 The linearized scaled ABE criterion is calculated according to the SAS code
 given in the FDA progesterone guidance.\cr\cr
 The simulations are done via the distributional properties of the statistical
-quantities necessary for deciding BE based on widened ABEL. For more details see
-the man page of \code{power.RSABE()}.
+quantities necessary for deciding BE based on scaled ABE. For more details see
+a document in the doc subdirectory of the package.
 }
 \value{
 Returns the numerical value of the sample size.

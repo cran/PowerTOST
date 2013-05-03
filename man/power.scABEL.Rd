@@ -85,21 +85,11 @@ the conventional ABE limits apply (mixed procedure). In case of
 the widened limits are held at value calculated at CVwr=0.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL.\cr
-The sample mean difference T-R is assumed normally distributed with 
-mean=log(theta0) and sd=sqrt(bkni*sum(1/ni)*sqrt(s2D + (s2WT + s2WR)/2). 
-s2WT and s2WR are obtained from the corresponding CV's via s2..=log(CV^2+1).
-The subject-by-formulation interaction s2D is assumed in the current 
-implementation =0. The ni are the number of subjects in the sequence groups
-and bkni is the design constant in terms of ni.\cr
-The sample variance (sd2s) of the difference T-R is obtained from the chi-squared 
-distribution of sd2s*df/s2d with df degrees of freedom. s2d is the assumed
-population (true) value.\cr
-The sample variance (s2WRs) of the difference R-R is obtained from the chi-squared 
-distribution of s2WRs*dfRR/s2WR with dfRR degrees of freedom. s2WR is the assumed
-population (true) value of the within-subject variance of the Reference.
+For more details see a document "implementation_scaledABE_sims" in the doc 
+subdirectory of the package.
 }
 \value{
-Returns the value of the empirical power.
+Returns the value of the 'empirical' power.
 }
 \references{
 Laszlo Tothfalusi and Laszlo Endrenyi\cr
@@ -117,6 +107,17 @@ FDA method.\cr
 To get the power for the FDA favored method via linearized scaled ABE criterion
 use function \code{power.RSABE()}.
 }
+\section{Warning }{
+Preliminary cross-validation of the simulations as implemented here and via 
+subject data simulation and subsequent evaluation via the EMA method have shown 
+that the algorithm used here in V1.1-02 may be to naively implemented.\cr
+Both simulation algorithm gave sometimes quite different results in the magnitude.
+For more details see a document "implementation_scaledABE_sims" 
+in the doc subdirectory of the package.\cr\cr
+The new implemented simulation algorithm gave better agreement to the power values
+obtained via subject data sims if CVwT=CVwR. The calculations with different 
+variabilities gave still unsatisfactory results.
+}
 \seealso{
 \code{\link{sampleN.scABEL}}, \code{\link{power.RSABE}}
 }
@@ -127,12 +128,13 @@ use function \code{power.RSABE()}.
 # true ratio =0.95, 1E+6 simulations
 power.scABEL(CV=0.4, n=29)
 # Unbalanced design. n(i)=10/10/9 assumed.
-# [1] 0.81104
+# [1] 0.82854
 # with details=TRUE to view the computational time
 power.scABEL(CV=0.5, n=54, theta0=1.15, details=TRUE)
-# should give
+# should give (times may differ depending on your machine).
 # 1e+05 sims. Time elapsed (sec):
 #    user  system elapsed 
-#    0.09    0.03    0.12 
-# p(BE-ABE)= 0.27539 ; p(BE-wABEL)= 0.81649 ; p(BE-PE)= 0.85385 
-# [1] 0.80604}
+#    0.09    0.00    0.10 
+# p(BE-ABE)= 0.27542 ; p(BE-wABEL)= 0.82078 ; p(BE-PE)= 0.85385 
+# 0.81727
+}

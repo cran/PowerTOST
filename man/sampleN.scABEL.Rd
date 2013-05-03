@@ -75,7 +75,7 @@ is issued if \code{setseed=TRUE}, the default.
 \details{
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL. For more details see
-the man page of \code{power.scABEL()}.
+a document in the doc subdirectory of the package.
 }
 \value{
 Returns the numerical value of the sample size.
@@ -94,7 +94,7 @@ break down of the total subject number in case of unbalanced sequence groups
 is not unique. Moreover the formulas used are only for balanced designs.\cr
 In case of \code{regulator="FDA"} the sample size is only approximate since
 the BE decision method is not exactly what is expected by the FDA. But the two
-Laszlos state that the scABEL method should be 'operational' equivalent to the
+Laszlo's state that the scABEL method should be 'operational' equivalent to the
 FDA method. Thus the sample size should be comparable.\cr
 Consider in case of \code{regulator="FDA"} to use the function 
 \code{sampleN.RSABE()}. 
@@ -109,24 +109,26 @@ If you really need sample sizes in that range be prepared to restart the
 sample size estimation via the argument nstart.\cr
 Since the dependence of power from n is very flat in the mentioned region you
 may also consider to rise the number of simulations not to pad in the
-simulation error trap.
+simulation error trap.\cr\cr
+See also the Warning section of the function \code{power.scABEL()} concerning
+the power value agreement to those obtained from simulations via subject data.
 }
 
 \seealso{
-\code{\link{power.scABEL}}, \code{\link{sampleN.RSABE}}
+\code{\link{power.scABEL}}, \code{\link{power.RSABE}}, \code{\link{sampleN.RSABE}}
 }
 \examples{
-# using all the defaults
+# using all the defaults:
 # partial replicate design, targetpower=80\%,
 # true assumed ratio = 0.95, 1E+5 simulated studies
 # ABE limits, PE constraint 0.8 - 1.25
 # EMA regulatory settings
 sampleN.scABEL(CV=0.3)
-# results in a sample size n=27, power=0.81746
+# results in a sample size n=27, power=0.82566
 
 # for the full replicate design, target power = 90\%
 # true assumed ratio = 0.9, FDA regulatory settings
 sampleN.scABEL(CV=0.4, targetpower=0.9, theta0=0.9, design="2x2x4", regulator="FDA")
-# should result in a sample size n=32, power=0.91251
+# should result in a sample size n=30, power=0.91295
 
 }

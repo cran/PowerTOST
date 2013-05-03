@@ -79,18 +79,8 @@ The linearized scaled ABE criterion is calculated according to the SAS code
 given in the FDA progesterone guidance.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on scaled ABE criterion.\cr
-The sample mean difference T-R is assumed normally distributed with 
-mean=log(theta0) and sd=sqrt(bkni*sum(1/ni)*sqrt(s2D + (s2WT + s2WR)/2). 
-s2WT and s2WR are obtained from the corresponding CV's via s2..=log(CV^2+1).
-The subject-by-formulation interaction s2D is assumed in the current 
-implementation =0. The ni are the number of subjects in the sequence groups
-and bkni is the design constant in terms of ni.\cr
-The sample variance (sd2s) of the difference T-R is obtained from the chi-squared 
-distribution of sd2s*df/s2d with df degrees of freedom. s2d is the assumed
-population (true) value.\cr
-The sample variance (s2WRs) of the difference R-R is obtained from the chi-squared 
-distribution of s2WRs*dfRR/s2WR with dfRR degrees of freedom. s2WR is the assumed
-population (true) value of the within-subject variance of the Reference.
+Details can be found in a document located in the doc subdirectory of the 
+package.
 }
 \value{
 Returns the value of the empirical power.
@@ -121,12 +111,11 @@ D. Labes
 # true ratio =0.95, 1E+5 simulations
 power.RSABE(CV=0.4, n=24)
 # should give
-# [1] 0.0.80864
+# [1] 0.80864
 #
 # to explore the simulation error due to the state of the
 # random number generator
 power.RSABE(CV=0.4, n=24, setseed=FALSE)
 # will give something like
 # [1] 0.8081
-
 }
