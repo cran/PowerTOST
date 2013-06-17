@@ -42,18 +42,18 @@ May be given as vector. In that case it is assumed that n contains the number
 of subjects in the sequence groups.\cr\cr
 If n is given as single number (total sample size) and this number is not 
 divisible by the number of sequences of the design an unbalanced design is assumed.
-A corresponding message is thrown showing the numbers of subjects
+A corresponding message is thrown showing the numbers of subjects in sequence groups.
 }
   \item{design}{
 Design of the study to be planned.\cr
 2x3x3 is the partial replicate design (TRR/RTR/RRT).\cr
 2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
-Defaults to \code{design="2x3x3"}
+Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
 Regulatory body settings for the scaled ABE criterion.\cr
 Defaults to \code{design="FDA"}.\cr
-Also the scaled ABE criterion is usually calculated with the FDA constant
+Also the linearized scaled ABE criterion is usually calculated with the FDA constant
 r_const=log(1.25)/0.25 you can override this behavior to use the EMA setting
 r_const=0.76 to avoid the discontinuity at CV=30\% and be more stringent.
 }
@@ -66,7 +66,7 @@ If set to \code{TRUE} the computational time is shown as well as the components
 for the BE decision.\cr
 p(BE-ABE) is the simulated probability for the conventional ABE test.
 p(BE-SABEc) is the probability that the 95\% CI of the ABE criterion is <0.\cr
-p(BE-PE) is the probability that the point estimate is within theta1 ... theta2.\cr
+p(BE-PE) is the probability that the point estimate is within theta1 ... theta2.
 }
   \item{setseed}{
 Simulations are dependent on the starting point of the (pseudo) random number 
@@ -79,8 +79,8 @@ The linearized scaled ABE criterion is calculated according to the SAS code
 given in the FDA progesterone guidance.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on scaled ABE criterion.\cr
-Details can be found in a document located in the doc subdirectory of the 
-package.
+Details can be found in a document "Implementation_scaledABE_simsVx.yy.pdf" located 
+in the doc subdirectory of the package.
 }
 \value{
 Returns the value of the empirical power.

@@ -84,8 +84,7 @@ The sample size is bound to 4 as minimum.
 }
 \value{
 A data.frame with the input and results will be returned.\cr
-The "Sample size" column contains the total sample size in case of the 
-crossover designs and the paired means design.\cr
+The "Sample size" column contains the total sample size.
 }
 \note{
 Of course it is highly recommended to use the default \code{method="exact"} :-)). \cr

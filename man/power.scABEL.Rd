@@ -42,13 +42,13 @@ May be given as vector. In that case it is assumed that n contains the number
 of subjects in the sequence groups.\cr\cr
 If n is given as single number (total sample size) and this number is not 
 divisible by the number of sequences of the design an unbalanced design is assumed.
-A corresponding message is thrown showing the numbers of subjects
+A corresponding message is thrown showing the numbers of subjects in sequence groups.
 }
   \item{design}{
 Design of the study to be planned.\cr
 2x3x3 is the partial replicate design (TRR/RTR/RRT).\cr
 2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
-Defaults to \code{design="2x3x3"}
+Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
 Regulatory body settings for the widening of the BE acceptance limits.\cr
@@ -67,7 +67,7 @@ p(BE-ABE) is the simulated probability for the conventional ABE test.
 }
   \item{setseed}{
 Simulations are dependent on the starting point of the (pseudo) random number 
-generator. To avoid differences in power for different runs a set.seed() 
+generator. To avoid differences in power for different runs a \code{set.seed()} 
 is issued if \code{setseed=TRUE}, the default. 
 }
 }
@@ -79,13 +79,13 @@ The widened BE acceptance limits will be calculated by the formula\cr
 with r_const the regulatory constant and sWR the standard deviation of the within
 subjects variability of the Reference. r_const=0.76 is used in case of 
 \code{regulator="EMA"} and in case of \code{regulator="FDA"} 
-r_const=0.89257...=log(1.25)/0.25. If the CVwr of the Reference is < CVswitch=0.3 
+r_const=0.89257...=log(1.25)/0.25. If the CVwR of the Reference is < CVswitch=0.3 
 the conventional ABE limits apply (mixed procedure). In case of 
 \code{regulator="EMA"} a cap is placed on the widened limits if CVwr>0.5, i.e.
-the widened limits are held at value calculated at CVwr=0.5.\cr\cr
+the widened limits are held at value calculated at CVwR=0.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL.\cr
-For more details see a document "implementation_scaledABE_sims" in the doc 
+For more details see a document "Implementation_scaledABE_simsVx.yy.pdf" in the doc 
 subdirectory of the package.
 }
 \value{
@@ -110,9 +110,9 @@ use function \code{power.RSABE()}.
 \section{Warning }{
 Preliminary cross-validation of the simulations as implemented here and via 
 subject data simulation and subsequent evaluation via the EMA method have shown 
-that the algorithm used here in V1.1-02 may be to naively implemented.\cr
+that the algorithm used in V1.1-02 may be to naively implemented.\cr
 Both simulation algorithm gave sometimes quite different results in the magnitude.
-For more details see a document "implementation_scaledABE_sims" 
+For more details see a document "Implementation_scaledABE_sims" 
 in the doc subdirectory of the package.\cr\cr
 The new implemented simulation algorithm gave better agreement to the power values
 obtained via subject data sims if CVwT=CVwR. The calculations with different 
@@ -127,6 +127,7 @@ variabilities gave still unsatisfactory results.
 # PE constraint 0.8-1.25, cap on widening if CV>0.5
 # true ratio =0.95, 1E+6 simulations
 power.scABEL(CV=0.4, n=29)
+# should give:
 # Unbalanced design. n(i)=10/10/9 assumed.
 # [1] 0.82854
 # with details=TRUE to view the computational time
