@@ -57,11 +57,11 @@ The default value 100 000 = 1e+5 is usually sufficient. Consider to rise
 this value if theta0<=0.85 or >=1.25. But see the warning section.
 }
   \item{nstart}{
-Set this to a start for the sample size if a previous run failed.
+Set this to a start for the sample size search if a previous run failed.\cr
+After reworking the start n in version 1.1-05 seldom needed.
 }
   \item{print}{
-If TRUE (default) the function prints its results.\cr 
-If FALSE only the sample size will be returned. 
+If TRUE (default) the function prints its results.
 }
   \item{details}{
 If set to \code{TRUE}, the default, the steps during sample size search are shown.
@@ -78,7 +78,9 @@ quantities necessary for deciding BE based on widened ABEL. For more details see
 a document in the doc subdirectory of the package.
 }
 \value{
-Returns the numerical value of the sample size.
+Returns now a data.frame with the input and sample size results.\cr
+The "Sample size" column contains the total sample size.\cr
+The "nlast" column contains the last n value. May be useful for restarting.
 }
 \references{
 Laszlo Tothfalusi and Laszlo Endrenyi\cr
@@ -101,15 +103,9 @@ Consider in case of \code{regulator="FDA"} to use the function
 }
 
 \section{Warning }{
-The sample size estimation for theta0 >= 1.2 and <=0.85 may be very time 
-consuming and will eventually also fail since the start values chosen are
-not really reasonable in that ranges. This is especially true if you choose
-a target power >0.8 and your CV is >0.5.\cr
-If you really need sample sizes in that range be prepared to restart the
-sample size estimation via the argument nstart.\cr
-Since the dependence of power from n is very flat in the mentioned region you
-may also consider to rise the number of simulations not to pad in the
-simulation error trap.\cr\cr
+The sample size estimation for very extreme theta0 (<0.83 or >1.21) may be very time consuming and will eventually also fail since the start values chosen are not really reasonable in that ranges. This is especially true in the range around CV = 0.3 and regulatory constant according to FDA.\cr
+If you really need sample sizes in that range be prepared to restart the sample size estimation via the argument nstart.\cr
+Since the dependence of power from n is very flat in the mentioned region you may also consider to adapt the number of simulations not to tap in the simulation error trap.\cr\cr
 See also the Warning section of the function \code{power.scABEL()} concerning
 the power value agreement to those obtained from simulations via subject data.
 }

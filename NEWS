@@ -1,3 +1,21 @@
+Version 1.1-05
+Released 2012-06-17
+     - The functions sampleN.scABEL(), sampleN.RSABE() and sampleN.NTIDFDA()  
+       return now a data.frame with the input and the sample size result.
+       The "Sample size" column contains the total sample size.
+       The "nlast" column contains the last n value handled. May be useful for
+       restarting.
+     - Start values for sample size search in functions sampleN.scABEL(), 
+       sampleN.RSABE()
+       reworked. Failed sample size searches are now more seldom observed. 
+     - Flaw in sample size search removed which does not indicate a failed 
+       search (n=NA) if started with a too high n (Thanks to Helmut Schütz).
+Version 1.1-04
+Released 2012-05-15 to alpha testers only
+     - Functions power.NTIDFDA() and sampleN.NTIDFDA() introduced to calculate
+       power and sample size for the BE decision via the method of the FDA for
+       narrow therapeutic index drugs (NTID's). Power and sample size
+       are based on simulations.
 Version 1.1-03
 Released 2012-05-03
      - Flaw in implementing the sims of 2x3x3 design with different intra-subject

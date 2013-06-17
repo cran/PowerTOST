@@ -5,6 +5,16 @@
 # Author: dlabes
 #---------------------------------------------------------------------------
 
+# helper function: sample size for pe in a range?
+# definition is more or less empirical (i.e. not understood by me)
+.sampleN0.2 <- function(targetpower, ltheta2, diffm, se, bk, steps)
+{
+  n <- qnorm(targetpower)^2*se^2*bk/(abs(diffm)-ltheta2)^2
+  #make an even multiple of step (=2 in case of 2x2 cross-over)
+  n <- steps*trunc(n/steps)
+  n
+}  
+
 sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
                            theta2, CV, design=c("2x3x3", "2x2x4"), 
                            regulator=c("EMA", "FDA"), nsims=1E5,
@@ -14,10 +24,12 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if (missing(theta0)) theta0 <- 0.95
   if (missing(theta2)) theta2=1/theta1
   if ( (theta0<=theta1) | (theta0>=theta2) ) {
-    stop("Null ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
-         call.=FALSE)
+    stop("Null ratio ",theta0," not between margins ",theta1," / ",
+         theta2,"!", call.=FALSE)
   }
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  
+  #if (!print) details <- FALSE # do not print anything
   
   # for later enhancement taking into account the 
   # subject-by-formulation interaction
@@ -81,7 +93,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     if (details) { 
       cat("- CVswitch = ", CVswitch)
       if (is.finite(CVcap)){
-        cat(", cap on ABEL if CV > ", CVcap,"\n",sep="")
+        cat(", cap on ABEL if CVw(R) > ", CVcap,"\n",sep="")
       } else {
         cat(", no cap on ABEL\n",sep="")
       }  
@@ -91,7 +103,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   
   # -----------------------------------------------------------------
   # nstart? from sampleN0 with widened limits
-  # does'nt fit really good if theta0>=1.2! ways out?
+  # does'nt fit really good if theta0>=1.2! ways out? see sampleN0.2
   ltheta1 <- -sqrt(s2wR)*r_const
   ltheta2 <- -ltheta1
   if (CVwR <= CVswitch){
@@ -103,8 +115,21 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     ltheta2 <- -ltheta1
   }
   if (missing(nstart)){
-    n <- .sampleN0(alpha=alpha, targetpower, ltheta1, ltheta2, diffm=mlog, 
-                   se=sqrt(Emse), steps=seqs, bk=bk)
+    # start from ABE start with widened limits
+    n01 <- .sampleN0(alpha=alpha, targetpower, ltheta1, ltheta2, diffm=mlog, 
+                     se=sqrt(Emse), steps=seqs, bk=bk)
+    # empirical correction in the vicinity of CV=0.3 for ratios 
+    # outside 0.86 ... 1/0.86
+    if(Emse < CV2mse(0.305) & Emse > CV2mse(0.295) & abs(mlog)>log(1/0.865)) {
+      if (regulator=="EMA") n01 <- 0.9*n01 else  n01 <- 0.8*n01
+      n01 <- seqs*trunc(n01/seqs)
+    }  
+    # start from PE constraint sample size
+    n02 <- .sampleN0.2(targetpower, ltheta2=log(theta2), diffm=mlog, 
+                       se=sqrt(Emse), steps=seqs, bk=bk)
+    # debug print
+    # cat(n01,n02,"\n")
+    n <- max(c(n01,n02))
   } else n <- seqs*round(nstart/seqs)           
   # iterate until pwr>=targetpower
   # we are simulating for balanced designs
@@ -131,15 +156,16 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   nmin <- 6
   # iter>100 is emergency brake
   # --- loop until power <= target power, step-down
+  down <- FALSE
+  up   <- FALSE
   while (pwr>targetpower) {
+    down <- TRUE
     if (n<=nmin) { 
       if (details & iter==0) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
       break
     }
     n  <- n-seqs     # step down if start power is to high
     iter <- iter + 1
-# rising the stepsize does not function stepsize too big in some cases    
-#    if (abs(pwr-targetpower)>0.03) n  <- n-seqs
     C2 <- bk/n
     # sd of the sample mean T-R (point estimator)
     sdm  <- sqrt(Emse*C2)
@@ -155,14 +181,13 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
     if (iter>imax) break  
     # loop results in n with power too low
-    # must step one up again. is done in the next loop
+    # must step up again one step. is done in the next loop
   }
   while (pwr<targetpower) {
+    up   <- TRUE; down <- FALSE
     n    <- n+seqs   # step-up
-#    does not function stepsize too big in some cases    
-#    if (abs(pwr-targetpower)>0.03) n  <- n+seqs
     iter <- iter+1
-    C2 <- bk/n
+    C2   <- bk/n
     sdm  <- sqrt(Emse*C2)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
@@ -177,7 +202,12 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     if (iter>imax) break 
   }
   
-  if (pwr<targetpower) {
+  nlast <- n
+  if (up & pwr<targetpower) {
+    n <- NA
+    if (details) cat("Sample size search failed!\n")
+  }
+  if (down & pwr>targetpower) {
     n <- NA
     if (details) cat("Sample size search failed!\n")
   }
@@ -190,8 +220,16 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   }
   if (print) cat("\n")
   
-  if (print) return(invisible(n)) 
-  else return(n)
+  #return results as data.frame
+  res <- data.frame(design=design, alpha=alpha, CVwT=CVwT, CVwR=CVwR,
+                    theta0=theta0, theta1=theta1, theta2=theta2, n=n, power=pwr, 
+                    targetpower=targetpower,nlast=nlast)
+  names(res) <-c("Design","alpha","CVwT","CVwR","theta0","theta1","theta2",
+                 "Sample size", "Achieved power", "Target power","nlast")
+
+  #cat("iter=",iter,"\n")
+  
+  if (print | details) return(invisible(res)) else return(res)
   
 } # end function
 

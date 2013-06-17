@@ -24,16 +24,18 @@ The power and sample size calculations based on non-inferiority test may also
 performed via 'expected' power in case of uncertain (estimated) variability.\cr\cr
 Contains functions to calculate power and sample size for the BE decision 
 via scaled (widened) BE acceptance limits based on simulations.\cr
-Contains further functions to calculate power and sample size for the 
+Contains functions to calculate power and sample size for the 
 BE decision via linearized reference scaled ABE criterion according to the FDA 
-favored procedure based on simulations.
+favored procedure based on simulations.\cr
+Contains further functions to calculate power and sample size according to the FDA 
+procedure for NTID's.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 1.1-03\cr
-Date: \tab 2013-05-03\cr
+Version: \tab 1.1-05\cr
+Date: \tab 2013-06-17\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes
@@ -53,7 +55,10 @@ average bioequivalence are \code{power.scABEL()} and \code{sampleN.scABEL()}
 for the EMA adopted method via widened BE acceptance limits or 
 \code{power.RSABE()} and \code{sampleN.RSABE()} for the FDA favored method via
 linearized scaled ABE criterion, respectively. These functions are based on
-simulations.\cr\cr
+simulations.\cr
+The functions for calculating 'empirical' power and sample size via the
+FDA method for NTID's are \code{power.NTIDFDA()} and \code{sampleN.NTIDFDA()}. 
+These functions are based on simulations.\cr\cr
 The package contains further some utility functions (see Index).
 }
 \author{
@@ -103,6 +108,10 @@ J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
 Tothfalusi L., Endrenyi L. and A. Garcia Arieta\cr
 "Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average Bioequivalence"\cr
 Clin. Pharmacokin. 48/11, 725-743 (2009)
+
+FDA "Draft Guidance on Warfarin Sodium"\cr
+Recommended Dec 2012\cr
+http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM201283.pdf
 
 BEBAC forum: \cr
 categories 'Power/Sample size' and 'R for BE/BA'\cr

@@ -155,14 +155,14 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   for (iter in 1:chunks){
     # simulate sample mean via its normal distribution
     means  <- rnorm(nsi, mean=mlog, sd=sdm)
-    # simulate sample mse via chi-square distri
-    # used in V1.1.00-V1.1.02 - but gives not so perfect agreement
+    # simulate sample mse via its chi-square distri
+    # used in V1.1.00-V1.1.02 - but gives horrible agreement
     # with simulations via subject data
     #mses   <- Emse*rchisq(nsi, df)/df
     # simulate sample value s2wR via chi-square distri
     s2wRs  <- s2wR*rchisq(nsi, dfRR)/dfRR
     # simulate sample value s2wT via chi-square distri
-    # flaw for the 2x3x3 design, but good numeric values also for it
+    # flawed for the 2x3x3 design, but 'good' numeric values also for it
     s2wTs  <- s2wT*rchisq(nsi, dfRR)/(dfRR)
     mses   <- (cvec[1]*s2wTs + cvec[2]*s2wRs)/denom
     

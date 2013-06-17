@@ -2,8 +2,8 @@ Package: PowerTOST
 Type: Package
 Title: Power and Sample size based on two one-sided t-tests (TOST) for
         (bio)equivalence studies
-Version: 1.1-03
-Date: 2013-05-03
+Version: 1.1-05
+Date: 2013-06-17
 Authors@R: c(person("Detlew", "Labes", role = c("aut","cre"), email =
         "DetlewLabes@gmx.de"))
 Author: Detlew Labes
@@ -25,15 +25,18 @@ Description: Contains functions to calculate power and sample size for
         case of uncertain (estimated) variability.  ----- Contains
         functions power.scABEL() and sampleN.scABEL() to calculate
         power and sample size for the BE decision via scaled (widened)
-        BE acceptance limits based on simulations.  Contains further
-        functions power.RSABE() and sampleN.RSABE() to calculate power
-        and sample size for the BE decision via reference scaled ABE
-        criterion according to the FDA procedure based on simulations.
+        BE acceptance limits based on simulations.  Contains functions
+        power.RSABE() and sampleN.RSABE() to calculate power and sample
+        size for the BE decision via reference scaled ABE criterion
+        according to the FDA procedure based on simulations.  Contains
+        further functions power.NTIDFDA() and sampleN.NTIDFDA() to
+        calculate power and sample size for the BE decision via the FDA
+        procedure for NTID's based on simulations.
 Depends: mvtnorm
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2013-05-03 10:59:08 UTC; dlabes
+Packaged: 2013-06-17 09:19:40 UTC; dlabes
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-05-03 14:08:47
+Date/Publication: 2013-06-17 11:54:53

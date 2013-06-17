@@ -6,12 +6,13 @@
 # Sample size for a desired power, large sample approx.
 # bk = design constant, see known.designs()
 .sampleN0 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
-                      se, steps=2, bk=2)
+                      se, steps=2, bk=2, diffmthreshold=0.04)
 {
   z1 <- qnorm(1-alpha)
-  # value 0.04 corresponds roughly to log(0.96)
+  # value diffmthreshold=0.04 corresponds roughly to log(0.96)
   # with lower values there are many steps around between 0.95 and 1
-  if (abs(diffm)>0.04) z2 <- qnorm(targetpower) else {
+  # in sampleN.TOST
+  if (abs(diffm)>diffmthreshold) z2 <- qnorm(targetpower) else {
     z2 <- qnorm(1-(1-targetpower)/2) # for diffm ~0 (log: theta0=1)
     diffm <- 0
   }
@@ -134,15 +135,17 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   # in experimentation I have seen max of six steps
   # reformulation with only one loop does not shorten the code considerable
   # --- loop until power <= target power, step-down
+  down <- FALSE; up <- FALSE
   while (pow>targetpower) {
     if (n<=nmin) { 
       if (details & iter==0) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
       break
     }
+    down <- TRUE
     n    <- n-steps     # step down if start power is to high
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
+    pow  <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
     
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
@@ -152,15 +155,20 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   }
   # --- loop until power >= target power
   while (pow<targetpower) {
+    up   <- TRUE; down <- FALSE
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
+    pow  <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
-
-  if (pow<targetpower) {
+  nlast <- n
+  if (up & pow<targetpower) {
+    n <- NA
+    if (details) cat("Sample size search failed!\n")
+  }
+  if (down & pow>targetpower) {
     n <- NA
     if (details) cat("Sample size search failed!\n")
   }

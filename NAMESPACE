@@ -31,6 +31,8 @@ export(
   , power.RSABE
   , sampleN.RSABE
   , CVp2CV
+  , power.NTIDFDA
+  , sampleN.NTIDFDA
 )         
 
 # Import all packages listed as Imports or Depends
