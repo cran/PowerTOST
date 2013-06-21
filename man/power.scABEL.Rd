@@ -41,8 +41,9 @@ Number of subjects under study.\cr
 May be given as vector. In that case it is assumed that n contains the number
 of subjects in the sequence groups.\cr\cr
 If n is given as single number (total sample size) and this number is not 
-divisible by the number of sequences of the design an unbalanced design is assumed.
-A corresponding message is thrown showing the numbers of subjects in sequence groups.
+divisible by the number of sequences of the design an unbalanced design is 
+assumed. A corresponding message is thrown showing the numbers of subjects 
+in sequence groups.
 }
   \item{design}{
 Design of the study to be planned.\cr
@@ -85,8 +86,8 @@ the conventional ABE limits apply (mixed procedure). In case of
 the widened limits are held at value calculated at CVwR=0.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL.\cr
-For more details see a document "Implementation_scaledABE_simsVx.yy.pdf" in the doc 
-subdirectory of the package.
+For more details see a document "Implementation_scaledABE_simsVx.yy.pdf" in the 
+doc subdirectory of the package.
 }
 \value{
 Returns the value of the 'empirical' power.

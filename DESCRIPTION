@@ -2,8 +2,8 @@ Package: PowerTOST
 Type: Package
 Title: Power and Sample size based on two one-sided t-tests (TOST) for
         (bio)equivalence studies
-Version: 1.1-05
-Date: 2013-06-17
+Version: 1.1-06
+Date: 2013-06-21
 Authors@R: c(person("Detlew", "Labes", role = c("aut","cre"), email =
         "DetlewLabes@gmx.de"))
 Author: Detlew Labes
@@ -36,7 +36,7 @@ Depends: mvtnorm
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2013-06-17 09:19:40 UTC; dlabes
+Packaged: 2013-06-21 09:07:52 UTC; dlabes
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-06-17 11:54:53
+Date/Publication: 2013-06-21 11:21:13

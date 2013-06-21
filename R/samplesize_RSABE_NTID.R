@@ -132,6 +132,7 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     sdm  <- sqrt(Emse*C3)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
+    dfTT <- dfRR
     
     if(setseed) set.seed(123456)
     p <- .power.NTID(mlog, sdm, C3, Emse, df, s2wR, dfRR, s2wT, dfTT, nsims, 
@@ -152,6 +153,7 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     sdm  <- sqrt(Emse*C3)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
+    dfTT <- dfRR
     
     if(setseed) set.seed(123456)
     p <- .power.NTID(mlog, sdm, C3, Emse, df, s2wR, dfRR, s2wT, dfTT, nsims, 

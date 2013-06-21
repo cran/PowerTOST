@@ -1,3 +1,8 @@
+Version 1.1-06
+Released 2012-06-21
+     - Fat bug corrected in sampleN.NTIDFDA() which lead to false sample size
+       for cases where the test of equal variabilties of Test vs. Reference
+       comes into effect.
 Version 1.1-05
 Released 2012-06-17
      - The functions sampleN.scABEL(), sampleN.RSABE() and sampleN.NTIDFDA()  

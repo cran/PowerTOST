@@ -27,15 +27,15 @@ via scaled (widened) BE acceptance limits based on simulations.\cr
 Contains functions to calculate power and sample size for the 
 BE decision via linearized reference scaled ABE criterion according to the FDA 
 favored procedure based on simulations.\cr
-Contains further functions to calculate power and sample size according to the FDA 
-procedure for NTID's.
+Contains further functions to calculate power and sample size according to the 
+FDA procedure for NTID's.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 1.1-05\cr
-Date: \tab 2013-06-17\cr
+Version: \tab 1.1-06\cr
+Date: \tab 2013-06-21\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes
@@ -106,7 +106,8 @@ Laszlo Tothfalusi and Laszlo Endrenyi\cr
 J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
 
 Tothfalusi L., Endrenyi L. and A. Garcia Arieta\cr
-"Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average Bioequivalence"\cr
+"Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average 
+Bioequivalence"\cr
 Clin. Pharmacokin. 48/11, 725-743 (2009)
 
 FDA "Draft Guidance on Warfarin Sodium"\cr

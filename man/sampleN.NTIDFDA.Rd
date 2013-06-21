@@ -5,8 +5,8 @@ Sample size estimation for BE decision via FDA method for narrow therapeutic ind
 }
 \description{
 This function performs the Sample size estimation for the BE decision via 
-FDA method for NTID's based on simulations. The study design is the full replicate
-design 2x2x4.
+FDA method for NTID's based on simulations. The study design is the full 
+replicate design 2x2x4.
 }
 \usage{
 sampleN.NTIDFDA(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
@@ -51,7 +51,7 @@ May be missing.
 }
   \item{print}{
 If \code{TRUE} (default) the function prints its results.\cr 
-If \code{FALSE} only the sample size will be returned. 
+If \code{FALSE} only the resulting dataframe will be returned. 
 }
   \item{details}{
 If set to \code{TRUE}, the default, the steps during sample size search are shown.
@@ -59,16 +59,18 @@ Moreover the details of the method settings are printed.
 }
   \item{setseed}{
 Simulations are dependent on the starting point of the (pseudo) random number 
-generator. To avoid differences in power values for different runs a \code{set.seed(123456)} 
-is issued if \code{setseed=TRUE}, the default. 
+generator. To avoid differences in power values for different runs a 
+\code{set.seed(123456)} is issued if \code{setseed=TRUE}, the default. 
 }
 }
 \details{
 The linearized scaled ABE criterion is calculated according to the SAS code
-given in the FDA Warfarine guidance. For deciding BE the study must pass that criterion, the conventional ABE test and additional the test that the ratio of sWT/sWR is < 2.5.\cr\cr
+given in the FDA Warfarine guidance. For deciding BE the study must pass that criterion, the conventional ABE test and additional the test that the ratio of 
+sWT/sWR is < 2.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on these method.\cr
-Details can be found in a document "Implementation_scaledABE_sims" located in the doc subdirectory of the package.
+Details can be found in a document "Implementation_scaledABE_sims" located in 
+the doc subdirectory of the package.
 }
 \value{
 Returns now a data.frame with the input and sample size results.\cr
@@ -83,8 +85,8 @@ http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guida
 D. Labes
 }
 \note{
-The design recommended by the FDA is the full replicate design 2x2x4. Only this design 
-is implemented.\cr
+The design recommended by the FDA is the full replicate design 2x2x4. 
+Only this design is implemented.\cr
 The sample size estimation is done only for balanced studies since the 
 break down of the total subject number in case of unbalanced sequence groups
 is not unique. Moreover the formulas used are only valid for balanced designs.\cr
@@ -114,6 +116,6 @@ sampleN.NTIDFDA(CV=0.04,theta0=0.975)
 # Test formulation with lower variability
 sampleN.NTIDFDA(CV=c(0.04,0.06),theta0=0.975)
 # should give
-# n=20 with an (empirical) power of 0.0.814600
+# n=20 with an (empirical) power of 0.0.814610
 }
 

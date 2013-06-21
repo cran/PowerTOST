@@ -103,9 +103,15 @@ Consider in case of \code{regulator="FDA"} to use the function
 }
 
 \section{Warning }{
-The sample size estimation for very extreme theta0 (<0.83 or >1.21) may be very time consuming and will eventually also fail since the start values chosen are not really reasonable in that ranges. This is especially true in the range around CV = 0.3 and regulatory constant according to FDA.\cr
-If you really need sample sizes in that range be prepared to restart the sample size estimation via the argument nstart.\cr
-Since the dependence of power from n is very flat in the mentioned region you may also consider to adapt the number of simulations not to tap in the simulation error trap.\cr\cr
+The sample size estimation for very extreme theta0 (<0.83 or >1.21) may be very 
+time consuming and will eventually also fail since the start values chosen are 
+not really reasonable in that ranges. This is especially true in the range around 
+CV = 0.3 and regulatory constant according to FDA.\cr
+If you really need sample sizes in that range be prepared to restart the sample 
+size estimation via the argument nstart.\cr
+Since the dependence of power from n is very flat in the mentioned region you may 
+also consider to adapt the number of simulations not to tap in the simulation 
+error trap.\cr\cr
 See also the Warning section of the function \code{power.scABEL()} concerning
 the power value agreement to those obtained from simulations via subject data.
 }
