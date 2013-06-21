@@ -79,7 +79,8 @@ The linearized scaled ABE criterion is calculated according to the SAS code
 given in the FDA progesterone guidance.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on scaled ABE. For more details see
-a document "Implementation_scaledABE_simsVx.yy.pdf" in the doc subdirectory of the package.
+a document "Implementation_scaledABE_simsVx.yy.pdf" in the doc subdirectory of 
+the package.
 }
 \value{
 Returns now a data.frame with the input and sample size results.\cr
@@ -89,14 +90,16 @@ The "nlast" column contains the last n value. May be useful for restarting.
 \references{
 FDA "Draft Guidance on Progesterone"\cr
 Recommended Apr 2010; Revised Feb 2011\cr
-http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM209294.pdf
+http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/
+Guidances/UCM209294.pdf
 
 Laszlo Tothfalusi and Laszlo Endrenyi\cr
 "Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
 J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
 
 Tothfalusi L., Endrenyi L. and A. Garcia Arieta\cr
-"Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average Bioequivalence" \cr
+"Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average 
+Bioequivalence" \cr
 Clin. Pharmacokin. 48/11, 725-743 (2009)
 }
 \author{

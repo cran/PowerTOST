@@ -66,6 +66,7 @@ power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   dfTT <- dfRR       # at least for the 2x2x4 design
  
   if(setseed) set.seed(123456)
+  
   p <- .power.NTID(mlog, sdm, C3, Emse, df, s2wR, dfRR, s2wT, dfTT, nsims, 
                    r_const, ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     

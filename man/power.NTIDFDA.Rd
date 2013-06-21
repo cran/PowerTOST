@@ -6,7 +6,8 @@
 \description{
 This function performs the power calculation of the BE decision via 
 the FDA method for narrow therapeutic index drugs (NTID's) by simulations.
-The study design is the full replicate design 2x2x4 (2-treatment-2-sequence-4period design)
+The study design is the full replicate design 2x2x4 
+(2-treatment-2-sequence-4period design)
 }
 \usage{
 power.NTIDFDA(alpha = 0.05, theta1, theta2, theta0, CV, n, nsims = 1e+05, 
@@ -26,7 +27,9 @@ Defaults to 1.25 if not given explicitly.
 }
   \item{theta0}{
 'True' or assumed bioequivalence ratio. \cr
-Attention! Defaults here to 0.975 if not given explicitly. The value was chosen nearer to 1 because the potency (contents) settings for NTID's are tightened by the FDA.
+Attention! Defaults here to 0.975 if not given explicitly. The value was chosen 
+nearer to 1 because the potency (contents) settings for NTID's are tightened 
+by the FDA.
 }
   \item{CV}{
 Coefficient(s) of variation as ratio.\cr
@@ -61,10 +64,13 @@ is issued if \code{setseed=TRUE}, the default.
 }
 \details{
 The linearized scaled ABE criterion is calculated according to the SAS code
-given in the FDA Warfarine guidance. For deciding BE the study must pass that criterion, the conventional ABE test and additional the test that the ratio of sWT/sWR is < 2.5.\cr\cr
+given in the FDA Warfarine guidance. For deciding BE the study must pass 
+that criterion, the conventional ABE test and additional the test that the 
+ratio of sWT/sWR is < 2.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on these method.\cr
-Details can be found in a document "Implementation_scaledABE_sims" located in the doc subdirectory of the package.
+Details can be found in a document "Implementation_scaledABE_sims" located in 
+the doc subdirectory of the package.
 }
 \value{
 Returns the value of the empirical power.
@@ -77,8 +83,8 @@ http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guida
 Detlew Labes
 }
 \note{
-The FDA method is described for the ABE limits 0.8 ... 1.25 only. Setting theta1, theta2
-to other values may not be reasonable and is not tested.
+The FDA method is described for the ABE limits 0.8 ... 1.25 only. Setting theta1,
+theta2 to other values may not be reasonable and is not tested.
 }
 \seealso{
 \code{\link{sampleN.NTIDFDA}}
