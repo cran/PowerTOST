@@ -28,14 +28,14 @@ Contains functions to calculate power and sample size for the
 BE decision via linearized reference scaled ABE criterion according to the FDA 
 favored procedure based on simulations.\cr
 Contains further functions to calculate power and sample size according to the 
-FDA procedure for NTID's.
+FDA procedure for NTID's, also via simulations.
 }
 \details{
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 1.1-06\cr
-Date: \tab 2013-06-21\cr
+Version: \tab 1.1-07\cr
+Date: \tab 2013-09-02\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes

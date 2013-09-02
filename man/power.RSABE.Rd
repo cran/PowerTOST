@@ -9,7 +9,7 @@ linearized scaled ABE criterion by simulations.
 }
 \usage{
 power.RSABE(alpha = 0.05, theta1, theta2, theta0, CV, n, 
-            design = c("2x3x3", "2x2x4"), regulator = c("FDA", "EMA"),
+            design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("FDA", "EMA"),
             nsims = 1e+05, details = FALSE, setseed=TRUE)
 }
 \arguments{
@@ -43,12 +43,16 @@ of subjects in the sequence groups.\cr\cr
 If n is given as single number (total sample size) and this number is not 
 divisible by the number of sequences of the design an unbalanced design is 
 assumed. A corresponding message is thrown showing the numbers of subjects 
-in sequence groups.
+in sequence groups.\cr
+Attention! In case of the 2x2x3 (TRT|RTR) design the order of n's important 
+if given as vector. n[1] is for sequence group 'TRT' and n[2] is for 
+sequence group 'RTR'. 
 }
   \item{design}{
 Design of the study to be planned.\cr
-2x3x3 is the partial replicate design (TRR/RTR/RRT).\cr
+2x3x3 is the partial replicate design (TRR|RTR|RRT).\cr
 2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
+2x2x3 is the 3-period design with sequences TRT|RTR.\cr
 Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
@@ -86,6 +90,13 @@ located in the doc subdirectory of the package.
 }
 \value{
 Returns the value of the empirical power.
+}
+\section{Warning }{
+In case of the design 2x2x3 heteroscedasticity (CVwT not equal to CVwR) may 
+lead to poor agreement of the power values compared to those calculated via the 
+'classical' way of subject data sims if the design is unbalanced in respect
+to the number of subjects in the sequence groups. The function therefore 
+issues a warning for that cases.
 }
 \references{
 FDA "Draft Guidance on Progesterone"\cr

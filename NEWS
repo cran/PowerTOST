@@ -1,7 +1,15 @@
+Version 1.1-07
+Released 2012-09-02
+     - design 2x2x3 (TRT|RTR) implemented in power.scABEL(), sampleN.scABEL()
+       and in power.RSABE(), sampleN.RSABE()
+     - power.scABEL() now gives a warning if CVwT not equal CVwR in the design
+       2x3x3, partial replicate.
+     - Simulation details for the full replicate design slightly changed
+       to obtain better numeric agreement of power to subject data sims. 
 Version 1.1-06
 Released 2012-06-21
      - Fat bug corrected in sampleN.NTIDFDA() which lead to false sample size
-       for cases where the test of equal variabilties of Test vs. Reference
+       for cases where the test of equal variabilities of Test vs. Reference
        comes into effect.
 Version 1.1-05
 Released 2012-06-17
@@ -11,8 +19,8 @@ Released 2012-06-17
        The "nlast" column contains the last n value handled. May be useful for
        restarting.
      - Start values for sample size search in functions sampleN.scABEL(), 
-       sampleN.RSABE()
-       reworked. Failed sample size searches are now more seldom observed. 
+       sampleN.RSABE() reworked. 
+       Failed sample size searches are now more seldom observed. 
      - Flaw in sample size search removed which does not indicate a failed 
        search (n=NA) if started with a too high n (Thanks to Helmut Schütz).
 Version 1.1-04

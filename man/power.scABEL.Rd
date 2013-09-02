@@ -9,7 +9,7 @@ scaled (widened) BE acceptance limits by simulations.
 }
 \usage{
 power.scABEL(alpha = 0.05, theta1, theta2, theta0, CV, n, 
-             design = c("2x3x3", "2x2x4"), regulator = c("EMA", "FDA"), 
+             design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("EMA", "FDA"), 
              nsims = 1e+05, details = FALSE, setseed = TRUE)
 }
 \arguments{
@@ -43,12 +43,16 @@ of subjects in the sequence groups.\cr\cr
 If n is given as single number (total sample size) and this number is not 
 divisible by the number of sequences of the design an unbalanced design is 
 assumed. A corresponding message is thrown showing the numbers of subjects 
-in sequence groups.
+in sequence groups.\cr
+Attention! In case of the 2x2x3 (TRT|RTR) design the order of n's important 
+if given as vector. n[1] is for sequence group 'TRT' and n[2] is for 
+sequence group 'RTR'. 
 }
   \item{design}{
 Design of the study to be planned.\cr
 2x3x3 is the partial replicate design (TRR/RTR/RRT).\cr
 2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
+2x2x3 is the 3-period design with sequences TRT|RTR.\cr
 Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
@@ -117,7 +121,9 @@ For more details see a document "Implementation_scaledABE_sims"
 in the doc subdirectory of the package.\cr\cr
 The new implemented simulation algorithm gave better agreement to the power values
 obtained via subject data sims if CVwT=CVwR. The calculations with different 
-variabilities gave still unsatisfactory results.
+variabilities gave still unsatisfactory results for the 2x3x3 design.
+The function therefore gives a warning if calculations with different CVwT, CVwR
+are requested for the 2x3x3 partial replicate design.
 }
 \seealso{
 \code{\link{sampleN.scABEL}}, \code{\link{power.RSABE}}

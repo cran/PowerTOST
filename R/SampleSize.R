@@ -2,7 +2,7 @@
 # Author: dlabes
 #-----------------------------------------------------------------------------
 
-# ----- helper functions for sampleN.TOST ------------------------------------
+# ----- helper functions for sampleN.TOST and other --------------------------
 # Sample size for a desired power, large sample approx.
 # bk = design constant, see known.designs()
 .sampleN0 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
@@ -13,16 +13,17 @@
   # with lower values there are many steps around between 0.95 and 1
   # in sampleN.TOST
   if (abs(diffm)>diffmthreshold) z2 <- qnorm(targetpower) else {
-    z2 <- qnorm(1-(1-targetpower)/2) # for diffm ~0 (log: theta0=1)
+    z2 <- qnorm(1-(1-targetpower)/2) # for diffm ~0 (log: theta0=1) 1-beta/2
     diffm <- 0
   }
   n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
   n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
   n0 <- ceiling(max(n01,n02))
+  
   #make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
-  #if (n0<4) n0 <- 4   # minimum sample size will be checked outside
-	
+  
+  # minimum sample size will be checked outside
   return(n0)
 }
 

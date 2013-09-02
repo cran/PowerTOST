@@ -8,8 +8,8 @@ This function performs the Sample size estimation for the BE decision via
 linearized scaled ABE criterion based on simulations.
 }
 \usage{
-sampleN.RSABE(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, 
-              CV, design = c("2x3x3", "2x2x4"), regulator = c("FDA", "EMA"),
+sampleN.RSABE(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV,
+              design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("FDA", "EMA"),
               nsims = 1e+05, nstart, print = TRUE, details = TRUE, setseed=TRUE)
 }
 \arguments{
@@ -43,8 +43,9 @@ Reference in CV[2].
 }
   \item{design}{
 Design of the study to be planned.\cr
-2x3x3 is the partial replicate design (TRR/RTR/RRT).\cr
+2x3x3 is the partial replicate design (TRR|RTR|RRT).\cr
 2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
+2x2x3 is the 3-period design with sequences (TRT|RTR).\cr
 Defaults to \code{design="2x3x3"}
 }
   \item{regulator}{
@@ -111,9 +112,15 @@ break down of the total subject number in case of unbalanced sequence groups
 is not unique. Moreover the formulas used are only for balanced designs.
 }
 \section{Warning }{
-The sample size estimation for theta0 >1.2 and <0.85 may be very time consuming and will eventually also fail since the start values chosen are not really reasonable in that ranges. This is especially true in the range about CV = 0.3 and regulatory constant according to FDA.\cr
-If you really need sample sizes in that range be prepared to restart the sample size estimation via the argument nstart.\cr
-Since the dependence of power from n is very flat in the mentioned region you may also consider to adapt the number of simulations not to tap in the simulation error trap.
+The sample size estimation for theta0 >1.2 and <0.85 may be very time consuming 
+and will eventually also fail since the start values chosen are not really 
+reasonable in that ranges. This is especially true in the range about CV = 0.3 
+and regulatory constant according to FDA.\cr
+If you really need sample sizes in that range be prepared to restart the sample 
+size estimation via the argument nstart.\cr
+Since the dependence of power from n is very flat in the mentioned region you 
+may also consider to adapt the number of simulations not to tap in the simulation 
+error trap.
 }
 \seealso{
 \code{\link{power.RSABE}}, \code{\link{power.scABEL}}
