@@ -8,8 +8,8 @@ This function performs the Sample size estimation for the BE decision via
 scaled (widened) BE acceptance limits based on simulations.
 }
 \usage{
-sampleN.scABEL(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, 
-               CV, design = c("2x3x3", "2x2x4"), regulator = c("EMA", "FDA"), 
+sampleN.scABEL(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
+               design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("EMA", "FDA"), 
                nsims = 1e+05, nstart, print = TRUE, details = TRUE, setseed = TRUE)
 }
 \arguments{
@@ -43,7 +43,8 @@ Reference in CV[2].
 }
   \item{design}{
 Design of the study to be planned.\cr
-2x3x3 is the partial replicate design (TRR/RTR/RRT).\cr
+2x3x3 is the partial replicate design (TRR|RTR|RRT).\cr
+2x2x3 is the 3-period replicate design (TRT|RTR).\cr
 2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
 Defaults to \code{design="2x3x3"}
 }
@@ -131,6 +132,6 @@ sampleN.scABEL(CV=0.3)
 # for the full replicate design, target power = 90\%
 # true assumed ratio = 0.9, FDA regulatory settings
 sampleN.scABEL(CV=0.4, targetpower=0.9, theta0=0.9, design="2x2x4", regulator="FDA")
-# should result in a sample size n=30, power=0.91295
+# should result in a sample size n=30, power=0.9074
 
 }

@@ -5,12 +5,12 @@
 # Author: dlabes
 #---------------------------------------------------------------------------
 
-sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
-                            theta2, CV, nsims=1E5, nstart, 
-                            print=TRUE, details=TRUE, setseed=TRUE)
+sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2, 
+                            CV, nsims=1E5, nstart, print=TRUE, details=TRUE, 
+                            setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
-  if (missing(theta0)) theta0 <- 0.975      # tighter content 
+  if (missing(theta0)) theta0 <- 0.975      # tighter content requirement
   if (missing(theta2)) theta2=1/theta1
   if ( (theta0<=theta1) | (theta0>=theta2) ) {
     stop("Null ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
@@ -37,8 +37,8 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # thus we use here bk - the design constant for ntotal
   # expressions for the df's
   if (design=="2x2x4") {
-    seqs <- 2
-    bk   <- 1.0    # needed for n0
+    seqs  <- 2
+    bk    <- 1.0    # needed for n0
     dfe   <- parse(text="n-2", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     # expectation of mse of the ANOVA of intra-subject contrasts
@@ -48,6 +48,7 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   mlog <- log(theta0)
   ltheta1 <- -r_const*sqrt(s2wR)
   ltheta2 <- -ltheta1
+  # 'design' constant for nstart
   bkk     <- 1.55          # this is purely empirical!
   
   if (CVwR > CVcap) {

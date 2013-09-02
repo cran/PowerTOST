@@ -11,7 +11,8 @@
 # 2x2x4  dfRR = n-2
 
 power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                        design=c("2x3x3", "2x2x4"), regulator = c("FDA", "EMA"),
+                        design=c("2x3x3", "2x2x4", "2x2x3"), 
+                        regulator = c("FDA", "EMA"),
                         nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
@@ -53,6 +54,14 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # sd^2 of the differences T-R from their components
     Emse  <- (s2D + (s2wT + s2wR)/2) 
   }
+  if (design=="2x2x3") {
+    seqs  <- 2
+    dfe   <- parse(text="n-2", srcfile=NULL)
+    dfRRe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
+    dfTTe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
+    # sd^2 of the differences T-R from their components
+    Emse  <- 1.5*(s2wT + s2wR)/2               # for balanced design 
+  }
   
   if (length(n)==1){
     # then we assume n=ntotal
@@ -73,13 +82,28 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     if (length(n)!=seqs) stop("n must be a vector of length=",seqs,"!")
     
     C3 <- sum(1/n)/seqs^2
+    nv <- n
     n  <- sum(n)
   }
+  
+  df   <- eval(dfe)
+  if (design=="2x2x3"){
+    dfTT <- nv[1]-1
+    dfRR <- nv[2]-1
+    # where does this next came from?
+    Emse <- (dfRR*(s2wT + s2wR/2)+dfTT*(s2wT/2 + s2wR))/(dfRR+dfTT)
+    # warning in case of unbalanced design and heteroscdasticity
+    if (abs(s2wT - s2wR)>1e-5 & abs(dfRR-dfTT)>2){
+      warning(paste("Heteroscedasticity in unbalanced 2x2x3 design may led", 
+              "to poor accuracy of power!"), call.=FALSE)
+    }
+  } else {
+    dfRR <- eval(dfRRe)
+  }
+  #cat("dfRR=", dfRR," dfTT=",dfTT," E(s2I)=", Emse, "\n")
   # sd of the mean T-R (point estimator)
   sdm  <- sqrt(Emse*C3)
   mlog <- log(theta0)
-  df   <- eval(dfe)
-  dfRR <- eval(dfRRe)
   
   if(setseed) set.seed(123456)
   p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 

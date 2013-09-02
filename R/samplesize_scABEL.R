@@ -16,7 +16,7 @@
 }  
 
 sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
-                           theta2, CV, design=c("2x3x3", "2x2x4"), 
+                           theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"), 
                            regulator=c("EMA", "FDA"), nsims=1E5,
                            nstart, print=TRUE, details=TRUE, setseed=TRUE)
 {
@@ -31,10 +31,8 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   
   #if (!print) details <- FALSE # do not print anything
   
-  # for later enhancement taking into account the 
-  # subject-by-formulation interaction
-  # can we incorporate this? EMA method doesn't have such a term.
-  s2D  <- 0  
+  # subject-by-formulation interaction can't play a role here I think
+  # since the model doesn't allow such term
   CVwT <- CV[1]
   # should we allow different variabilities in the EMA method?
   if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
@@ -59,15 +57,17 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # thus we use here bk - design constant for ntotal
   # expressions for the df's
   if (design=="2x3x3") {
+    desi <- "2x3x3 (partial replicate)"
     bk <- 1.5; seqs <- 3
     dfe   <- parse(text="2*n-3", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
-    #sd2  <- s2D + (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02
+    #sd2  <- (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02, wrong
     # simulations with s2D=0 show:
     Emse  <- (s2wT + 2.0*s2wR)/3
     cvec  <- c(1, 2) # for sim of mses from s2wT and s2wR
   }
   if (design=="2x2x4") {
+    desi <- "2x2x4 (full replicate)"
     bk <- 1.0; seqs <- 2
     # only EMA settings
     dfe   <- parse(text="3*n-4", srcfile=NULL)
@@ -76,13 +76,24 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     Emse  <- (s2wT + s2wR)/2
     cvec  <- c(1, 1)
   }
+  if (design=="2x2x3") {
+    desi <- "2x2x3 (TRT|RTR)"
+    bk <- 1.5; seqs <- 2
+    # only EMA settings
+    dfe   <- parse(text="2*n-3", srcfile=NULL)
+    dfRRe <- parse(text="n/2-1", srcfile=NULL)
+    # sd^2 (variance) of the differences T-R from their components
+    Emse  <- (s2wT + s2wR)/2 # for balanced designs we use here
+    cvec  <- c(1, 1) # dummy
+  }
+  
   mlog <- log(theta0)
   
   if (print){
     cat("\n+++++++++++ scaled (widened) ABEL +++++++++++\n")
     cat("            Sample size estimation\n")
     cat("---------------------------------------------\n")
-    cat("Study design: ",design,"\n")
+    cat("Study design: ",desi,"\n")
     cat("log-transformed data (multiplicative model)\n")
     cat(nsims,"studies simulated.\n\n")
     cat("alpha  = ",alpha,", target power = ", targetpower,"\n", sep="")
@@ -138,19 +149,20 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   sdm  <- sqrt(Emse*C2)
   df   <- eval(dfe)
   dfRR <- eval(dfRRe)
+  dfTT <- dfRR
   
   if(setseed) set.seed(123456)
-  p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT,
-                     nsims, CVswitch, r_const, CVcap, 
+  p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+                     design, nsims, CVswitch, r_const, CVcap, 
                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
   pwr <- as.numeric(p["BE"]);
-  
+  pd <- max(4,round(log10(nsims),0)-1)  # digits for power
   if (details) {
     cat("\nSample size search\n")
     cat(" n     power\n")
     # do not print first too high
     # this is for cases with only one step-down and than step up
-    if (pwr<=targetpower) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    if (pwr<=targetpower) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
   }
   iter <- 0; imax=100
   nmin <- 6
@@ -161,7 +173,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   while (pwr>targetpower) {
     down <- TRUE
     if (n<=nmin) { 
-      if (details & iter==0) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+      if (details & iter==0) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
       break
     }
     n  <- n-seqs     # step down if start power is to high
@@ -171,14 +183,14 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     sdm  <- sqrt(Emse*C2)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
-    
+    dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT,
-                       nsims, CVswitch, r_const, CVcap, 
+    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+                       design, nsims, CVswitch, r_const, CVcap, 
                        ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
-    if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    if (details) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
     if (iter>imax) break  
     # loop results in n with power too low
     # must step up again one step. is done in the next loop
@@ -191,14 +203,14 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     sdm  <- sqrt(Emse*C2)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
-    
+    dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, 
-                       nsims, CVswitch, r_const, CVcap, 
+    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+                       design, nsims, CVswitch, r_const, CVcap, 
                        ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
-    if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    if (details) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
     if (iter>imax) break 
   }
   
@@ -215,7 +227,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if (print && !details) {
     cat("\nSample size\n")
     cat(" n     power\n")
-    cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
     if (is.na(n)) cat("Sample size search failed!\n")
   }
   if (print) cat("\n")

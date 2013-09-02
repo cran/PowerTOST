@@ -6,7 +6,7 @@
 #---------------------------------------------------------------------------
 
 sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
-                          theta2, CV, design=c("2x3x3", "2x2x4"),
+                          theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"),
                           regulator = c("FDA", "EMA"), nsims=1E5, nstart, 
                           print=TRUE, details=TRUE, setseed=TRUE)
 {
@@ -40,6 +40,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # thus we use here bk - design constant for ntotal
   # expressions for the df's
   if (design=="2x3x3") {
+    desi <- "2x3x3 (partial replicate)"
     seqs <- 3
     bk   <- 1.5    # needed for n0
     # in case of the FDA we are using the 'robust' df's
@@ -54,12 +55,22 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     Emse  <- s2D + s2wT + s2wR/2
   }
   if (design=="2x2x4") {
+    desi <- "2x2x4 (full replicate)"
     seqs <- 2
     bk   <- 1.0    # needed for n0
     dfe   <- parse(text="n-2", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     # expectation of mse of the ANOVA of intra-subject contrasts
     Emse  <- (s2D + (s2wT + s2wR)/2) 
+  }
+  if (design=="2x2x3") {
+    desi <- "2x2x3 (TRT|RTR)"
+    seqs <- 2
+    bk   <- 1.5    # needed for n0?
+    dfe   <- parse(text="n-2", srcfile=NULL)
+    dfRRe <- parse(text="n/2-1", srcfile=NULL) # for balanced designs
+    # expectation of mse of the ANOVA of intra-subject contrasts
+    Emse  <- 1.5*(s2wT + s2wR)/2               # for balanced designs
   }
   
   mlog <- log(theta0)
@@ -68,7 +79,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     cat("\n++++++++ Reference scaled ABE crit. +++++++++\n")
     cat("           Sample size estimation\n")
     cat("---------------------------------------------\n")
-    cat("Study design: ",design,"\n")
+    cat("Study design: ",desi,"\n")
     cat("log-transformed data (multiplicative model)\n")
     cat(nsims,"studies simulated.\n\n")
     cat("alpha  = ",alpha,", target power = ", targetpower,"\n", sep="")
@@ -122,7 +133,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
                        se=sqrt(Emse), steps=seqs, bk=1)
     # debug print
     # cat(n01,n02,"\n")
-    n <- max(c(n01,n02))
+    n <- max(c(n01,n02))+seqs
   } else n <- seqs*round(nstart/seqs)
   # iterate until pwr>=targetpower
   # we are simulating for balanced designs
@@ -134,16 +145,16 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   
   if(setseed) set.seed(123456)
   p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
-                    ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
+                    ln_lBEL=log(theta1), ln_uBEL=log(theta2), 
                     CVswitch, r_const, alpha=alpha)
   pwr <- as.numeric(p["BE"]);
-  
+  pd <- max(4,round(log10(nsims),0))  # digits for power
   if (details) {
     cat("\nSample size search\n")
     cat(" n     power\n")
     # do not print first too high
     # this is for cases with only one step-down and than step up
-    if (pwr<=targetpower) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    if (pwr<=targetpower) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
   }
   iter <- 0; imax <- 100
   nmin <- 6 # fits 2x3x3 and 2x2x4
@@ -153,7 +164,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   while (pwr>targetpower) {
     down <- TRUE
     if (n<=nmin) { 
-      if (details & iter==0) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+      if (details & iter==0) cat(n," ", formatC(pwr, digits=pd, format="f"),"\n")
       break
     }
     n  <- n-seqs     # step down if start power is to high
@@ -171,7 +182,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     pwr <- as.numeric(p["BE"]);
     
     # do not print first step down
-    if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    if (details) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
     if (iter>imax) break  
     # loop results in n with power too low
     # must step one up again. is done in the next loop
@@ -191,7 +202,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
                       CVswitch, r_const, alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
-    if (details) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    if (details) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
     if (iter>imax) break 
   }
   
@@ -207,8 +218,8 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   
   if (print && !details) {
     cat("\nSample size\n")
-    cat(" n     power\n")
-    cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
+    cat(" n    power\n")
+    cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
     if (is.na(n)) cat("Sample size search failed!\n")
   }
   if (print) cat("\n")

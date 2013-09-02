@@ -58,7 +58,7 @@ It is assumed that the sequence groups in a crossover study or the
 treatment arms in a parallel-group study are balanced.\cr
 The estimated CV is conservative (i.e. greater than actually observed) in case of 
 unbalanced studies.\cr\cr
-\code{CV2CI()} is simply an alias to \code{CVfromCI()}.
+\code{CI2CV()} is simply an alias to \code{CVfromCI()}.
 }
 
 \examples{
