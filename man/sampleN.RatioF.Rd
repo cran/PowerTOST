@@ -10,7 +10,7 @@ Fieller's confidence ('fiducial') interval.
 \usage{
 sampleN.RatioF(alpha = 0.025, targetpower = 0.8, theta1 = 0.8, theta2, 
               theta0 = 0.95, CV, CVb, design = "2x2", 
-              print = TRUE, details = FALSE, imax=100)
+              print = TRUE, details = FALSE, imax=100, setseed=TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -56,10 +56,17 @@ Defaults to FALSE.
 Maximum number of steps in sample size search. \cr 
 Defaults to 100. Adaption only in rare cases needed.
   }
+  \item{setseed}{
+If set to TRUE the dependence of the power from the state of the random number
+generator is avoided.
+  }
 }
 \details{
 The sample size is based on exact power calculated using the bivariate 
 non-central t-distribution via function \code{pmvt()} from the package mvtnorm.\cr
+Due to the calculation method used in package mvtnorm these
+probabilities are dependent from the state of the random number generator
+within the precision of the power.\cr\cr
 The CV(within) and CVb(etween) in case of \code{design="2x2"} are obtained 
 via an appropriate ANOVA from the error term and from the difference 
 \code{(MS(subject within sequence)-MS(error))/2}.
@@ -99,7 +106,7 @@ non-inferiority" EMEA, London (2000).
 # 'true' ratio = 95\%, BE acceptance limits 80-125\%
 # using all the defaults:
 sampleN.RatioF(CV=0.2, CVb=0.4)
-# gives n=28 with an achieved power of 0.807695
+# gives n=28 with an achieved power of 0.807774
 # see Hauschke et.al. (2007) Table 10.3a
 
 # sample size for a 2-group parallel study
@@ -107,7 +114,7 @@ sampleN.RatioF(CV=0.2, CVb=0.4)
 # alpha=0.025 (95\% CIs), target power = 90\%
 # 'true' ratio = 90\%, BE acceptance limits 75-133.33\%
 sampleN.RatioF(targetpower=0.9, theta1=0.75, theta0=0.90, CV=0.4, design="parallel")
-# gives n=236 with an achieved power of 0.900681
+# gives n=236 with an achieved power of 0.900685
 # see Hauschke et.al. (2007) Table 10.2
 
 # a rather strange setting of ratio0! have a look at n.

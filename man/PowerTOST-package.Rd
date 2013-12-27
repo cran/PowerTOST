@@ -34,8 +34,8 @@ FDA procedure for NTID's, also via simulations.
 \tabular{ll}{
 Package: \tab PowerTOST\cr
 Type: \tab Package\cr
-Version: \tab 1.1-07\cr
-Date: \tab 2013-09-02\cr
+Version: \tab 1.1-08\cr
+Date: \tab 2013-12-27\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes

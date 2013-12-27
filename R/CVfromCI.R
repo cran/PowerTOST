@@ -7,11 +7,16 @@
 CVfromCI <- function(point, lower, upper, n, design="2x2", alpha=0.05, 
                      robust=FALSE)
 {
-  if (missing(lower) | missing(upper)) {
-    stop("Lower and upper CL must be given!", call.=FALSE) 
-  }
   if (missing(n)) stop("Sample size n must be given!",call.=FALSE)
-  
+  # according to Helmut's suggestion
+  if ((missing(lower) & missing(upper)) | ((missing(lower) & missing(point)) 
+                                        |  (missing(upper) & missing(point)))) 
+  {
+    stop("At least both CLs or PE and one CL must be given!", call.=FALSE)
+  }
+  if (!missing(point) & (missing(lower) | missing(upper))) {
+    ifelse(missing(lower), lower <- point^2/upper, upper <- point^2/lower)
+  }
   if (missing(point)) point <- sqrt(lower*upper) 
 
   d.no <- .design.no(design)
@@ -31,7 +36,9 @@ CVfromCI <- function(point, lower, upper, n, design="2x2", alpha=0.05,
   s2   <- (log(upper)-log(point))/sqrt(desi$bk/n)/tval
   sw   <- 0.5*(s1+s2)
   # both estimates very different?
-  if (abs(s1-s2)/sw > 0.1) warning("sw1, sw2 very different. Check input.")
+  if (abs(s1-s2)/sw > 0.1) {
+    warning("sw1, sw2 more than 10% different. Check input.", call.=FALSE)
+  }
   return(se2CV(sw))
 }
 
@@ -39,11 +46,7 @@ CVfromCI <- function(point, lower, upper, n, design="2x2", alpha=0.05,
 CI2CV <- function(point, lower, upper, n, design="2x2", alpha=0.05, 
                   robust=FALSE)
 {
-  if (missing(lower) | missing(upper)) {
-    stop("Lower and upper CL must be given!", call.=FALSE) 
-  }
-  if (missing(point)) point <- sqrt(lower*upper) 
-  CVfromCI(point=point, lower, upper, n, design=design, alpha=alpha, 
+  CVfromCI(point, lower, upper, n, design=design, alpha=alpha, 
            robust=robust)
 }
 
