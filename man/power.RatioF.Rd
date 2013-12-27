@@ -11,7 +11,7 @@ test (again a TOST procedure).
 }
 \usage{
 power.RatioF(alpha = 0.025, theta1 = 0.8, theta2, theta0 = 0.95, CV, CVb, n,   
-             design = "2x2")
+             design = "2x2", setseed=TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -46,10 +46,19 @@ A character string describing the study design.\cr
 \code{design="parallel"} or \code{design="2x2"} allowed for a two-parallel 
 group design or a classical TR/RT crossover design.
 }
+  \item{setseed}{
+If set to TRUE the dependence of the power from the state of the random number
+generator is avoided. With \code{setseed = FALSE} you may see the dependence
+from the state of the random number generator.
+}
 }
 \details{
 The power is calculated exact using the bivariate non-central t-distribution
-via function \code{pmvt()} from the package mvtnorm.
+via function \code{pmvt()} from the package mvtnorm.\cr
+Due to the calculation method of the used package mvtnorm, randomized 
+Quasi-Monte-Carlo, these probabilities are dependent from the state of the 
+random number generator within the precision of the power. 
+See argument \code{setseed}.
 }
 \value{
 Value of power according to the input.
@@ -87,5 +96,5 @@ within-subject and between-subject variabilities for the 2x2 crossover design.
 # 2x2 crossover study, n=24
 # using all the defaults:
 power.RatioF(CV=0.2, CVb=0.4, n=24)
-# gives [1] 0.731509
+# gives [1] 0.7315357
 }

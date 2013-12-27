@@ -1,18 +1,28 @@
+Version 1.1-08
+Released 2013-12-27
+      - Dates typo in the history (NEWS) corrected from version 1.1-00 on. 
+        THX to Julien Grassot.
+      - CVfromCI() now accepts either both CLs or one CL and the point estimator,
+        programmed by Helmut Schuetz.
+      - power.RatioF() and sampleN.RatioF() now have an argument setseed=TRUE 
+        which avoids the dependence if the power from the state of the 
+        random number generator (due to the calculation method of pmvt() 
+        from package mvtnorm). Thanks to Benjamin Lang.
 Version 1.1-07
-Released 2012-09-02
+Released 2013-09-02
      - design 2x2x3 (TRT|RTR) implemented in power.scABEL(), sampleN.scABEL()
-       and in power.RSABE(), sampleN.RSABE()
+       and in power.RSABE(), sampleN.RSABE().
      - power.scABEL() now gives a warning if CVwT not equal CVwR in the design
        2x3x3, partial replicate.
      - Simulation details for the full replicate design slightly changed
        to obtain better numeric agreement of power to subject data sims. 
 Version 1.1-06
-Released 2012-06-21
+Released 2013-06-21
      - Fat bug corrected in sampleN.NTIDFDA() which lead to false sample size
        for cases where the test of equal variabilities of Test vs. Reference
        comes into effect.
 Version 1.1-05
-Released 2012-06-17
+Released 2013-06-17
      - The functions sampleN.scABEL(), sampleN.RSABE() and sampleN.NTIDFDA()  
        return now a data.frame with the input and the sample size result.
        The "Sample size" column contains the total sample size.
@@ -24,13 +34,13 @@ Released 2012-06-17
      - Flaw in sample size search removed which does not indicate a failed 
        search (n=NA) if started with a too high n (Thanks to Helmut Schütz).
 Version 1.1-04
-Released 2012-05-15 to alpha testers only
+Released 2013-05-15 to alpha testers only
      - Functions power.NTIDFDA() and sampleN.NTIDFDA() introduced to calculate
        power and sample size for the BE decision via the method of the FDA for
        narrow therapeutic index drugs (NTID's). Power and sample size
        are based on simulations.
 Version 1.1-03
-Released 2012-05-03
+Released 2013-05-03
      - Flaw in implementing the sims of 2x3x3 design with different intra-subject
        variabilities in functions power.RSABE() and sampleN.RSABE() as well as
        in functions power.scABEL() and sampleN.scABEL() disposed.
@@ -43,7 +53,7 @@ Released 2012-05-03
        methods implemented in power.scABEL() gave empirical power values
        that are only approximately in agreement.   
 Version 1.1-02
-Released 2012-02-28
+Released 2013-02-28
      - Functions power.RSABE() and sampleN.RSABE() introduced to calculate
        power and sample size for the BE decision via linearized scaled 
        ABE criterion as favored method of the FDA. Power and sample size
@@ -55,7 +65,7 @@ Released 2012-02-28
        each call of the simulation functions.
      - Documentation improved.
 Version 1.1-00
-Released 2012-02-08
+Released 2013-02-08
      - Functions power.scABEL() and sampleN.scABEL() introduced to calculate
        power and sample size for the BE decision via scaled (widened)
        BE acceptance limits based on simulations.

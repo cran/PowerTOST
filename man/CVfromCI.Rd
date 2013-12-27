@@ -49,7 +49,7 @@ of the algebra underlying this function.
 \value{
 Numeric value of the CV as ratio.
 }
-\author{D. Labes}
+\author{D. Labes and H. Schuetz }
 \note{
 The calculations are based on the assumption of evaluation via log-transformed values.\cr
 The calculations are further based on a common variance of Test and Reference 

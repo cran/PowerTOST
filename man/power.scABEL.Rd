@@ -39,12 +39,12 @@ Reference in CV[2].
   \item{n}{
 Number of subjects under study.\cr
 May be given as vector. In that case it is assumed that n contains the number
-of subjects in the sequence groups.\cr\cr
+of subjects in the sequence groups.\cr
 If n is given as single number (total sample size) and this number is not 
 divisible by the number of sequences of the design an unbalanced design is 
 assumed. A corresponding message is thrown showing the numbers of subjects 
 in sequence groups.\cr
-Attention! In case of the 2x2x3 (TRT|RTR) design the order of n's important 
+Attention! In case of the 2x2x3 (TRT|RTR) design the order of n's is important 
 if given as vector. n[1] is for sequence group 'TRT' and n[2] is for 
 sequence group 'RTR'. 
 }

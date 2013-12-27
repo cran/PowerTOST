@@ -13,7 +13,7 @@
 # require(mvtnorm)
 
 power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb, 
-                         n, design="2x2")
+                         n, design="2x2", setseed=TRUE)
 {
   if (!(tolower(design) %in% c("2x2","parallel"))) {
     design <- "2x2"; warning("Design unknown. Will use 2x2 cross-over.\n",
@@ -25,8 +25,11 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
                            call.=FALSE)
   }
   if (missing(n))  stop("Number of subjects must be given!", call.=FALSE)
+  if (n<=2) stop("Number of subjects must be >2!", call.=FALSE)
+  
   if (missing(theta2)) theta2 <- 1/theta1
   
+  if (setseed) set.seed(123456789)
   power <- .power.RatioF(alpha, theta1, theta2, theta0, CV, CVb, n, design)
 
   return(power)
@@ -63,15 +66,23 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
   # upper limits of integration
   upper <- c(Inf,0)
   upper[2] <- -qt(1-alpha,df)
+  # without set.seed() each run gives different
+  # power values especially if power is small
   if (df<4000){
-    power <- pmvt(upper=upper, delta=delta, corr=corr, df=df)
+    power <- pmvt(upper=upper, delta=delta, corr=corr, df=df,
+                  abseps=1e-9)
     upper[1] <- qt(1-alpha,df)
-    power <- power - pmvt(upper=upper, delta=delta, corr=corr, df=df)
+    power <- power - pmvt(upper=upper, delta=delta, corr=corr, df=df,
+                          abseps=1e-9)
+    # may happen due to numeric inaccuracies
+    if (power<0) power <- 0
   } else {
     # large sample approx. multivariate normal distri.
     power <- pmvnorm(upper=upper, mean=delta, corr=corr)
     upper[1] <- qt(1-alpha,df)
     power <- power - pmvnorm(upper=upper, mean=delta, corr=corr)
+    # may happen due to numeric inaccuracies
+    if (power<0) power <- 0
   }
   attributes(power) <- NULL
   return(power)
@@ -121,7 +132,7 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
 # therefore 95% CIs had to be used and consequently alpha=0.025
 sampleN.RatioF <- function(alpha=0.025, targetpower=0.8, theta1=0.8, theta2,
                            theta0=0.95, CV, CVb, design="2x2", print=TRUE, 
-                           details=FALSE, imax=100)
+                           details=FALSE, imax=100, setseed=TRUE)
 {
   if (!(tolower(design) %in% c("2x2","parallel"))) {
     design <- "2x2"
@@ -164,6 +175,7 @@ sampleN.RatioF <- function(alpha=0.025, targetpower=0.8, theta1=0.8, theta2,
   # Start
   n   <- .sampleN0.RatioF(alpha, targetpower, theta1, theta2, theta0, CV, CVb, 
                            design)
+  if (setseed) set.seed(123456789)
   pow <- .power.RatioF(alpha, theta1, theta2, theta0, CV, CVb, n, design)
   if (details) {
     cat("\nSample size search\n")
@@ -182,6 +194,7 @@ sampleN.RatioF <- function(alpha=0.025, targetpower=0.8, theta1=0.8, theta2,
     }
     n    <- n - steps
     iter <- iter+1
+    if (setseed) set.seed(123456789)
     pow  <- .power.RatioF(alpha, theta1, theta2, theta0, CV, CVb, n, design)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
@@ -189,6 +202,7 @@ sampleN.RatioF <- function(alpha=0.025, targetpower=0.8, theta1=0.8, theta2,
   while (pow<targetpower) {
     n    <- n+steps
     iter <- iter+1
+    if (setseed) set.seed(123456789)
     pow <- .power.RatioF(alpha, theta1, theta2, theta0, CV, CVb, n, design)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
