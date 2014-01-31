@@ -1,9 +1,30 @@
+Version 1.1-10
+Released 2014-01-31
+      - The package is now pre-compiled to 'byte code' via the compiler
+        package for speed reasons. F.i. OwensQOwen() gains a sixfold boost.
+      - Some bulk code changes to make the power calculations for extrem 
+        cases more bullet proof without computation time burden.
+      - Bug removed where noncentrality parameters in the power calculations
+        became NaN (not a number).
+      - OwensQ() now tries to return a value via nct-approximation if its value 
+        is due to numeric difficulties falsely equal zero. 
+        This approximation is up to 6 decimals correct as far as tested. 
+        OwensQ() issues a warning if the nct-approximation is used.
+      - Some improvements in documentation (man pages and *.pdf) to
+        reflect the code changes
+Version 1.1-09
+Build 2014-01-03 Not released to the public.
+      - OwensQ() now uses OwensQOwen() in case of high delta and/or high upper 
+        integration limit. Thus extrem cases can be handled properly where 
+        the former implementation via integrate() was prone to fail. 
+        Thanks to Jiri Hofmann and Helmut Schuetz for pointing me to 
+        such extrem cases.
 Version 1.1-08
 Released 2013-12-27
       - Dates typo in the history (NEWS) corrected from version 1.1-00 on. 
         THX to Julien Grassot.
-      - CVfromCI() now accepts either both CLs or one CL and the point estimator,
-        programmed by Helmut Schuetz.
+      - CVfromCI() now accepts either both CLs or one CL and the point 
+        estimator, programmed by Helmut Schuetz.
       - power.RatioF() and sampleN.RatioF() now have an argument setseed=TRUE 
         which avoids the dependence if the power from the state of the 
         random number generator (due to the calculation method of pmvt() 

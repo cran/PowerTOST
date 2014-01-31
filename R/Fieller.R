@@ -45,7 +45,9 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
   if (tolower(design)=="parallel"){
     delta[1] <- (theta0 - theta1)/CV/sqrt(2.*(1.0+theta1^2)/n)
     delta[2] <- (theta0 - theta2)/CV/sqrt(2.*(1.0+theta2^2)/n)
-    
+    # in case of theta0=theta1 or =theta2 and CV=0 NaN is produced
+    # setting it to zero, is this correct?
+    delta[is.nan(delta)] <- 0
     rho <- (1.0+theta1*theta2)/sqrt((1+theta1^2)*(1+theta2^2))
   } else {
     # cross-over
@@ -54,6 +56,9 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
                  CVb^2*(1.0-theta1)^2)/n)
     delta[2] <- (theta0 - theta2)/sqrt((CVw^2*(1.0+theta2^2) + 
                  CVb^2*(1.0-theta2)^2)/n)
+    # in case of theta0=theta1 or =theta2 and CV=0 NaN is produced
+    # setting it to zero, is this correct?
+    delta[is.nan(delta)] <- 0
     
     rho <- (CVw^2*(1.0+theta1*theta2) + 
             CVb^2*(1.0+theta1*theta2-theta1-theta2)) /
@@ -69,8 +74,7 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
   # without set.seed() each run gives different
   # power values especially if power is small
   if (df<4000){
-    power <- pmvt(upper=upper, delta=delta, corr=corr, df=df,
-                  abseps=1e-9)
+    power <- pmvt(upper=upper, delta=delta, corr=corr, df=df, abseps=1e-9)
     upper[1] <- qt(1-alpha,df)
     power <- power - pmvt(upper=upper, delta=delta, corr=corr, df=df,
                           abseps=1e-9)

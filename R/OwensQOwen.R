@@ -10,10 +10,12 @@
 # most simple implementation via integrate()
 # TODO: consider eventually a numerical algo with high precision
 # according to M. PATEFIELD, D. TANDY
+
+OT_integrand <- function(x, h) exp(-0.5*h^2*(1+x^2))/(1+x^2)/(2*pi)
+
 OwensT <- function(h, a)
 { 
-  integrand <- function(x, h) exp(-0.5*h^2*(1+x^2))/(1+x^2)/(2*pi)
-  int <- integrate(integrand, lower=0, upper=a, h=h)
+  int <- integrate(OT_integrand, lower=0, upper=a, h=h)
   return(int$value) 
 }
 
@@ -59,7 +61,7 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
     if (k==1) M[1] <- A*sB*dnorm(delta*sB)*( pnorm(delta*A*sB) - 
                                              pnorm((delta*A*B-b)/sB) )
     if (k==2) M[2] <- B*( delta*A*M[1] + A*dnorm(delta*sB)*
-                          ( dnorm(delta*A*sB)-dnorm((delta*A*B-b)/sB)) )
+                        ( dnorm(delta*A*sB)-dnorm((delta*A*B-b)/sB)) )
     if (k>2)  M[k] <- ((k-2)/(k-1))*B*(av[k-1]*delta*A*M[k-1] + M[k-2]) - L[k-2]
   }
   
@@ -92,6 +94,13 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
   return(qv)
 }
 
+# ----------------------------------------------------------------------------
+# precompiled to 'byte code' via compiler package
+# now (31Jan2014) decided to pre-compile the whole package
+# OwensQOwen <- cmpfun(OwensQOwen)
+
+# ----------------------------------------------------------------------------
+# raw power function using OwensQOwen
 .power.TOST.Q0 <- function(alpha=0.05, ltheta1, ltheta2, diffm, se, n, df, bk=2)
 {
   tval   <- qt(1 - alpha, df, lower.tail = TRUE)
@@ -102,8 +111,12 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
   
   delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
   delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
+  # 0/0 -> NaN in case diffm=ltheta1 or diffm=ltheta2 and se=0!
+  delta1[is.nan(delta1)] <- 0
+  delta2[is.nan(delta2)] <- 0
+    
   # R is infinite in case of alpha=0.5
-  R      <- (delta1-delta2)*sqrt(df)/(2.*abs(tval))
+  R <- (delta1-delta2)*sqrt(df)/(2.*abs(tval))
   
   # to avoid numerical errors in OwensQ implementation
   if (df[1]>10000) { 
@@ -149,5 +162,5 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
 #
 #OwensQ(2,-2.919986,-4.213542,0,2.040712)
 #OwensQ(2,2.919986,4.213542,0,2.040712)
-#OwensQOwen(6,-2.919986,-4.213542,0,2.040712)
-#OwensQOwen(2,2.919986,4.213542,0,2.040712)
+#
+#OwensQOwen(2, 2.919986, 4.213542,0,2.040712)

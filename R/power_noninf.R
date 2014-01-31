@@ -13,6 +13,10 @@
   # the original abs() function has the effect that in case of diffm<lmargin
   # if lmargin<0 the power of inferiority! is calculated
   tau  <- (diffm-lmargin)*sqrt(n)/sqrt(bk*se^2)
+  # in case of diffm=lmargin and se=0
+  # tau has the value NaN
+  tau[is.nan(tau)] <- 0
+  
   if (lmargin>0) tau <- -tau
   return(1 - pt(tval, df, tau))
 }
