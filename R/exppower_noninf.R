@@ -5,12 +5,15 @@
 # taking into account the uncertainty of an estimated se with 
 # dfse degrees of freedom
 # Only for log-transformed data.
-# Raw function: see the call in exppower.TOST()
+# Raw function: see the call in exppower.noninf()
 .exppower.noninf <- function(alpha=0.05, lmargin, diffm, 
                              se, dfse, n, df, bk=2)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE)
   tau  <- sqrt(n*(diffm-lmargin)^2/(bk*se^2))
+  # in case of diffm=lmargin and se=0
+  # tau has the value NaN
+  tau[is.nan(tau)] <- 0
   
   pow  <- pt(tau,dfse,tval)
   

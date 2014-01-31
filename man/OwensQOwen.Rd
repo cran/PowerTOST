@@ -19,7 +19,7 @@ OwensQOwen(nu, t, delta, a=0, b)
   \item{b}{upper integration limit}
 }
 \value{
-numeric value of Owen's Q.
+numeric value of Owen's Q function.
 }
 \note{
 The argument \code{a=0} could be dropped but is retained for sake of completeness. 
@@ -33,7 +33,9 @@ Biometrika Vol. 52, p437-446.
 D. Labes
 }
 \note{
-This function is only for comparative / validation purposes.\cr
+This function is mainly for comparative / validation purposes.\cr
+It is used in \code{OwensQ()} in case of high nu and/or high upper integration 
+limit where the implementation via R's function \code{integrate()} may fail.
 The implementation needs \code{OwensT()} function.
 }
 

@@ -12,6 +12,11 @@
   tval <- qt(1 - alpha, df, lower.tail = TRUE)
   d1   <- sqrt(n*(diffm-ltheta1)^2/(bk*se^2))
   d2   <- sqrt(n*(diffm-ltheta2)^2/(bk*se^2))
+  # in case of diffm=ltheta1 or =ltheta2 and se=0
+  # d1 or d2 have the value NaN
+  # is this correct?
+  d1[is.nan(d1)] <- 0
+  d2[is.nan(d2)] <- 0
   
   pow  <- pt(d1,dfse,tval) + pt(d2,dfse,tval) - 1
   

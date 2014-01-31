@@ -40,5 +40,5 @@ import(
   mvtnorm
 )
 
-# Define S3 methods
+# Define S3 methods for the pooled CV
 S3method(print, CVp)
