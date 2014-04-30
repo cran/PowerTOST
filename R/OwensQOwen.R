@@ -119,14 +119,13 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
   R <- (delta1-delta2)*sqrt(df)/(2.*abs(tval))
   
   # to avoid numerical errors in OwensQ implementation
-  if (df[1]>10000) { 
+  if (min(df)>10000) { 
     # Joulious formula (57) or (67), normal approximation
     p1 <- pnorm( (abs(delta1)-tval), lower.tail = TRUE)
     p2 <- pnorm( (abs(delta2)-tval), lower.tail = TRUE)
     
     return(p1 + p2 -1.)
   }
- 
   # attempt to vectorize (it vectorizes properly if diffm is a vector
   # OR se OR n,df are vectors) 
   nel <- length(delta1)

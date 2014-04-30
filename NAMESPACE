@@ -3,7 +3,9 @@
 # Export explicitly by name
 # print.CVp is defined under S3method
 export(
-    CVCL
+    CI.BE
+  , CI.RatioF
+  , CVCL
   , CV2se
   , CV2mse
   , CI2CV

@@ -95,7 +95,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     cat("---------------------------------------------\n")
     cat("Study design: ",desi,"\n")
     cat("log-transformed data (multiplicative model)\n")
-    cat(nsims,"studies simulated.\n\n")
+    cat(nsims,"studies for each step simulated.\n\n")
     cat("alpha  = ",alpha,", target power = ", targetpower,"\n", sep="")
     cat("CVw(T) = ",CVwT,"; CVw(R) = ",CVwR,"\n", sep="")
     cat("Null (true) ratio = ",theta0,"\n", sep="")
