@@ -6,24 +6,78 @@
 # Sample size for a desired power, large sample approx.
 # bk = design constant, see known.designs()
 .sampleN0 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
-                      se, steps=2, bk=2, diffmthreshold=0.04)
+                      se, steps=2, bk=2, diffmthreshold=0.03)
 {
   z1 <- qnorm(1-alpha)
   # value diffmthreshold=0.04 corresponds roughly to log(0.96)
   # with lower values there are many steps around between 0.95 and 1
   # in sampleN.TOST
   if (abs(diffm)>diffmthreshold) z2 <- qnorm(targetpower) else {
-    z2 <- qnorm(1-(1-targetpower)/2) # for diffm ~0 (log: theta0=1) 1-beta/2
+    z2 <- qnorm(1-(1-targetpower)*0.5) # for diffm ~0 (log: theta0=1) 1-beta/2
     diffm <- 0
   }
   n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
   n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
-  n0 <- ceiling(max(n01,n02))
   
+  n0 <- ceiling(max(n01,n02))
   #make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
   
   # minimum sample size will be checked outside
+  #browser()
+  return(n0)
+}
+
+# pure Zhang's formula. doesn't work sufficiently
+.sampleN0_2 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
+                        se, steps=2, bk=2)
+{
+  # Zhang's method, large sample
+  # browser()
+  beta <- 1-targetpower
+  z1 <- qnorm(1-alpha)
+  fz <- ifelse(diffm<0, 0.5*exp(-7.06*diffm/ltheta1),
+                        0.5*exp(-7.06*diffm/ltheta2))
+  z2 <- abs(qnorm((1-fz)*beta))
+  
+  n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
+  n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
+  
+  n0 <- ceiling(max(n01,n02))
+  
+  # make an even multiple of step (=2 in case of 2x2 cross-over)
+  n0 <- steps*trunc(n0/steps)
+  
+  #browser()
+  return(n0)
+}
+
+# mixture of old code and Zhang's formula 
+.sampleN0_3 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
+                        se, steps=2, bk=2)
+{
+  # transform to limits symmetric around zero (if they are not)
+  locc    <- (ltheta1+ltheta2)/2
+  diffm   <- diffm - locc
+  ltheta1 <- ltheta1 - locc
+  ltheta2 <- -ltheta1
+  delta   <- abs((ltheta2-ltheta1)/2)
+  
+  z1   <- qnorm(1-alpha)
+  beta <- 1-targetpower
+  
+  c  <- abs(diffm/delta)
+  # probability for second normal quantil
+  # if c<0.2 is in general a good choice needs to be tested
+  #                        Zhang's f. if 7.06 is general needs to be tested
+  p2 <- ifelse(c<0.2, 1-(1-0.5*exp(-7.06*c))*beta, 1-beta)
+  z2 <- qnorm(p2)
+  # difference for denominator
+  dn <- ifelse(diffm<0, diffm-ltheta1, diffm-ltheta2)
+  n0 <- (bk/2)*((z1+z2)*(se*sqrt(2)/dn))^2
+  # make an even multiple of steps (=2 in case of 2x2 cross-over)
+  n0 <- steps*trunc(n0/steps)
+  #browser()
   return(n0)
 }
 
@@ -116,8 +170,13 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   }
   
   # start value from large sample approx. (hidden func.)
-  n  <- .sampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, bk)
+  # Jul 2014: changed to mixture of old code and Zhang's formula
+#    n <- .sampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, 
+#                   bk, diffmthreshold=0.04)
+  n <- .sampleN0_3(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, bk)
+  #browser()
   if (n<nmin) n <- nmin
+
   df <- eval(dfe)
   pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
 

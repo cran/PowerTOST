@@ -8,8 +8,8 @@ export(
   , CVCL
   , CV2se
   , CV2mse
-  , CI2CV
   , CVfromCI
+  , CI2CV
   , CVp2CV
   , CVpooled
   , exppower.noninf

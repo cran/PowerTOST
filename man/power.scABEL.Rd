@@ -57,11 +57,12 @@ Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
 Regulatory body settings for the widening of the BE acceptance limits.\cr
-Defaults to \code{design="EMA"}
+Defaults to \code{regulator="EMA"}
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the empirical power.
-Defaults to 100 000 = 1e+05.
+Defaults to 100 000 = 1e+05.\cr
+If simulations are aimed for empirical alpha \code{nsims=1e+06} is recommended.
 }
   \item{details}{
 If set to \code{TRUE} the computational time is shown as well as the components
@@ -80,18 +81,18 @@ is issued if \code{setseed=TRUE}, the default.
 The methods rely on the analysis of log-transformed data, i.e. assume a 
 log-normal distribution on the original scale.\cr\cr
 The widened BE acceptance limits will be calculated by the formula\cr
-\code{[lBEL,uBEL] =exp(-+ r_const*sWR)}\cr
+\code{   [lBEL,uBEL] =exp(-+ r_const*sWR)}\cr
 with r_const the regulatory constant and sWR the standard deviation of the within
 subjects variability of the Reference. r_const=0.76 is used in case of 
 \code{regulator="EMA"} and in case of \code{regulator="FDA"} 
 r_const=0.89257...=log(1.25)/0.25. If the CVwR of the Reference is < CVswitch=0.3 
 the conventional ABE limits apply (mixed procedure). In case of 
 \code{regulator="EMA"} a cap is placed on the widened limits if CVwr>0.5, i.e.
-the widened limits are held at value calculated at CVwR=0.5.\cr\cr
+the widened limits are held at value calculated for CVwR=0.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL.\cr
 For more details see a document "Implementation_scaledABE_simsVx.yy.pdf" in the 
-doc subdirectory of the package.
+/doc subdirectory of the package.
 }
 \value{
 Returns the value of the 'empirical' power.
@@ -107,23 +108,18 @@ D. Labes
 \note{
 In case of \code{regulator="FDA"} the (empirical) power is only approximate since
 the BE decision method is not exactly what is expected by the FDA. But the two
-Laszlos state that the scABEL method should be 'operational' equivalent to the
+Laszlos state that the scABEL method should be 'operational equivalent' to the
 FDA method.\cr
 To get the power for the FDA favored method via linearized scaled ABE criterion
 use function \code{power.RSABE()}.
 }
 \section{Warning }{
-Preliminary cross-validation of the simulations as implemented here and via 
-subject data simulation and subsequent evaluation via the EMA method have shown 
-that the algorithm used in V1.1-02 may be to naively implemented.\cr
-Both simulation algorithm gave sometimes quite different results in the magnitude.
-For more details see a document "Implementation_scaledABE_sims" 
-in the doc subdirectory of the package.\cr\cr
-The new implemented simulation algorithm gave better agreement to the power values
-obtained via subject data sims if CVwT=CVwR. The calculations with different 
-variabilities gave still unsatisfactory results for the 2x3x3 design.
+Cross-validation of the simulations as implemented here and via the 'classical' 
+subject data simulation have shown somewhat unsatisfactory results for the 
+2x3x3 design if the variabilities for Test and Reference are different.\cr
 The function therefore gives a warning if calculations with different CVwT, CVwR
-are requested for the 2x3x3 partial replicate design.
+are requested for the 2x3x3 partial replicate design.\cr
+For more details see the above mentioned document "Implementation_scaledABE_simsVy.xx.pdf" 
 }
 \seealso{
 \code{\link{sampleN.scABEL}}, \code{\link{power.RSABE}}

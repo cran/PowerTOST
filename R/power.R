@@ -161,12 +161,16 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   
   # design characteristics
   ades <- .design.props(d.no)
-  #degrees of freedom as expression
+  # degrees of freedom as expression
   dfe  <- .design.df(ades, robust=robust)
-  #design const.
+  # design const.
   bk    <- ades$bk
   # step size = no of sequences
   steps <- ades$steps
+  
+  # warn if design is imbalanced?
+  if (any(n%%steps!=0)) warning("Formulas implemented assume balanced designs.\n",
+                                "Use function power2.TOST() instead.", call.=FALSE)
   
   # regularize the method giving
   method <- .powerMethod(method)

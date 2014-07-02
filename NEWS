@@ -1,3 +1,11 @@
+Version 1.1-12
+Released 2014-07-02
+      - Some minor improvements in documentation.
+      - Function power.TOST() now throws a warning if used with imbalanced
+        designs (n not an even multiple of no. of sequences)
+      - Internal change of start value of sample size search in sampleN.TOST()
+        to avoid failed searches if variability is high and theta0 is near 1
+
 Version 1.1-11
 Released 2014-04-30
       - Utility function added which calculates 1-2*alpha confidence interval(s) 

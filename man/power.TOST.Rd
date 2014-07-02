@@ -67,10 +67,11 @@ Has only effect for higher-order crossover designs.
 }
 \details{
 The exact calculations of power are based on Owen's Q-function.\cr
-The approximate power is implemented via non-central t-distribution\cr
+The approximate power is implemented via non-central t-distribution
 or via 'shifted' central t-distribution.\cr\cr
 The formulas used assume balanced studies, i.e. equal number of subjects in
 the (sequence) groups.\cr
+If the design is imbalanced consider function \code{power2.TOST()} instead.\cr\cr
 In case of parallel group design and higher order crossover designs 
 (replicate crossover or crossover with more than two treatments) the calculations 
 are based on the assumption of equal variances for Test and Reference products
@@ -109,10 +110,10 @@ See here for a short description:\cr
 D. Labes
 }
 \seealso{
- \code{\link{sampleN.TOST}, \link{known.designs}}
+ \code{\link{sampleN.TOST}, \link{known.designs}, \link{power2.TOST}}
 }
 \examples{
-# power for the 2x2 cross-over design with 24 subjects
+# power for the 2x2 cross-over design with 24 subjects and CV 25\%
 # using all the other default values
 # should give: [1] 0.7391155
 power.TOST(CV=0.25, n=24)

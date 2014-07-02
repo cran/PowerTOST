@@ -43,7 +43,7 @@ of subjects in the sequence groups.\cr\cr
 If n is given as single number (total sample size) and this number is not 
 divisible by the number of sequences of the design an unbalanced design is 
 assumed. A corresponding message is thrown showing the numbers of subjects 
-in sequence groups.\cr
+in sequence groups used.\cr
 Attention! In case of the 2x2x3 (TRT|RTR) design the order of n's important 
 if given as vector. n[1] is for sequence group 'TRT' and n[2] is for 
 sequence group 'RTR'. 
@@ -57,7 +57,7 @@ Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
 Regulatory body settings for the scaled ABE criterion.\cr
-Defaults to \code{design="FDA"}.\cr
+Defaults to \code{regulator="FDA"}.\cr
 Also the linearized scaled ABE criterion is usually calculated with the FDA 
 constant r_const=log(1.25)/0.25 you can override this behavior to use the 
 EMA setting r_const=0.76 to avoid the discontinuity at CV=30\% and be 
@@ -65,7 +65,8 @@ more stringent.
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the empirical power.
-Defaults to 100 000 = 1e+5.
+Defaults to 100 000 = 1e+5.\cr
+If simulations are aimed for empirical alpha \code{nsims=1e+06} is recommended.
 }
   \item{details}{
 If set to \code{TRUE} the computational time is shown as well as the components
