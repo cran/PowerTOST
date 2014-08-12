@@ -1,3 +1,8 @@
+Version 1.1-13
+Released 2014-08-12
+      - Design constant bk(ni) for design="paired" corrected.
+        THX to Helmut Schuetz which detected that bug.
+
 Version 1.1-12
 Released 2014-07-02
       - Some minor improvements in documentation.

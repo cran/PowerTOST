@@ -27,7 +27,7 @@ no  design    df    df2  steps  bk   bknif
  7  2x4x4    3*n-4  n-4    4    1    1/16  
  9  2x3x3    2*n-3  n-3    3    1.5  1/6   # partial replicate
 10  2x4x2    n-2    n-2    4    8    1/2   # Balaam's design 
-100 paired   n-1    n-1    1    2    1/2   
+100 paired   n-1    n-1    1    2    2/1   
 ")
 # no. 9 is f.i. the partial replicate design TRR/RTR/RRT
 # no. 10 is Balaam's design, a mixture of crossover and parallel group.
@@ -82,7 +82,7 @@ no  design    df    df2  steps  bk   bknif
   if (is.na(des$no)) stop("Design ",design.no," not defined!")
 	return (des)
 }	
-
+#--- return design degrees of freedom
 .design.df <- function(des.props, robust)
 {
   if (robust){

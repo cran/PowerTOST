@@ -1,11 +1,11 @@
-5f9c41333124fd3e7c376c0bf716c19c *DESCRIPTION
+1040ade258065fc8ae995fd1cfdc5bf7 *DESCRIPTION
 c1dd3d1775ea67da084dcb51af285806 *NAMESPACE
-34c4e488c2226800fbf0505b4c15dc07 *NEWS
+40ff085f9e465a09bb354ee866aaa1a4 *NEWS
 b05dde0cf71f71653fc5c92dbb972ff1 *R/BE_CI.R
 990f4ff4f9efc790e21b1e8dbfefabc2 *R/CVfromCI.R
 ca3fc662e22aeddf2352f862f61408d3 *R/CVpMethods.R
 bb25b92652da9eecfceb53e1ba815f70 *R/CVpooled.R
-6ba54263e3f44af0c571fdf729648767 *R/DesignHelpers.R
+3404e82192296cc550aaf6d228c5eb34 *R/DesignHelpers.R
 43487206fe60312414f9a118810967d2 *R/Fieller.R
 ced270f7d4a7137ea856436cb015559e *R/OwensQ.R
 2c6a2f997795b4424345558551f0c5df *R/OwensQOwen.R
@@ -29,7 +29,7 @@ d167029b2d945596a9312d8f7f253484 *data/data2x2.rda
 0b4448108f01f99eb71a71da0a60f912 *data/data2x2x3.rda
 958b6d7393f6e426f3ac9aaeffd818d7 *data/data2x4x4.rda
 01e37462e6df603ebf8d5c78ab966434 *data/data_parallel.rda
-58ca68f21c509d49cd1d9f3afc04f9e8 *inst/doc/BE_power_sample_size_excerpt_V06.pdf
+704a12123d7c3205bc0cd3d63953c596 *inst/doc/BE_power_sample_size_excerpt_V06.pdf
 7a64ddb3c7043b44fea68701f134342a *inst/doc/Implementation_scaledABE_simsV0.05.pdf
 632dbee298668d8d00858720463fe546 *inst/tests/test_2x2.R
 c4c63e55f815fcf1169c813451d9c5ff *inst/tests/test_2x2x3.R
