@@ -1,3 +1,18 @@
+Version 1.2-01
+Released 2014-09-30
+      - Some minor bugs removed and spelling in man pages corrected
+      - print method for class pwrA now calls plot()
+      - power analysis in case of n=12 for the plan now drops n below 12 subjects
+
+Version 1.2-00
+Build 2014-09-19, released to alpha/beta testers only
+      - Contains now functions for power analysis of a sample size plan
+        for ABE (pa.ABE()), scaled ABE (pa.sABE()) and scaled ABE for NTID's
+        (pa.NTIDFDA()) analyzing power for deviations from assumptions for 
+        the sample size estimation
+      - Contains further experimental functions for power calculations / samplesize 
+        estimation for dose proportionality studies using the Power model
+
 Version 1.1-13
 Released 2014-08-12
       - Design constant bk(ni) for design="paired" corrected.

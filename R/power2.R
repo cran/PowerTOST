@@ -27,6 +27,8 @@ power2.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
     dfe   <- parse(text="n-2", srcfile=NULL)# for total
     steps <- 2
   }
+  # check if all n's are >0
+  if (any(n<1)) stop("All n(i) have to be >0")
   # check the correct length due to design
   # must be length==number of (sequence) groups, that is coded in steps
   if (length(n)!= steps){

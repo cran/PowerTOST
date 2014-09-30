@@ -20,6 +20,9 @@ export(
   , OwensQ
   , OwensQOwen
   , OwensT
+  , pa.ABE
+  , pa.scABE
+  , pa.NTIDFDA
   , power.noninf
   , power.RatioF
   , power.TOST
@@ -27,12 +30,14 @@ export(
   , power.NTIDFDA
   , power.RSABE
   , power.scABEL
+  , power.dp
   , sampleN.noninf
   , sampleN.RatioF
   , sampleN.TOST
   , sampleN.NTIDFDA
   , sampleN.RSABE
   , sampleN.scABEL
+  , sampleN.dp
   , se2CV
   , mse2CV
 )         
@@ -44,3 +49,6 @@ import(
 
 # Define S3 methods for the pooled CV
 S3method(print, CVp)
+# S3 methods for printing/plotting power analysis
+S3method(print, pwrA)
+S3method(plot, pwrA)

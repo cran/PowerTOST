@@ -264,7 +264,6 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   names(res) <-c("Design","alpha","CV","theta0","theta1","theta2",
                  "Sample size", "Achieved power", "Target power")
   
-  if (print) return(invisible(res)) 
-  else return(res)
+  if (print) return(invisible(res)) else return(res)
   
 }

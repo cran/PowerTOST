@@ -30,9 +30,9 @@ difference to 1. See examples.\cr
 Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}.
   }
   \item{theta1}{
-  Lower bioequivalence limit.\cr
-  In case of \code{logscale=TRUE} it is given as ratio, otherwise as diff. to 1.\cr
-  Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
+Lower bioequivalence limit.\cr
+In case of \code{logscale=TRUE} it is given as ratio, otherwise as diff. to 1.\cr
+Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
   }
   \item{theta2}{
 Upper bioequivalence limit.\cr
@@ -57,20 +57,20 @@ approximation via 'shifted' central t-distribution.\cr
 The strings for \code{method} may be abbreviated.
   }
   \item{robust}{
-Defaults to FALSE. With that value the usual degrees of freedom will be used.\cr
+Defaults to \code{FALSE}. With that value the usual degrees of freedom will be used.\cr
 Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
 (aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
 See \code{known.designs()$df2} for designs covered in this package.\cr
 Has only effect for higher-order crossover designs.
   }
   \item{print}{
-If TRUE (default) the function prints its results.\cr 
-If FALSE only the data.frame with the results will be returned. 
+If \code{TRUE} (default) the function prints its results.\cr 
+If \code{FALSE} only the data.frame with the results will be returned. 
   }
   \item{details}{
-If TRUE the design characteristics and the steps during
+If \code{TRUE} the design characteristics and the steps during
 sample size calculations will be shown. \cr 
-Defaults to FALSE.
+Defaults to \code{FALSE}.
   }
   \item{imax}{
 Maximum number of steps in sample size search. \cr 
