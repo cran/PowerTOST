@@ -47,6 +47,9 @@ power.noninf <- function(alpha=0.025,  logscale=TRUE, margin, theta0, CV, n,
   if (logscale) {
     if (missing(margin)) margin <- 0.8
     if (missing(theta0)) theta0 <- 0.95
+    # further check of input
+    if(margin<=0) stop("With logscale=TRUE margin must be ratio >0")
+    if(theta0<=0) stop("With logscale=TRUE theta0 must be ratio >0")
     lmargin <- log(margin)
     diffm   <- log(theta0)
     se      <- CV2se(CV)

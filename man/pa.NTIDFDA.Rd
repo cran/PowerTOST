@@ -32,7 +32,7 @@ Note that targetpower < 0.5 doesn't make many sense.
   \item{minpower}{
 Minimum acceptable power to have if deviating from assumptions for sample size plan.\cr
 Has to be lower than \code{targetpower}. Defaults to 0.7.\cr
-Note that minpower < 0.5 doesn't make many sense.
+\code{minpower} < 0.5 doesn't make many sense.
 }
   \item{\dots}{
 More arguments to pass to \code{power.NTIDFDA()}.\cr

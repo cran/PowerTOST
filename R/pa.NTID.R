@@ -4,7 +4,11 @@
 # Only design="2x2x4" according to the Warfarin guidance
 # -------------------------------------------------------------------
 pa.NTIDFDA <- function(CV, theta0=0.975, targetpower=0.8, minpower=0.7,  ...) 
-{ # functions to use with uniroot
+{ 
+  # Rversion must be >=3.1.0 for the uniroot call with argument extendInt
+  Rver <- paste0(R.Version()$major, ".", R.Version()$minor)
+  
+  # functions to use with uniroot
   pwrCV  <- function(x, ...) {
     #browser()
     power.NTIDFDA(CV=x, ...) - minpower
@@ -23,10 +27,15 @@ pa.NTIDFDA <- function(CV, theta0=0.975, targetpower=0.8, minpower=0.7,  ...)
   if (targetpower>=1 | minpower>=1 | targetpower<=0 | minpower<=0 ) 
     stop("Power values have to be within 0...1") 
   if(minpower>=targetpower) stop("Minimum acceptable power must < than target.")
-  if(minpower <= 0.5) 
-    message("Minimum acceptable power <=0.5 doesn't make much sense.")
-  if(targetpower <= 0.5) 
-    message("Target power <=0.5 doesn't make much sense.")
+  if (Rver<"3.1.0"){
+    if (minpower < 0.5) stop("Minimum acceptable power must be >=0.5.")
+    if (targetpower < 0.5) stop("Target power must be >=0.5.")
+  } else {
+    if (minpower <= 0.5) 
+      message("Note: Minimum acceptable power <=0.5 doesn't make much sense.")
+    if (targetpower <= 0.5) 
+      message("Note: Target power <=0.5 doesn't make much sense.")
+  }
   
   #if(minpower < 0.05) stop("Minimum acceptable power must not be <0.05!")
   # otherwise uniroot() throws an error says Helmut

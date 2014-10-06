@@ -1,3 +1,8 @@
+Version 1.2-02
+Released 2014-10-06
+      - functions pa.XYZ() adapted so that they also function under R < 3.1.1
+        (request of U. Ligges) although with minpower>=0.5 
+
 Version 1.2-01
 Released 2014-09-30
       - Some minor bugs removed and spelling in man pages corrected

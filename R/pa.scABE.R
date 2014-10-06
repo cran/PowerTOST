@@ -6,7 +6,9 @@
 pa.scABE   <- function(CV, theta0=0.9, targetpower=0.8, minpower=0.7, 
                        design=c("2x3x3", "2x2x4", "2x2x3"), 
                        regulator=c("EMA", "FDA"), ...) 
-{
+{ # Rversion must be >=3.1.0 for the uniroot call with argument extendInt
+  Rver <- paste0(R.Version()$major, ".", R.Version()$minor)
+  
   if (length(CV)>1) stop("Only CVwT=CVwR=CV implemented. CV has to be a scalar.")
   if (CV<0) {
     CV <- -CV
@@ -17,10 +19,15 @@ pa.scABE   <- function(CV, theta0=0.9, targetpower=0.8, minpower=0.7,
     stop("Power values have to be within 0...1") 
   if(minpower>=targetpower) stop("Minimum acceptable power must be < than target")
   
-  if(minpower <= 0.5) 
-    message("Minimum acceptable power <=0.5 doesn't make much sense.")
-  if(targetpower <= 0.5) 
-    message("Target power <=0.5 doesn't make much sense.")
+  if (Rver<"3.1.0"){
+    if (minpower < 0.5) stop("Minimum acceptable power must be >=0.5.")
+    if (targetpower < 0.5) stop("Target power must be >=0.5.")
+  } else {
+    if (minpower <= 0.5) 
+      message("Note: Minimum acceptable power <=0.5 doesn't make much sense.")
+    if (targetpower <= 0.5) 
+      message("Note: Target power <=0.5 doesn't make much sense.")
+  }
   
   # check regulator, check design
   reg    <- match.arg(regulator)
@@ -75,8 +82,14 @@ pa.scABE   <- function(CV, theta0=0.9, targetpower=0.8, minpower=0.7,
 	########################################
   # TODO: test many cases. the form of the curves suggest that uniroot may fail!
   #browser()
-  CV.max <- uniroot(pwrCV, c(CV, 30*CV), tol=1e-7, extendInt ="downX" , 
-                    n=n.est, design=design, theta0=GMR, ...)$root
+  if (Rver<"3.1.0"){
+    CV.max <- uniroot(pwrCV, c(CV, 30*CV), tol=1e-7,  
+                      n=n.est, design=design, theta0=GMR, ...)$root
+    
+  } else {
+    CV.max <- uniroot(pwrCV, c(CV, 30*CV), tol=1e-7, extendInt ="downX", 
+                      n=n.est, design=design, theta0=GMR, ...)$root
+  }
   # points for plotting
   seg    <- 75; 
   # what did he do here? D.L.
@@ -106,8 +119,13 @@ pa.scABE   <- function(CV, theta0=0.9, targetpower=0.8, minpower=0.7,
   # extending interval for extrem cases
   updown <- ifelse(GMR <= 1, "upX", "downX")
   
-	GMR.min <- uniroot(pwrGMR, interval, tol=1e-7, extendInt=updown,
+  if (Rver<"3.1.0"){
+    GMR.min <- uniroot(pwrGMR, interval, tol=1e-7, 
                      n=n.est, CV=CV, design=design, ...)$root
+  } else {
+    GMR.min <- uniroot(pwrGMR, interval, tol=1e-7, extendInt=updown,
+                       n=n.est, CV=CV, design=design, ...)$root
+  }  
   seg     <- 50 # save some speed compared to Helmuts always 75
 	GMRs    <- seq(GMR.min, GMR, length.out=seg)
 	pBEGMR  <- vector("numeric", length=length(GMRs))

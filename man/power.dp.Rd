@@ -51,18 +51,19 @@ Power is calculated via non-central t approximation only.
 Value of power according to the input arguments.
 }
 \references{
-Patterson, Jones\cr
+Patterson S, Jones B\cr
 "Bioequivalence and Statistics in Clinical Pharmacology"\cr
 Chapman & Hall/CRC, Boca Raton, 2006, page 239\cr
+(contains presumably an error)
+
+Sethuraman VS, Leonov S, Squassante L, Mitchell TR, Hale MD\cr
+"Sample size calculation for the Power Model for dose proportionality studies"\cr
+Pharm. Stat. 2007 Jan-Mar;6(1):35-41
 
 Hummel J, McKendrick S, Brindley C, and R French\cr
 "Exploratory assessment of dose proportionality: review of current approaches\cr 
 and proposal for a practical criterion"\cr
-Pharmaceut Statist 8(1), 38-49 (2009)
-
-Sethuraman VS, Leonov S, Squassante L, Mitchell TR, Hale MD\cr
-"Sample size calculation for the Power Model for dose proportionality studies"\cr
-Pharm Stat. Vol. 6(1):35-41 (2007)
+Pharm. Stat. 2009 Jan-Mar;8(1):38-49
 }
 \author{
 D. Labes

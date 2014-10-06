@@ -6,7 +6,10 @@
 # -----------------------------------------------------------
 pa.ABE <- function(CV, theta0=0.95, targetpower=0.8, minpower=0.7, 
                     design="2x2", ...) 
-{ # functions to use with uniroot
+{ # Rversion must be >=3.1.0 for the uniroot call with argument extendInt
+  Rver <- paste0(R.Version()$major, ".", R.Version()$minor)
+  
+  # functions to use with uniroot
   pwrCV  <- function(x, ...) {
     #browser()
     power.TOST(CV=x, ...) - minpower
@@ -14,14 +17,22 @@ pa.ABE <- function(CV, theta0=0.95, targetpower=0.8, minpower=0.7,
   pwrGMR <- function(x, ...) {
     power.TOST(theta0=x, ...) - minpower
   } 
-  # to avoid reprogramming
+  # to avoid reprogramming of Helmuts code
   GMR <- theta0
   
   if (targetpower>=1 | minpower>=1) stop("Power values have to be within 0...1") 
   if (targetpower<=0 | minpower<=0) stop("Power values have to be within 0...1") 
   if (minpower>=targetpower) stop("Minimum acceptable power must < than target")
-  if (minpower <= 0.5) message("Minimum acceptable power <=0.5 doesn't make much sense.")
-  if (targetpower <= 0.5) message("Target power <=0.5 doesn't make much sense.")
+  if (Rver<"3.1.0"){
+    if (minpower < 0.5) stop("Minimum acceptable power must be >=0.5.")
+    if (targetpower < 0.5) stop("Target power must be >=0.5.")
+    
+  } else {
+    if (minpower <= 0.5) 
+      message("Note: Minimum acceptable power <=0.5 doesn't make much sense.")
+    if (targetpower <= 0.5) 
+      message("Note: Target power <=0.5 doesn't make much sense.")
+  }
   
   if (CV<0) {
     CV <- -CV
@@ -51,8 +62,14 @@ pa.ABE <- function(CV, theta0=0.95, targetpower=0.8, minpower=0.7,
   ########################################
   # max. CV for minimum acceptable power #
   ########################################
-  CV.max <- uniroot(pwrCV,  c(CV, 10*CV), tol=1e-7, extendInt ="downX",
-                    n=n.est, theta0=GMR, design=design, ...)$root
+  if(Rver<"3.1.0"){
+    CV.max <- uniroot(pwrCV,  c(CV, 10*CV), tol=1e-7, 
+                      n=n.est, theta0=GMR, design=design, ...)$root
+  } else {
+    # argument extentInt is available from 3.1.0 on
+    CV.max <- uniroot(pwrCV,  c(CV, 10*CV), tol=1e-7, extendInt ="downX",
+                      n=n.est, theta0=GMR, design=design, ...)$root
+  }
   CVs    <- seq(CV, CV.max, length.out=seg)
   # dimension properly in advance
   pBECV  <- vector("numeric", length=length(CVs))
@@ -70,8 +87,14 @@ pa.ABE <- function(CV, theta0=0.95, targetpower=0.8, minpower=0.7,
   # extending interval for extrem cases
   if(GMR <= 1) updown   <- "upX" else updown <- "downX"
   #browser()
-  GMR.min  <- uniroot(pwrGMR, interval, tol=1e-7, extendInt=updown,
-                      n=n.est, CV=CV, design=design, ...)$root
+  if(Rver<"3.1.0"){
+    GMR.min  <- uniroot(pwrGMR, interval, tol=1e-7, 
+                        n=n.est, CV=CV, design=design, ...)$root
+  } else {
+    # extentInt is available from 3.1.0 on
+    GMR.min  <- uniroot(pwrGMR, interval, tol=1e-7, extendInt=updown,
+                        n=n.est, CV=CV, design=design, ...)$root
+  }  
   GMRs     <- seq(GMR.min, GMR, length.out=seg)
   pBEGMR   <- vector("numeric", length=length(GMRs))
   # replace eventually with apply/sapply

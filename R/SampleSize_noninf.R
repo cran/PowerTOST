@@ -20,7 +20,7 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
                            details=FALSE, print=TRUE, imax=100)
 { 
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
-  
+    
   #number of the design and check
   d.no <- .design.no(design)
   if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
@@ -41,7 +41,6 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   # make a multiple of steps
   nmin <- as.integer(steps*trunc(n/steps)) 
   nmin <- nmin + steps*(nmin<n)
-  
   if (print) {
     cat("\n++++++++++++ Non-inferiority test +++++++++++++\n")
     cat("            Sample size estimation\n")
@@ -59,6 +58,8 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   if (logscale) {
     if (missing(margin)) margin <- 0.8
     if (missing(theta0)) theta0 <- 0.95
+    if(margin<=0) stop("With logscale=TRUE margin must be ratio >0")
+    if(theta0<=0) stop("With logscale=TRUE theta0 must be ratio >0")
     if ( (theta0<=margin) & (margin<1) ) {
       stop("Null ratio ",theta0," must be above margin ",margin,"!", 
           call.=FALSE)

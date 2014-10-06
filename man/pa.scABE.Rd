@@ -26,11 +26,14 @@ in point estimator of T/R.
   \item{targetpower}{
 Power to achieve at least in sample size estimation. Must be >0 and <1.\cr
 Typical values are 0.8 or 0.9. Defaults to 0.8.\cr
-targetpower < 0.5 doesn't make many sense.
+targetpower < 0.5 doesn't make many sense.\cr
+If package run under R version < 3.1.0 \code{targetpower} has to be >= 0.5.
 }
   \item{minpower}{
 Minimum acceptable power to have if deviating from assumptions for sample size plan.\cr
-Has to be < as \code{targetpower}. Defaults to 0.7.
+Has to be < as \code{targetpower}. Defaults to 0.7.\cr
+\code{minpower} or \code{targetpower} <0.5 does'nt make many sense.\cr
+If package run under R version < 3.1.0 \code{minpower} has to be >= 0.5.
 }
   \item{design}{
 Character string describing the study design.\cr
