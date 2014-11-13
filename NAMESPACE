@@ -1,9 +1,10 @@
 # Export all names except those beginning with .
 # exportPattern("^[^\\.]")
+#
 # Export explicitly by name
-# print.CVp is defined under S3method
 export(
-    CI.BE
+    bib.CL
+  , CI.BE
   , CI.RatioF
   , CVCL
   , CV2se

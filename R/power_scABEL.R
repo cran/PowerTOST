@@ -103,13 +103,10 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (length(n)==1){
     # for unbalanced designs we divide the ns by ourself
     # to have smallest imbalance
-    ni <- round(n/seqs,0)
-    nv <- rep.int(ni, times=seqs-1)
-    nv <- c(nv, n-sum(nv))
-    if (nv[length(nv)]!=ni){
-      message("Unbalanced design. n(i)=", paste(nv, collapse="/"),
-          " assumed.")
-    } 
+    nv <- nvec(n=n, grps=seqs)
+    if (nv[1]!=nv[length(nv)]){
+      message("Unbalanced design. n(i)=", paste(nv, collapse="/"), " assumed.")
+    }
     C2 <- sum(1/nv)*bkni
     n <- sum(nv)
   } else {

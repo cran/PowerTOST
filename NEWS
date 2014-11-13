@@ -1,7 +1,17 @@
+Version 1.2-03
+Released 2014-11-13
+      - sampleN.dp() / power.dp() now cover "incomplete block designs"
+      - minimum sample size in sampleN.dp() introduced to avoid errors for
+        small CV <= 0.1 for the crossover design
+      - partitition of n(total) to (sequence) groups reworked in most power  
+        functions if design is unbalanced
+      - Liu's 2x2x2 design with 2 repeated measurements in each period added
+        (see ?known.designs under Notes)
+       
 Version 1.2-02
 Released 2014-10-06
       - functions pa.XYZ() adapted so that they also function under R < 3.1.1
-        (request of U. Ligges) although with minpower>=0.5 
+        (request of U. Ligges from CRAN) although with minpower>=0.5 
 
 Version 1.2-01
 Released 2014-09-30

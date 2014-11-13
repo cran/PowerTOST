@@ -93,6 +93,10 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
                          robust=FALSE, print=TRUE, details=FALSE, imax=100)
 {
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  if(CV<0) {
+    message("Negative CV changed to abs(CV).")
+    CV <- abs(CV)
+  }
   
   #number of the design and check
   d.no <- .design.no(design)
