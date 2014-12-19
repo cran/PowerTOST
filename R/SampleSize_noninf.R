@@ -96,7 +96,7 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   n   <- .sampleN0.noninf(alpha, targetpower, lmargin, d0=diffm, se, steps, bk)
   if (n<nmin) n <- nmin
   df  <- eval(dfe)
-  pow <- .power.noninf(alpha, lmargin, diffm, se, n, df, bk)
+  pow <- .power.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), df)
   if (details){
     cat("\nSample size search (ntotal)\n")
     cat(" n     power\n")
@@ -112,7 +112,7 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     }
     n <- n - steps
     df  <- eval(dfe)
-    pow <- .power.noninf(alpha, lmargin, diffm, se, n, df, bk)
+    pow <- .power.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), df)
     iter <- iter+1
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break  
@@ -120,7 +120,7 @@ sampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   while(pow<targetpower){
     n <- n+steps
     df  <- eval(dfe)
-    pow <- .power.noninf(alpha, lmargin, diffm, se, n, df, bk)
+    pow <- .power.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), df)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     iter <- iter +1
     if (iter>imax) break  

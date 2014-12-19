@@ -136,11 +136,9 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
                              se, dfse, steps, bk)
   if(n<nmin) n <- nmin
   df  <- eval(dfe)
-  pow <- .exppower.noninf(alpha, lmargin, diffm, se, dfse, n, df, bk) 
+  pow <- .exppower.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), dfse, df) 
   if (details) {
     cat("\nSample size search (ntotal)\n")
-    #parallel group design is now handled also in terms of ntotal
-    #if (d.no == 0) cat("(n is sample size per group)\n") 
     cat(" n    exp. power\n")
     # do not print first too high
     if (pow<=targetpower) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
@@ -160,7 +158,7 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down 
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.noninf(alpha, lmargin, diffm, se, dfse, n, df, bk) 
+    pow  <- .exppower.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), dfse, df) 
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -169,7 +167,7 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .exppower.noninf(alpha, lmargin, diffm, se, dfse, n, df, bk) 
+    pow  <- .exppower.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), dfse, df) 
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }

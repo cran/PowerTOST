@@ -9,11 +9,10 @@ known.designs <- function()
 # Chen, Chow and Liu used models with carry-over, i.e. 1 df lower.
 # n is the total number of subjects (cross-over designs and parallel group)
 # df2 = degrees of freedom for robust analysis (aka Senn's basic estimator).
-# bk is the so-called design constantin terms of total n, also without carry over.
-# bkni is the design constantin terms of n per sequence, also without carry over.
+# bk is the so-called design constant in terms of total n, also without carry over.
+# bkni is the design constant in terms of n per sequence, also without carry over.
 # In case of 2x2x4 design Chen, Chow and Liu used bk=1.1 (bkni=11/40) 
 # in a model with carry over.
-# Dec 2011: parallel group design now also for n=ntotal
 des <- ("
 no  design    df    df2  steps  bk   bknif 
  0  parallel n-2    n-2    2    4    1/1             

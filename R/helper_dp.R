@@ -1,7 +1,6 @@
 # -------------------------------------------------------------------------
-# helper functions for power.dp / sampleN.dp
+# helper functions for power.dp / sampleN.dp and others
 # -------------------------------------------------------------------------
-#
 # distribute n into grps with 'best' balance between grps
 # this function is also used in other power functions
 nvec <- function(n, grps)
@@ -16,6 +15,7 @@ nvec <- function(n, grps)
 }
 # --------------------------------------------------------------------------
 # css without ni, assuming all ni equal
+# --------------------------------------------------------------------------
 .css <- function(doses, design, dm=NULL)
 {
   ld  <- log(doses)

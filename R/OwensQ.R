@@ -93,7 +93,7 @@ OwensQ <- function (nu, t, delta, a, b)
 			         nu=nu, t=t, delta = delta, subdivisions = 10000, 
 			         #rel.tol = .Machine$double.eps^0.5, 
                #abs.tol = .Machine$double.eps^0.5,
-			         rel.tol = 1.e-10, abs.tol=1.e-12, stop.on.error = TRUE)[[1]]
+			         rel.tol = 1.e-9, abs.tol=1.e-9, stop.on.error = TRUE)[[1]]
 	# error handling? How?
   if(a==0){
     # approx. via nct?

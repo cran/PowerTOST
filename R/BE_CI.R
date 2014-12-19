@@ -38,11 +38,13 @@ CI.BE <- function(alpha=0.05, pe, CV, n, design="2x2", robust=FALSE)
   return(CI)
 }
 
-# ---------------------------------------------------------------------
-# Fieller CI
-# ---------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+# Fieller CI for values in the original scale
+# ----------------------------------------------------------------------------
 CI.RatioF <- function(alpha=0.025, pe, CV, CVb, n, design=c("2x2","parallel"))
 {
+  # check design
   design <- match.arg(design)
   
   if (missing(pe)) stop("point est. (ratio T/R) must be given!")

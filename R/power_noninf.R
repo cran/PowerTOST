@@ -7,12 +7,12 @@
 # --------------------------------------------------------------------------
 # internal functions:
 # power function (working horse)
-.power.noninf <- function(alpha, lmargin, diffm, se, n, df, bk=2)
+.power.noninf <- function(alpha, lmargin, diffm, sedm, df)
 {
   tval <- qt(1-alpha, df)
   # the original abs() function has the effect that in case of diffm<lmargin
   # if lmargin<0 the power of inferiority! is calculated
-  tau  <- (diffm-lmargin)*sqrt(n)/sqrt(bk*se^2)
+  tau  <- (diffm-lmargin)/sedm
   # in case of diffm=lmargin and se=0
   # tau has the value NaN
   tau[is.nan(tau)] <- 0
@@ -35,10 +35,27 @@ power.noninf <- function(alpha=0.025,  logscale=TRUE, margin, theta0, CV, n,
   #degrees of freedom as expression
   dfe  <- .design.df(ades, robust=robust)
   # design constant
-  bk <- ades$bk
+  #bk <- ades$bk    # we use always bkni
+
+  # we use always bkni
+  #bk   <- ades$bk
+  if (length(n) == 1) {
+    # total n given    
+    # for unbalanced designs we divide the ns by ourself
+    # to have only small imbalance (function nvec() from Helper_dp.R)
+    n <- nvec(n=n, grps=ades$steps)
+    if (n[1]!=n[length(n)]){
+      message("Unbalanced design. n(i)=", paste(n, collapse="/"), " assumed.")
+    } 
+  } else {
+    if (length(n) != ades$steps) {
+      stop("Length of n vector must be ", ades$steps, "!")
+    }
+  }
   
-  if (missing(CV)) stop("CV must be given!")
-  if (missing(n))  stop("Number of subjects n must be given!")
+  nc <- sum(1/n)
+  n <- sum(n)
+  se.fac <- sqrt(ades$bkni * nc)
   
   df   <- eval(dfe)    
   if (any(df<1)) stop("n too small. Degrees of freedom <1!")
@@ -52,13 +69,13 @@ power.noninf <- function(alpha=0.025,  logscale=TRUE, margin, theta0, CV, n,
     if(theta0<=0) stop("With logscale=TRUE theta0 must be ratio >0")
     lmargin <- log(margin)
     diffm   <- log(theta0)
-    se      <- CV2se(CV)
+    sedm    <- CV2se(CV)*se.fac
   } else {
     if (missing(margin)) margin <- -0.2
     if (missing(theta0)) theta0 <- -0.05
     lmargin <- margin
     diffm   <- theta0
-    se      <- CV
+    sedm    <- CV*se.fac
   }
-  return(.power.noninf(alpha, lmargin, diffm, se, n, df, bk))
+  return(.power.noninf(alpha, lmargin, diffm, sedm, df))
 }

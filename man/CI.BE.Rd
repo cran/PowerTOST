@@ -1,7 +1,7 @@
 \name{CI.BE}
 \alias{CI.BE}
 \title{
-1-2*alpha confidence interval given point est., CV and n
+1-2*alpha confidence interval given point estimator, CV and n
 }
 \description{
 Utility function to calculate the 1-2*alpha CI's given point est., CV and n for

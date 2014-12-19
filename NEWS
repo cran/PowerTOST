@@ -1,3 +1,12 @@
+Version 1.2-04
+Released 2014-12-19
+      - Bug in OwensT(h,a) for the case of a=-Inf removed. Thanks to
+        Benjamin Lang for discovering that nasty bug
+      - Functions power.noninf(), exppower.TOST(), exppower.noninf() adapted to 
+        deal with unbalanced studies
+      - Function pvalue.TOST() introduced to calculate the two p-values of the
+        TOST procedure. Contributed by Benjamin Lang
+
 Version 1.2-03
 Released 2014-11-13
       - sampleN.dp() / power.dp() now cover "incomplete block designs"
@@ -172,7 +181,7 @@ Released 2012-10-26
        power.noninf() calculated up to now the power of an inferiority test.
        Thanks to Helmut Schuetz.
      - New helper functions CV2mse() and mse2CV.
-     - New function CVCI() to calculate a confidence interval of a CV.   
+     - New function CVCL() to calculate a confidence interval of a CV.   
 
 Version 0.9-11
 Released 2012-08-07

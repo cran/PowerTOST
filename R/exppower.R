@@ -6,12 +6,11 @@
 # dfse degrees of freedom
 # Only for log-transformed data.
 # Raw function: see the call in exppower.TOST()
-.exppower.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
-                           se, dfse, n, df, bk=2)
+.exppower.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, sedm, dfse, df)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE)
-  d1   <- sqrt(n*(diffm-ltheta1)^2/(bk*se^2))
-  d2   <- sqrt(n*(diffm-ltheta2)^2/(bk*se^2))
+  d1   <- sqrt((diffm-ltheta1)^2/sedm^2)
+  d2   <- sqrt((diffm-ltheta2)^2/sedm^2)
   # in case of diffm=ltheta1 or =ltheta2 and se=0
   # d1 or d2 have the value NaN
   # is this correct?
@@ -37,7 +36,7 @@ exppower.TOST <- function(alpha=0.05, logscale=TRUE, theta0, theta1, theta2,
   #df as expression
   dfe  <- .design.df(ades, robust=robust)
   #design const.
-  bk   <- ades$bk
+  #bk   <- ades$bk # we use always bkni
   
   if (missing(CV) | missing(dfCV)) stop("CV and df must be given!", call.=FALSE)
   if (missing(n)) stop("Number of subjects must be given!", call.=FALSE)
@@ -61,11 +60,31 @@ exppower.TOST <- function(alpha=0.05, logscale=TRUE, theta0, theta1, theta2,
     ldiff   <- theta0
     se      <- CV
   }
-
+  # we use always bkni
+  #bk   <- ades$bk
+  if (length(n) == 1) {
+    # total n given    
+    # for unbalanced designs we divide the ns by ourself
+    # to have only small imbalance (function nvec() from Helper_dp.R)
+    n <- nvec(n=n, grps=ades$steps)
+    if (n[1]!=n[length(n)]){
+      message("Unbalanced design. n(i)=", paste(n, collapse="/"), " assumed.")
+    } 
+  } else {
+    if (length(n) != ades$steps) {
+      stop("Length of n vector must be ", ades$steps, "!")
+    }
+  }
+  
+  nc <- sum(1/n)
+  n <- sum(n)
+  se.fac <- sqrt(ades$bkni * nc)
+  
+  
   df      <- eval(dfe)
   if (any(df<1)) stop("n too low. Degrees of freedom <1!", call.=FALSE)
   
-  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se, dfCV, n, df, bk)
+  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se*se.fac, dfCV, df)
   
   return( pow )
 }

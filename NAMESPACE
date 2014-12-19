@@ -32,6 +32,8 @@ export(
   , power.RSABE
   , power.scABEL
   , power.dp
+  , pvalue.TOST
+  , pvalues.TOST
   , sampleN.noninf
   , sampleN.RatioF
   , sampleN.TOST

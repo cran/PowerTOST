@@ -6,11 +6,10 @@
 # dfse degrees of freedom
 # Only for log-transformed data.
 # Raw function: see the call in exppower.noninf()
-.exppower.noninf <- function(alpha=0.05, lmargin, diffm, 
-                             se, dfse, n, df, bk=2)
+.exppower.noninf <- function(alpha=0.05, lmargin, diffm, sedm, dfse, df)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE)
-  tau  <- sqrt(n*(diffm-lmargin)^2/(bk*se^2))
+  tau  <- sqrt((diffm-lmargin)^2/sedm^2)
   # in case of diffm=lmargin and se=0
   # tau has the value NaN
   tau[is.nan(tau)] <- 0
@@ -52,9 +51,28 @@ exppower.noninf <- function(alpha=0.025, logscale=TRUE, theta0, margin,
     ldiff   <- theta0
     se      <- CV
   }
+  
+  if (length(n) == 1) {
+    # total n given    
+    # for unbalanced designs we divide the ns by ourself
+    # to have only small imbalance (function nvec() from Helper_dp.R)
+    n <- nvec(n=n, grps=ades$steps)
+    if (n[1]!=n[length(n)]){
+      message("Unbalanced design. n(i)=", paste(n, collapse="/"), " assumed.")
+    } 
+  } else {
+    if (length(n) != ades$steps) {
+      stop("Length of n vector must be ", ades$steps, "!")
+    }
+  }
+  
+  nc <- sum(1/n)
+  n <- sum(n)
+  se.fac <- sqrt(ades$bkni * nc)
+  
   df      <- eval(dfe)
   if (any(df<1)) stop("n too low. Degrees of freedom <1!", call.=FALSE)
-  pow <- .exppower.noninf(alpha, lmargin, ldiff, se, dfCV, n, df, bk)
+  pow <- .exppower.noninf(alpha, lmargin, ldiff, se*se.fac, dfCV, df)
   
   return( pow )
 }

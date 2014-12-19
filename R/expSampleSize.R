@@ -135,15 +135,15 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   if (print) {
     cat("alpha = ",alpha,", target power = ", targetpower,"\n", sep="")
     cat("BE margins         =",theta1,"...", theta2,"\n")
-    if (logscale) cat("Null (true) ratio  = ",theta0,",  CV = ",CV,"\n", sep="")
-    else          cat("Null (true) diff.  = ",theta0,",  CV = ",CV,"\n", sep="")
-    # can use lower.tail=FALSE and 1-0.05 in qchisq, H. Schütz in his lectures
+    if (logscale) cat("Null (true) ratio  = ",theta0, sep="")
+      else  cat("Null (true) diff.  = ",theta0, sep="")
+    # can use lower.tail=FALSE and 1-0.05 in qchisq, H. Schuetz in his lectures
     if (length(CV)>1){
       cat("Variability data\n")
       print(data.frame(CV=CV,df=dfCV), row.names = FALSE)
-      cat("CV(pooled)         = ", CVp, " with ", dfse," df\n", sep="")
+      cat("CV(pooled) = ", CVp, " with ", dfse," df\n", sep="")
     } else {
-      cat("CV                 = ", CVp, " with ", dfse," df\n", sep="")
+      cat("CV = ", CVp, " with ", dfse," df\n", sep="")
     }   
   }
   
@@ -152,11 +152,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
                       se, dfse, steps, bk)
   if (n<nmin) n <- nmin
   df  <- eval(dfe)
-  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
+  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se*sqrt(bk/n), dfse, df) 
   if (details) {
     cat("\nSample size search (ntotal)\n")
-    #parallel group design is now handled also in terms of ntotal
-    #if (d.no == 0) cat("(n is sample size per group)\n") 
     cat(" n   exp. power\n")
     # do not print first too high
     if (pow<=targetpower) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
@@ -176,7 +174,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down 
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.TOST(alpha,ltheta1,ltheta2,diffm,se,dfse,n,df,bk) 
+    pow  <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se*sqrt(bk/n), dfse, df) 
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -185,7 +183,7 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se, dfse, n, df, bk) 
+    pow  <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se*sqrt(bk/n), dfse, df) 
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
@@ -217,5 +215,3 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   else return(res)
   
 }
-
-

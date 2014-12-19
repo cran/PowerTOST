@@ -36,7 +36,10 @@ In case of cross-over studies this is the within-subject CV, \cr
 in case of a parallel-group design the CV of the total variability.
 }
   \item{n}{
-Number of subjects under study.
+Number of subjects under study.\cr
+Is total number if given as scalar, else number of subjects in the (sequence) 
+groups. In the latter case the length of n vector has to be equal to the 
+number of (sequence) groups.
 }
   \item{design}{
 Character string describing the study design.\cr
@@ -58,7 +61,7 @@ Value of power according to the input arguments.
 }
 \section{Warning }{
 The function does not vectorize if design is a vector.\cr
-The function vectorize properly if n or CV or theta0 are vectors.\cr
+The function vectorize properly if CV or theta0 are vectors.\cr
 Other vector input is not tested yet.
 }
 \references{
@@ -84,8 +87,4 @@ formulation and immediate release product.
 # log-transformed, design="2x2"
 # should give: 0.4916748
 power.noninf(CV=0.3, n=24)
-#
-# vectorized answer
-# should give: [1] 0.7146648 0.8227931 0.8926036
-power.noninf(alpha=0.05, CV=0.3, n=c(30,40,50), design="2x2")
 }

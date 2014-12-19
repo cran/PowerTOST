@@ -105,5 +105,5 @@ CVs <- c(0.25, 0.3)
 dfs <- c(  22, 10)
 expsampleN.noninf(theta0=1.05, margin=1.25, CV=CVs, dfCV=dfs)
 # -> gives a pooled CV=0.2664927 with df=32
-# and a sample size n=34 with achieved expected power 0.815019
+# and a sample size n=40 with achieved expected power 0.808157
 }

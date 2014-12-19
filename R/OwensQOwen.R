@@ -15,8 +15,10 @@ OT_integrand <- function(x, h) exp(-0.5*h^2*(1+x^2))/(1+x^2)/(2*pi)
 
 OwensT <- function(h, a)
 { 
-  int <- integrate(OT_integrand, lower=0, upper=a, h=h)
-  return(int$value) 
+  int <- integrate(OT_integrand, lower=0, upper=abs(a), h=h)$value
+  # in case of a=Inf or -Inf the condition T(h,-a)=-T(h,a) is not maintained
+  int <- ifelse(a<0, -int, int)
+  return(int) 
 }
 
 # Owen's Q-function
@@ -77,6 +79,7 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
       k    <- seq(1, upr, by=2)
       sumt <- sum(M[k+1]) + sum(H[k+1])
     }
+    browser()
     qv <- pnorm(b) - 2*OwensT(b, (A*b-delta)/b) - 
                      2*OwensT(delta*sB, (delta*A*B-b)/B/delta) +
                      2*OwensT(delta*sB, A) - (delta>=0) + 2*sumt

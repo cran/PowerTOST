@@ -41,7 +41,10 @@ Coefficient of variation as ratio.
 Degrees of freedom for the CV (error/residual degree of freedom).
 }
   \item{n}{
-Number of subjects to be planned (ntotal).
+Number of subjects under study.\cr
+Is total number if given as scalar, else number of subjects in the (sequence) 
+groups. In the latter case the length of n vector has to be equal to the 
+number of (sequence) groups.
 }
   \item{design}{
 Character string describing the study design.
