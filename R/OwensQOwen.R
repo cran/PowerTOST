@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Calculation of Owens Q-function by the algo given by Owen itself:
+# Calculation of Owens Q-function by the algo given by Owen himself:
 # repeated integration by parts
 # 
 # Author: dlabes Mar 2012
@@ -79,7 +79,6 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
       k    <- seq(1, upr, by=2)
       sumt <- sum(M[k+1]) + sum(H[k+1])
     }
-    browser()
     qv <- pnorm(b) - 2*OwensT(b, (A*b-delta)/b) - 
                      2*OwensT(delta*sB, (delta*A*B-b)/B/delta) +
                      2*OwensT(delta*sB, A) - (delta>=0) + 2*sumt

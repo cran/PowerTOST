@@ -1,15 +1,15 @@
-27a867fb05c7711ef4aba106fd78b600 *DESCRIPTION
+a83ff0bdf76a268a93fb820152e5f64f *DESCRIPTION
 5ba3bd41ec23d823c8a9d164e19a9e50 *NAMESPACE
-6a29baa621dab8b20cb20fe2cc47f90d *NEWS
+a4c6a27235b74ba0baf58ac37bdc7c6a *NEWS
 982f834dee763fcd5ae3d9c3148960c8 *R/BE_CI.R
 33067d9fdc4969374af152cba6a239a7 *R/BIBs.R
-990f4ff4f9efc790e21b1e8dbfefabc2 *R/CVfromCI.R
+d0518c457aaa497dccf8035f869244dd *R/CVfromCI_BL.R
 ca3fc662e22aeddf2352f862f61408d3 *R/CVpMethods.R
 bb25b92652da9eecfceb53e1ba815f70 *R/CVpooled.R
 e7fad857c0d972431c35634c7896cbd6 *R/DesignHelpers.R
 43487206fe60312414f9a118810967d2 *R/Fieller.R
 5678d161c9e48239a5f30cd6b9044334 *R/OwensQ.R
-7d8757f317738b960ad5dc062fe11ea9 *R/OwensQOwen.R
+8c82026d024bf6816d3dfa9b52e5ebc7 *R/OwensQOwen.R
 fb40568824764fe63d928d36fab12a61 *R/SampleSize.R
 4e74c1bd27495268d1cc586ab9cd8d68 *R/SampleSize_doseprop.R
 03f06a77469e2d58bfdf4ea8119fa91f *R/SampleSize_noninf.R
@@ -29,7 +29,7 @@ dee02767b8b6ec6efd8342bb888523c0 *R/power2.R
 d4680420eebdb13b5785bc91f505f336 *R/power_doseprop.R
 7aa4172ad75062cfa914ee4268f5a008 *R/power_noninf.R
 b3b659b64c4ba7e044dfd5abd35811c6 *R/power_scABEL.R
-53f0df15b3185b035cf86888fdf66536 *R/pvalue.TOST_Benjamin.R
+27f444f01c92f2294159975439190130 *R/pvalue.TOST_Benjamin.R
 c0b783ff75eb1fed9453522b6124d608 *R/pwrA_S3methods.R
 c1a027ddbf064deac47cbcac1f9f4173 *R/samplesize_RSABE.R
 464c7a45f86c014d15d5746ddcf4498b *R/samplesize_RSABE_NTID.R
@@ -38,8 +38,8 @@ d167029b2d945596a9312d8f7f253484 *data/data2x2.rda
 0b4448108f01f99eb71a71da0a60f912 *data/data2x2x3.rda
 958b6d7393f6e426f3ac9aaeffd818d7 *data/data2x4x4.rda
 01e37462e6df603ebf8d5c78ab966434 *data/data_parallel.rda
-197ce36015e365164de9e8184f8d8420 *inst/doc/BE_power_sample_size_excerpt_V06.pdf
-a52f2e9d5f57e00b75431917f66bceb4 *inst/doc/Implementation_scaledABE_simsV0.06.pdf
+96e0db998dc0e399a9b193e5132214c6 *inst/doc/BE_power_sample_size_excerpt_V07.pdf
+b32956c33a68bd192e51cfbac0210b87 *inst/doc/Implementation_scaledABE_simsV0.07.pdf
 632dbee298668d8d00858720463fe546 *inst/tests/test_2x2.R
 c4c63e55f815fcf1169c813451d9c5ff *inst/tests/test_2x2x3.R
 07e56be2984ad9173d33abea9d7a91a7 *inst/tests/test_2x4x2.R
@@ -50,7 +50,7 @@ ee9d217af8db5305a2ed808db1857fed *inst/tests/test_parallel.R
 bb0097c6afe2e40ce1436cd969263751 *man/CI.RatioF.Rd
 bc5340656401147fc25e836c25d4bccc *man/CV2se.Rd
 1a3f417e06aa6a49137cbd8b4d5c34ea *man/CVCL.Rd
-e813553673b6d455bfa3b62c251c49c9 *man/CVfromCI.Rd
+3bfb1f28c2a6b2b8f8591dd0ef8c6e3d *man/CVfromCI.Rd
 de36ad0c8df61aacd5b09470c9a68558 *man/CVp2CV.Rd
 45220f9b8bcf30f3e92b5f2911d5125b *man/CVpooled.Rd
 104637f409fa6be52982be9bfddf03cc *man/OwensQ.Rd
@@ -78,7 +78,7 @@ c8a13112057cc54d2b916f09837ab3a8 *man/power.TOST.Rd
 22c59349d02f8c9b541d318bf08ec185 *man/power.noninf.Rd
 12e23d328872fb3b411fa84c5958989d *man/power.scABEL.Rd
 31b92a93d38c6cae42a43294c8d724db *man/power2.TOST.Rd
-9b31eee6d9fb8ca5cf79a8c8280d3a9a *man/pvalue.TOST.Rd
+35c7a599bff80f3d1fb8a6a54137b9a4 *man/pvalue.TOST.Rd
 e4e6265579ab1013fad0981aca23af05 *man/sampleN.NTIDFDA.Rd
 37d7f378f4958978fa92045259901474 *man/sampleN.RSABE.Rd
 967d07a7745e8fbd46dd422de8a4b15b *man/sampleN.RatioF.Rd

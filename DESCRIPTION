@@ -2,12 +2,13 @@ Package: PowerTOST
 Type: Package
 Title: Power and Sample Size Based on Two One-sided t-Tests (TOST) for
         (Bio)Equivalence Studies
-Version: 1.2-04
-Date: 2014-12-19
+Version: 1.2-05
+Date: 2015-01-07
 Authors@R: c(person("Detlew", "Labes", role = c("aut","cre"), email =
                     "DetlewLabes@gmx.de"),
              person("Helmut", "Schuetz", role = c("aut"), email =
-                    "helmut.schuetz@bebac.at") )
+                    "helmut.schuetz@bebac.at"),
+             person("Benjamin", "Lang", role=c("ctb")))
 Maintainer: Detlew Labes <DetlewLabes@gmx.de>
 Description: Contains functions to calculate power and sample size for
     various study designs used for bioequivalence studies. 
@@ -48,9 +49,10 @@ ByteCompile: yes
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2014-12-19 08:18:10 UTC; dlabes
+Packaged: 2015-01-06 18:58:45 UTC; detlew
 Author: Detlew Labes [aut, cre],
-  Helmut Schuetz [aut]
+  Helmut Schuetz [aut],
+  Benjamin Lang [ctb]
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2014-12-19 09:39:19
+Date/Publication: 2015-01-06 20:21:34

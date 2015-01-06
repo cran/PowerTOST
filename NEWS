@@ -1,3 +1,11 @@
+Version 1.2-05
+Released 2015-01-07
+      - Bug in OwensQOwen() removed (debug code left over), THX to Helmut 
+        for discovering this
+      - Function CVfromCI() and alias CI2CV() now handle unbalanced studies
+        contributed by Benjamin Lang
+      - Some typos in BE_power_sample_size_excerpt.pdf, found by Ben, corrected
+
 Version 1.2-04
 Released 2014-12-19
       - Bug in OwensT(h,a) for the case of a=-Inf removed. Thanks to

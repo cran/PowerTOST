@@ -46,7 +46,8 @@ pvalue.TOST <- function(pe, CV, n, logscale = TRUE, theta1, theta2,
     # to have only small imbalance (function nvec() from Helper_dp.R)
     n <- nvec(n=n, grps=ades$steps)
     if (n[1]!=n[length(n)]){
-      message("Unbalanced ",design, " design. n(i)= ", paste(n, collapse="/"), " assumed.")
+      message("Unbalanced ",design, " design. n(i)= ", paste(n, collapse="/"), 
+              " assumed.")
     } 
   } else {
     if (length(n) != ades$steps) {

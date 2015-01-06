@@ -81,10 +81,10 @@ Benjamin Lang\cr
 Man page by D. Labes
 }
 \note{
-In case of argument \code{n} given as not divisible by the number of (sequence) 
-groups the total sample size is partitioned to the (sequence) groups to have 
-small imbalance only. A message is given in such cases.\cr\cr
 The formulas implemented cover balanced and unbalanced designs.\cr\cr
+In case of argument \code{n} given as n(total) and is not divisible by the number
+of (sequence) groups the total sample size is partitioned to the (sequence) 
+groups to have small imbalance only. A message is given in such cases.\cr\cr
 SAS procedure TTEST with the TOST option names p.left = Upper, p.right= Lower
 according to the tail of the t-distribution to be used for obtaining the 
 p-values.
