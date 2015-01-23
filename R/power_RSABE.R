@@ -68,7 +68,6 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # for unbalanced designs we divide the ns by ourself
     # to have only small imbalance
     nv <- nvec(n=n, grps=seqs)
-    #browser()
     if (nv[1]!=nv[length(nv)]){
       message("Unbalanced design. n(i)=", paste(nv, collapse="/"), " assumed.")
     } 

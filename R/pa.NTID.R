@@ -10,7 +10,6 @@ pa.NTIDFDA <- function(CV, theta0=0.975, targetpower=0.8, minpower=0.7,  ...)
   
   # functions to use with uniroot
   pwrCV  <- function(x, ...) {
-    #browser()
     power.NTIDFDA(CV=x, ...) - minpower
   } 
   pwrGMR <- function(x, ...) {
@@ -59,15 +58,11 @@ pa.NTIDFDA <- function(CV, theta0=0.975, targetpower=0.8, minpower=0.7,  ...)
     res[,"Sample size"] <- n.est
     res[,"Achieved power"] <- pwr.est
   }
-  
-  
-  #browser()
   ########################################
   # max. CV for minimum acceptable power #
   ########################################
   # TODO: for small CV's and theta0^=1 the search interval may be not sufficient
   # to get a solution in uniroot
-  #browser()
   upr <- max(CV*10, 1/CV)
   CV.max <- NA
   # for the try code see Hadley Wickhams "Advanced R"
@@ -76,7 +71,6 @@ pa.NTIDFDA <- function(CV, theta0=0.975, targetpower=0.8, minpower=0.7,  ...)
   CV.min <- NA
   try(CV.min <- uniroot(pwrCV,  c(0.0001, CV), tol=1e-7, n=n.est, 
                         theta0=GMR, ...)$root, silent = TRUE)
-  #browser()
   if (is.na(CV.min)) CV.min <- CV*2/3 else CV.min <- as.numeric(CV.min)
   if (is.na(CV.max)) CV.max <- 0.5    else CV.max <- as.numeric(CV.max)
   # points for plotting

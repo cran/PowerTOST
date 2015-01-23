@@ -6,10 +6,10 @@
 # dfse degrees of freedom
 # Only for log-transformed data.
 # Raw function: see the call in exppower.noninf()
-.exppower.noninf <- function(alpha=0.05, lmargin, diffm, sedm, dfse, df)
+.exppower.noninf <- function(alpha=0.05, lmargin, diffm, sem, dfse, df)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE)
-  tau  <- sqrt((diffm-lmargin)^2/sedm^2)
+  tau  <- sqrt((diffm-lmargin)^2/sem^2)
   # in case of diffm=lmargin and se=0
   # tau has the value NaN
   tau[is.nan(tau)] <- 0
@@ -67,12 +67,13 @@ exppower.noninf <- function(alpha=0.025, logscale=TRUE, theta0, margin,
   }
   
   nc <- sum(1/n)
-  n <- sum(n)
+  n  <- sum(n)
   se.fac <- sqrt(ades$bkni * nc)
   
   df      <- eval(dfe)
   if (any(df<1)) stop("n too low. Degrees of freedom <1!", call.=FALSE)
-  pow <- .exppower.noninf(alpha, lmargin, ldiff, se*se.fac, dfCV, df)
+  pow <- .exppower.noninf(alpha=alpha, lmargin=lmargin, diffm=ldiff, 
+                          sem=se*se.fac, dfse=dfCV, df=df)
   
   return( pow )
 }

@@ -152,7 +152,8 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
                       se, dfse, steps, bk)
   if (n<nmin) n <- nmin
   df  <- eval(dfe)
-  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se*sqrt(bk/n), dfse, df) 
+  pow <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
+                        diffm=diffm, sem=se*sqrt(bk/n), dfse=dfse, df=df) 
   if (details) {
     cat("\nSample size search (ntotal)\n")
     cat(" n   exp. power\n")
@@ -174,7 +175,8 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down 
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se*sqrt(bk/n), dfse, df) 
+    pow  <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
+                           diffm=diffm, sem=se*sqrt(bk/n), dfse=dfse, df=df) 
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -183,7 +185,8 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.TOST(alpha, ltheta1, ltheta2, diffm, se*sqrt(bk/n), dfse, df) 
+    pow  <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
+                           diffm=diffm, sem=se*sqrt(bk/n), dfse=dfse, df=df) 
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }

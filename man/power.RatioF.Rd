@@ -55,8 +55,8 @@ from the state of the random number generator.
 \details{
 The power is calculated exact using the bivariate non-central t-distribution
 via function \code{pmvt()} from the package mvtnorm.\cr
-Due to the calculation method of the used package mvtnorm, randomized 
-Quasi-Monte-Carlo, these probabilities are dependent from the state of the 
+Due to the calculation method of the used package mvtnorm - randomized 
+Quasi-Monte-Carlo - these probabilities are dependent from the state of the 
 random number generator within the precision of the power. 
 See argument \code{setseed}.
 }

@@ -185,7 +185,6 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
        cex=0.85, pos=4)
   mklegend(x$method)
   
-  #browser()
   screen(3) ### Sensitivity of n (GMR and CV constant) ###
   pwr <- as.numeric(fact*x$paN[,"pwr"])
   Ns  <- as.numeric(x$paN[,"N"])
@@ -209,7 +208,6 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
        cex=0.85, pos=4)
   mklegend(x$method)
   
-  #browser()
   screen(4) ### Some basic information ###
   if (x$method!="RSABE NTID"){
       CVtxt <- sprintf("  %s %+5.1f%%", "CV =",  100*(CV.max-CV)/CV)
@@ -228,7 +226,6 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
     BEARtxt <- paste("BE AR: ", round(theta1,4),
                      " ... ", round(theta2,4), sep="")
   }
-  #browser()
   if(x$method=="scABE"){
     # (widened) acceptance range
     if(x$regulator=="FDA"){

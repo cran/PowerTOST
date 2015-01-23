@@ -29,7 +29,6 @@ CI.BE <- function(alpha=0.05, pe, CV, n, design="2x2", robust=FALSE)
     df <- eval(dfe)
     hw <- qt(1-alpha, df)*sqrt(mse*ades$bkni*nc)
   }
-  #browser()
   upper <- log(pe) + hw
   lower <- log(pe) - hw
   CI    <- cbind(lower,upper)    # gives a matrix

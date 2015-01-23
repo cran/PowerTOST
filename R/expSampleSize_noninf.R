@@ -194,8 +194,8 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
                  "Sample size", "Achieved power", "Target power")
   
   if (print) return(invisible(res)) 
-  else return(res)
+    else return(res)
   
-}
+} # end function
 
 

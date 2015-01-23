@@ -1,8 +1,18 @@
+Version 1.2-06
+Released 2015-01-23
+      - Function power.TOST() now handles balanced as well as unbalanced studies
+      - Function power2.TOST() is therefore depreciated and will not be contained
+        in later versions
+      - Internal change in interface to the (hidden) 'raw' power functions
+        (sem used in function calls instead of se, n, bk)
+      - BE_power_sample_size_excerpt.pdf in subdirectory doc changed to reflect
+        the internal changes
+
 Version 1.2-05
 Released 2015-01-07
       - Bug in OwensQOwen() removed (debug code left over), THX to Helmut 
         for discovering this
-      - Function CVfromCI() and alias CI2CV() now handle unbalanced studies
+      - Function CVfromCI() and alias CI2CV() now handle unbalanced studies,
         contributed by Benjamin Lang
       - Some typos in BE_power_sample_size_excerpt.pdf, found by Ben, corrected
 
@@ -48,7 +58,7 @@ Build 2014-09-19, released to alpha/beta testers only
 Version 1.1-13
 Released 2014-08-12
       - Design constant bk(ni) for design="paired" corrected.
-        THX to Helmut Schuetz which detected that bug.
+        THX to Helmut Schuetz who detected that bug.
 
 Version 1.1-12
 Released 2014-07-02
@@ -307,7 +317,6 @@ released 2011-01-18
      - Bug fix in known.designs().
 
 Version 0.8-2 
-===============
 released 2011-01-10
      - error in df for 3x3 and 4x4 crossover removed
      - function for pooling CV's from different studies made public

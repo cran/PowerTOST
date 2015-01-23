@@ -65,7 +65,6 @@ power.dp <- function(alpha=0.05, CV, doses, n, beta0, theta1=0.8, theta2=1/theta
   # log doses corrected sum of squares
   Sdd   <- .css3(doses=doses, design=desi, dm=dm, n=n, s02=CV2mse(CV), 
                  omega2=CV2mse(CVb))
-  #browser()
   # variance of slope
   vbeta <- s2/Sdd
   
@@ -83,8 +82,8 @@ power.dp <- function(alpha=0.05, CV, doses, n, beta0, theta1=0.8, theta2=1/theta
   nc2 <- (beta0-bu)/sqrt(vbeta)
   
   # nct approximation
-  pwr <- max(pt(-tval, df, nc2) - pt(tval, df, nc1), 0)
-  #browser()
+  pwr <- pmax(pt(-tval, df, nc2) - pt(tval, df, nc1), 0)
+
   return(pwr)
   
 }
@@ -118,6 +117,6 @@ power.dpLS <- function(alpha=0.05, CV, doses, n, beta0=1, theta1=0.8,
   u   <- qnorm(1-alpha) # original was alpha/2
   pwr <- pnorm(-u - (beta0-bu)*sqrt(w)) - pnorm(u - (beta0-bl)*sqrt(w))
   
-  return(max(pwr,0))
+  return(pmax(pwr,0))
   
 } # end function

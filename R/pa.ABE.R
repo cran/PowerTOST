@@ -5,13 +5,12 @@
 # infrastructure and namings
 # -----------------------------------------------------------
 pa.ABE <- function(CV, theta0=0.95, targetpower=0.8, minpower=0.7, 
-                    design="2x2", ...) 
+                   design="2x2", ...) 
 { # Rversion must be >=3.1.0 for the uniroot call with argument extendInt
   Rver <- paste0(R.Version()$major, ".", R.Version()$minor)
   
   # functions to use with uniroot
   pwrCV  <- function(x, ...) {
-    #browser()
     power.TOST(CV=x, ...) - minpower
   } 
   pwrGMR <- function(x, ...) {
@@ -86,7 +85,6 @@ pa.ABE <- function(CV, theta0=0.95, targetpower=0.8, minpower=0.7,
   if(GMR <= 1) interval <- c(0.8, GMR) else interval <- c(GMR, 1.25)
   # extending interval for extrem cases
   if(GMR <= 1) updown   <- "upX" else updown <- "downX"
-  #browser()
   if(Rver<"3.1.0"){
     GMR.min  <- uniroot(pwrGMR, interval, tol=1e-7, 
                         n=n.est, CV=CV, design=design, ...)$root
@@ -108,25 +106,20 @@ pa.ABE <- function(CV, theta0=0.95, targetpower=0.8, minpower=0.7,
   # not accept two vectors as limits #
   ####################################
   #Ns <- seq(n.est, 12, by=-1) # don't drop below 12 subjects
-  Ns <- seq(n.est, 12)
+  Ns  <- seq(n.est, 12)
   if(n.est==12) Ns <- seq(n.est, 2*seqs)
   nNs <-length(Ns)
-  j <- 0
+  j   <- 0
   pwrN <- pwr.est
   # may it be that j grows greater than length(Ns)?
   n.min <- NULL; pBEn <- NULL
-
   n <- vector("numeric", length=seqs)
   ni <- 1:seqs
   while(pwrN >= minpower & j<nNs){
     j <- j+1
     n[-seqs] <- diff(floor(Ns[j]*ni/seqs))
     n[seqs]  <- Ns[j] -sum(n[-seqs])
-    #browser()
-    # debug prints
-    #cat("Ns[j]",Ns[j],"\n")
-    #print(n)
-    pwrN <- power2.TOST(CV=CV, n=n, theta0=GMR, design=design, ...)
+    pwrN <- power.TOST(CV=CV, n=n, theta0=GMR, design=design, ...)
     if(pwrN >= minpower) {
       n.min <- c(n.min, sum(n))
       pBEn <- c(pBEn, pwrN)

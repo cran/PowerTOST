@@ -23,7 +23,9 @@
 # diffm=log(null ratio), theta1=log(lower BE limit), theta2=log(upper BE limit)
 # in case of additive model:
 # diffm=1-null ratio, theta1=lower BE limit-1, theta2=upper BE limit -1
-.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, se, n, df, bk=2)
+# Jan 2015: Interface changed to sem 
+# so call it with sem= se*sqrt(bk/n) if balanced or se*sqrt(bkni*sum(1/n)) 
+.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, sem, df)
 {
   tval   <- qt(1 - alpha, df, lower.tail = TRUE)
   # if alpha>0.5 (very unusual) then R is negative 
@@ -33,8 +35,8 @@
   
   # 0/0 -> NaN in case diffm=ltheta1 or diffm=ltheta2
   # and se=0!
-  delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
-  delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
+  delta1 <- (diffm-ltheta1)/sem
+  delta2 <- (diffm-ltheta2)/sem
   # is this correct?
   delta1[is.nan(delta1)] <- 0
   delta2[is.nan(delta2)] <- 0
@@ -43,17 +45,18 @@
   # in case of se=0 it results: delta1=Inf, delta2=inf if diffm>ltheta2
   # Inf - Inf is NaN
   R[is.nan(R)] <- 0
-  
   # to avoid numerical errors in OwensQ implementation
-  if (min(df)>10000) { 
-    # Joulious formula (57) or (67), large sample normal approximation
-    p1 <- pnorm( (abs(delta1)-tval), lower.tail = TRUE)
-    p2 <- pnorm( (abs(delta2)-tval), lower.tail = TRUE)
-    return(p1 + p2 - 1.)
+  if (min(df)>10000){
+    # 'shifted' normal approximation Jan 2015
+    # former Julious formula (57)/(58) doesn't work
+    tval <- qnorm(1-alpha)
+    p1   <- pnorm(tval-delta1)
+    p2   <- pnorm(-tval-delta2)
+    return(p2-p1)
   }
-  if (min(df)>=5000 & min(df)<=10000) {
+  if (min(df)>=5000 & min(df<=10000)) {
     # approximation via non-central t-distribution
-    return(.approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk))
+    return(.approx.power.TOST(alpha, ltheta1, ltheta2, diffm, sem, df))
   }
   
   # attempt to vectorize (it vectorizes properly if diffm is a vector
@@ -80,15 +83,14 @@
 # 'raw' approximate power function without any error checks, 
 # approximation based on non-central t
 # this vectorizes ok
-.approx.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
-		                           se, n, df, bk=2)
+.approx.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, sem, df)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE, log.p = FALSE)
   
   # 0/0 -> NaN in case diffm=ltheta1 or diffm=ltheta2
   # and se=0!
-  delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
-  delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
+  delta1 <- (diffm-ltheta1)/sem
+  delta2 <- (diffm-ltheta2)/sem
   # is this correct?
   delta1[is.nan(delta1)] <- 0
   delta2[is.nan(delta2)] <- 0
@@ -104,37 +106,34 @@
 # according to Chow, Liu "Design and Analysis of Bioavailability ..."
 # Chapter 9.6 and implemented in PASS 2008
 # where does this all come from?
-.approx2.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, 
-                                se, n, df, bk=2)
+.approx2.power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, sem, df)
 {
 	tval   <- qt(1 - alpha, df, lower.tail = TRUE)
 	# 0/0 -> NaN in case diffm=ltheta1 or diffm=ltheta2
 	# and se=0!
-	delta1 <- (diffm-ltheta1)/(se*sqrt(bk/n))
-	delta2 <- (diffm-ltheta2)/(se*sqrt(bk/n))
+	delta1 <- (diffm-ltheta1)/sem
+	delta2 <- (diffm-ltheta2)/sem
 	# is this correct?
 	delta1[is.nan(delta1)] <- 0
 	delta2[is.nan(delta2)] <- 0
 	
-	pow <- pt(-tval-delta2,df) - pt(tval-delta1,df)
+	pow <- pt(-tval-delta2, df) - pt(tval-delta1, df)
 	pow[pow<0] <- 0 # this is to avoid neg. power due to approx. (vector form)
 	
 	return(pow)
 }
 #------------------------------------------------------------------------------
 # function for merging the various power calculations
-.calc.power <- function(alpha=0.05, ltheta1, ltheta2, diffm, se, n, df, bk, 
-                        method="exact")
+.calc.power <- function(alpha=0.05, ltheta1, ltheta2, diffm, sem, df, method="exact")
 { 
   pow <- switch(
       method,
-      exact=.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
-      owenq=.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
-      nct=  .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
-      noncentral=.approx.power.TOST(alpha, ltheta1, ltheta2, diffm, 
-                                    se, n, df, bk),
-      shifted=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
-      central=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, se, n, df, bk),
+      exact=.power.TOST(alpha, ltheta1, ltheta2, diffm, sem, df),
+      owenq=.power.TOST(alpha, ltheta1, ltheta2, diffm, sem, df),
+      nct=  .approx.power.TOST(alpha, ltheta1, ltheta2, diffm, sem, df),
+      noncentral=.approx.power.TOST(alpha, ltheta1, ltheta2, diffm, sem, df),
+      shifted=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, sem, df),
+      central=.approx2.power.TOST(alpha, ltheta1, ltheta2, diffm, sem, df),
       stop("Method '", method, "' unknown!\n", call.=TRUE)
   ) 
   return(pow)
@@ -164,13 +163,29 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   # degrees of freedom as expression
   dfe  <- .design.df(ades, robust=robust)
   # design const.
-  bk    <- ades$bk
+  # we use always bkni
+  #bk   <- ades$bk
   # step size = no of sequences
   steps <- ades$steps
   
-  # warn if design is imbalanced?
-  if (any(n%%steps!=0)) warning("Formulas implemented assume balanced designs.\n",
-                                "Use function power2.TOST() instead.", call.=FALSE)
+  # handle n = ntotal if scalar else n's of the sequence groups
+  if (length(n) == 1) {
+    # total n given    
+    # for unbalanced designs we divide the ns by ourself
+    # to have only small imbalance (function nvec() from Helper_dp.R)
+    if(is.finite(n)) n <- nvec(n=n, grps=ades$steps) else n <- rep(Inf, times=steps)
+    if (n[1]!=n[length(n)]){
+      message("Unbalanced design. n(i)=", paste(n, collapse="/"), " assumed.")
+    } 
+  } else {
+    if (length(n) != ades$steps) {
+      stop("Length of n vector must be ", ades$steps, "!")
+    }
+    if (any(n<1)) stop("All n(i) have to be >0.")
+  }
+  nc <- sum(1/n)
+  n <- sum(n)
+  se.fac <- sqrt(ades$bkni * nc)
   
   # regularize the method giving
   method <- .powerMethod(method)
@@ -196,7 +211,7 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   
   df <- eval(dfe)
   if (any(df<1)) stop("n too small. Degrees of freedom <1!")
-  pow <- .calc.power(alpha, ltheta1, ltheta2, ldiff, se, n, df, bk, 
+  pow <- .calc.power(alpha, ltheta1, ltheta2, ldiff, sem=se*se.fac, df, 
                      method=method)
   return( pow )
 }

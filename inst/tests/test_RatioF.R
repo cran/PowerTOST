@@ -1,7 +1,7 @@
 # Author: dlabes
 # -----------------------------------------------------------------------------
 
-require(PowerTOST)
+library(PowerTOST)
 # function to create sample size tables
 sampsiz2 <- function(alpha=0.05, power, CV, CVb, GMR, theta1, design="2x2")
 {

@@ -6,14 +6,13 @@
 # dfse degrees of freedom
 # Only for log-transformed data.
 # Raw function: see the call in exppower.TOST()
-.exppower.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, sedm, dfse, df)
+.exppower.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, sem, dfse, df)
 {
   tval <- qt(1 - alpha, df, lower.tail = TRUE)
-  d1   <- sqrt((diffm-ltheta1)^2/sedm^2)
-  d2   <- sqrt((diffm-ltheta2)^2/sedm^2)
+  d1   <- sqrt((diffm-ltheta1)^2/sem^2)
+  d2   <- sqrt((diffm-ltheta2)^2/sem^2)
   # in case of diffm=ltheta1 or =ltheta2 and se=0
-  # d1 or d2 have the value NaN
-  # is this correct?
+  # d1 or d2 have then value NaN (0/0)
   d1[is.nan(d1)] <- 0
   d2[is.nan(d2)] <- 0
   
@@ -84,7 +83,8 @@ exppower.TOST <- function(alpha=0.05, logscale=TRUE, theta0, theta1, theta2,
   df      <- eval(dfe)
   if (any(df<1)) stop("n too low. Degrees of freedom <1!", call.=FALSE)
   
-  pow <- .exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se*se.fac, dfCV, df)
+  pow <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
+                        diffm=ldiff, sem=se*se.fac, dfse=dfCV, df=df)
   
   return( pow )
 }

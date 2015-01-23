@@ -1,7 +1,7 @@
 # Author: dlabes
 # -----------------------------------------------------------------------------
 
-require(PowerTOST)
+library(PowerTOST)
 # function to create sample size tables
 sampsiz <- function(alpha=0.05, power, CV, GMR, theta1, logscale=TRUE, 
                     design="2x2", method="exact")
@@ -40,7 +40,7 @@ cat(paste('S.A.Julious\n',
 CVs  <- seq(from=0.3,  to=0.85, by=0.05)
 GMRs <- seq(from=0.95, to=1.05,  by=0.05)
 power <- c(0.9)
-cat("Table VIII parallel group, BEL 0.8-1.25, multiplicative, exact\n")
+cat("Table VIII parallel group, BEL 0.8-1.25, multiplicative, nct\n")
 cat("Column level of BE =10%. PowerTOST gives ntotal!\n")
 tSJ.VIII.10 <- sampsiz(power=power, CV=CVs, GMR=GMRs, logscale=TRUE, theta1=0.9,
                        method="noncent", design="parallel")
@@ -48,7 +48,7 @@ tSJ.VIII.10 <- sampsiz(power=power, CV=CVs, GMR=GMRs, logscale=TRUE, theta1=0.9,
 CVs  <- seq(from=0.3,  to=0.85, by=0.05)
 GMRs <- seq(from=0.85, to=1.2,  by=0.05)
 power <- c(0.9)
-cat("Table VIII parallel group, BEL 0.8-1.25, multiplicative, exact\n")
+cat("Table VIII parallel group, BEL 0.8-1.25, multiplicative, nct\n")
 cat("Column level of BE =20%. PowerTOST gives ntotal!\n")
 tSJ.VIII.20 <- sampsiz(power=power, CV=CVs, GMR=GMRs, logscale=TRUE, theta1=0.8,
                        method="noncent", design="parallel")

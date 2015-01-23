@@ -81,7 +81,6 @@ pa.scABE   <- function(CV, theta0=0.9, targetpower=0.8, minpower=0.7,
 	# max. CV for minimum acceptable power #
 	########################################
   # TODO: test many cases. the form of the curves suggest that uniroot may fail!
-  #browser()
   if (Rver<"3.1.0"){
     CV.max <- uniroot(pwrCV, c(CV, 30*CV), tol=1e-7,  
                       n=n.est, design=design, theta0=GMR, ...)$root
@@ -148,7 +147,6 @@ pa.scABE   <- function(CV, theta0=0.9, targetpower=0.8, minpower=0.7,
   if(n.est==12) Ns <- seq(n.est, 6)
 	pwrN  <- pwr.est
 	n.min <- NULL; pBEn <- NULL
-	#browser()
   #######################################################
 	# THX to Detlew Labes for this part of the code!     #
 	# See: http://forum.bebac.at/forum_entry.php?id=13375 #

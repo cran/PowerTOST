@@ -56,7 +56,6 @@ nvec <- function(n, grps)
       desld <- c(desld, rep(desld2, times=n[l]))
       css2   <- css2 + n[l]*sum((desld2-mean(desld2))^2)
     }
-    #browser()
     desld <- as.vector(desld)
     css <- sum((desld-mean(desld))^2)
   } else {

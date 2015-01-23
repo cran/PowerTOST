@@ -35,7 +35,6 @@ sampleN0.dp <- function(alpha=0.05, CV, doses, targetpower=0.8, beta0=1,
   n <- s2*(Ub+qnorm(1-alpha))^2/css
   if (beta0>=1) n <- n/(beta0-bu)^2 else n<- n/(beta0-bl)^2
   n <- grps*round(n,0)
-  #browser()
   return(n)
 }
 

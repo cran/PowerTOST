@@ -28,7 +28,6 @@ OwensQ <- function (nu, t, delta, a, b)
   #if (b>1E6) b <- Inf
 	# in case of alpha=0.5 b is infinite
   # also in case of se=0 and diffm != ltheta1 or !=ltheta2
-  #browser()
   if (is.finite(b)){
   	if (nu >= 1000 || abs(delta*b) > 30 || b>50){
       # all adaptions don't cover all extremal cases!
@@ -88,7 +87,6 @@ OwensQ <- function (nu, t, delta, a, b)
 	# .Machine$double.eps^.5 = 1.490116e-08 on my machine
 	# MBESS uses .Machine$double.eps^0.25 = 0.0001220703 for both tolerances
 	# seems it makes no difference
-  #browser()
 	Qintegral <- integrate(.Q.integrand, lower = low, upper = up, 
 			         nu=nu, t=t, delta = delta, subdivisions = 10000, 
 			         #rel.tol = .Machine$double.eps^0.5, 

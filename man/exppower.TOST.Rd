@@ -4,8 +4,8 @@
 'Expected' power of TOST procedure
 }
 \description{
-Calculates the 'expected' power according to Julious for a variety of study
-designs used in bioequivalence studies.
+Calculates the so-called 'expected' power according to Julious for a variety 
+of study designs used in bioequivalence studies.
 }
 \usage{
 exppower.TOST(alpha = 0.05, logscale=TRUE, theta0, theta1, theta2,  
@@ -78,11 +78,6 @@ CRC Press, Chapman & Hall 2010
 \author{
 D. Labes
 }
-\note{
-This function is now also implemented for \code{logscale=FALSE}.\cr
-Previous versions only had \code{logscale=TRUE} implemented with lack of this argument.
-}
-
 \seealso{
  \code{\link{expsampleN.TOST}, \link{power.TOST}} 
 }
@@ -90,7 +85,7 @@ Previous versions only had \code{logscale=TRUE} implemented with lack of this ar
 # expected power for a 2x2 crossover
 # CV 30\% known from a pilot study with 12 subjects (-> dfCV=10)
 # using all the defaults for other parameters
-# should give: [1] 0.735977
+# should give: [1] 0.7359771
 exppower.TOST(CV=0.3, dfCV=10, n=40)
 
 # Compare this to the usual power (CV known, "carved in stone")

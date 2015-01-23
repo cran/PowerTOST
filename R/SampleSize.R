@@ -19,36 +19,38 @@
   n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
   n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
   
-  n0 <- ceiling(max(n01,n02))
+  n0 <- ceiling(pmax(n01,n02))
   #make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
   
   # minimum sample size will be checked outside
-  #browser()
   return(n0)
 }
 
-# pure Zhang's formula. doesn't work sufficiently
+# pure Zhang's formula. doesn't work sufficiently?
+# Why? Don't know any more DL Jan 2015
+# examine_n0 shows superiority of this function over next one for 2x2
+# Paul Zhang (2003)
+# A Simple Formula for Sample Size Calculation in Equivalence Studies 
+# Journal of Biopharmaceutical Statistics, 13:3, 529-538
 .sampleN0_2 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
                         se, steps=2, bk=2)
 {
-  # Zhang's method, large sample
-  # browser()
+  # handle unsymmetric limits, Zhang's c0
+  c0 <- 0.5*exp(-7.06*(ltheta1+ltheta2)/(ltheta1-ltheta2))
+  # Zhang's formula, large sample
   beta <- 1-targetpower
   z1 <- qnorm(1-alpha)
-  fz <- ifelse(diffm<0, 0.5*exp(-7.06*diffm/ltheta1),
-                        0.5*exp(-7.06*diffm/ltheta2))
+  fz <- ifelse(diffm<0, c0*exp(-7.06*diffm/ltheta1), c0*exp(-7.06*diffm/ltheta2))
   z2 <- abs(qnorm((1-fz)*beta))
   
   n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
   n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
   
-  n0 <- ceiling(max(n01,n02))
-  
+  n0 <- pmax(n01,n02) # or ceiling/round?
   # make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
   
-  #browser()
   return(n0)
 }
 
@@ -68,16 +70,18 @@
   
   c  <- abs(diffm/delta)
   # probability for second normal quantil
-  # if c<0.2 is in general a good choice needs to be tested
-  #                        Zhang's f. if 7.06 is general needs to be tested
-  p2 <- ifelse(c<0.2, 1-(1-0.5*exp(-7.06*c))*beta, 1-beta)
+  # c=0.2 corresponds roughly to exp(diffm) >0.95 or < 1.05 if ltheta1/ltheta2
+  # are the logs of 0.8/1.25
+  # c=0.35 corresponds roughly to >0.925 ... < 1.08
+  # outside these we use 1-beta, inside smooth change to 1-beta/2
+  p2 <- ifelse(c<0.35, 1-(1-0.5*exp(-7.06*c))*beta, 1-beta)
   z2 <- qnorm(p2)
   # difference for denominator
   dn <- ifelse(diffm<0, diffm-ltheta1, diffm-ltheta2)
   n0 <- (bk/2)*((z1+z2)*(se*sqrt(2)/dn))^2
   # make an even multiple of steps (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
-  #browser()
+  
   return(n0)
 }
 
@@ -93,7 +97,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
                          robust=FALSE, print=TRUE, details=FALSE, imax=100)
 {
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
-  if(CV<0) {
+  if(any(CV<0)) {
     message("Negative CV changed to abs(CV).")
     CV <- abs(CV)
   }
@@ -174,27 +178,24 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   }
   
   # start value from large sample approx. (hidden func.)
-  # Jul 2014: changed to mixture of old code and Zhang's formula
-#    n <- .sampleN0(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, 
-#                   bk, diffmthreshold=0.04)
+  # Jan 2015 attempt to change to pure Zhang's formula
+  # but this gives many iterations if theta0 near acceptance limits
   n <- .sampleN0_3(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, bk)
-  #browser()
   if (n<nmin) n <- nmin
 
   df <- eval(dfe)
-  pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
+  pow <- .calc.power(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, diffm=diffm, 
+                     sem=se*sqrt(bk/n), df=df, method=method)
 
   if (details) {
     cat("\nSample size search (ntotal)\n")
-    # parallel group design is now in terms of ntotal
-    #if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
     cat(" n     power\n")
     # do not print first too high
     # this is for cases with only one step-down and than step up
     if (pow<=targetpower) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
   }
   iter <- 0
-  # iter>100 is emergency brake
+  # iter>imax is emergency brake
   # this is eventually not necessary, depends on quality of sampleN0
   # in experimentation I have seen max of six steps
   # reformulation with only one loop does not shorten the code considerable
@@ -209,8 +210,9 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
     n    <- n-steps     # step down if start power is to high
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
-    
+    pow <- .calc.power(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, diffm=diffm, 
+                       sem=se*sqrt(bk/n), df=df, method=method)
+      
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -223,20 +225,21 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .calc.power(alpha, ltheta1, ltheta2, diffm, se, n, df, bk, method)
+    pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, sem=se*sqrt(bk/n), df, method)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
-  nlast <- n
-  if (up & pow<targetpower) {
-    n <- NA
-    if (details) cat("Sample size search failed!\n")
-  }
-  if (down & pow>targetpower) {
-    n <- NA
-    if (details) cat("Sample size search failed!\n")
-  }
   
+  # for very large n the search usually fails, but doesn't matter
+  nlast <- n
+  if (up & pow<targetpower & n<10000) {
+    n <- NA
+    if (details) cat("Sample size search failed!\n")
+  }
+  if (down & pow>targetpower & n<10000) {
+    n <- NA
+    if (details) cat("Sample size search failed!\n")
+  } 
   if (print && !details) {
     cat("\nSample size (total)\n")
     #if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design

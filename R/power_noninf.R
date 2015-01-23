@@ -7,12 +7,12 @@
 # --------------------------------------------------------------------------
 # internal functions:
 # power function (working horse)
-.power.noninf <- function(alpha, lmargin, diffm, sedm, df)
+.power.noninf <- function(alpha, lmargin, diffm, sem, df)
 {
   tval <- qt(1-alpha, df)
   # the original abs() function has the effect that in case of diffm<lmargin
   # if lmargin<0 the power of inferiority! is calculated
-  tau  <- (diffm-lmargin)/sedm
+  tau  <- (diffm-lmargin)/sem
   # in case of diffm=lmargin and se=0
   # tau has the value NaN
   tau[is.nan(tau)] <- 0
@@ -77,5 +77,5 @@ power.noninf <- function(alpha=0.025,  logscale=TRUE, margin, theta0, CV, n,
     diffm   <- theta0
     sedm    <- CV*se.fac
   }
-  return(.power.noninf(alpha, lmargin, diffm, sedm, df))
+  return(.power.noninf(alpha=alpha, lmargin=lmargin, diffm=diffm, sem=sedm, df=df))
 }

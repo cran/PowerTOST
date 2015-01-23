@@ -36,7 +36,7 @@ Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
   }
   \item{theta2}{
 Upper bioequivalence limit.\cr
-If not given theta2 will be calculated as \code{1/theta1} if \code{logscale=TRUE} \cr
+If not given theta2 will be calculated as \code{1/theta1} if \code{logscale=TRUE}\cr
 or as \code{-theta1} if \code{logscale=FALSE}.
   }
   \item{CV}{
@@ -78,8 +78,9 @@ Defaults to 100. Adaption only in rare cases needed.
   }
 }
 \details{
-The sample size is calculated via iterative evaluation of \code{power.TOST()}.\cr
-Start value for the sample size search is taken from a large sample approximation.\cr
+The sample size is calculated via iterative evaluation of power of the TOST procedure.\cr
+Start value for the sample size search is taken from a large sample approximation
+according to Zhang, modified.\cr
 The sample size is bound to 4 as minimum.
 }
 \value{
@@ -98,12 +99,12 @@ If you need sample sizes with varying CV's f.i. use for-loops or the apply-famil
 \references{
 Phillips, K. F. (1990)\cr 
 "Power of the Two One-Sided Tests Procedure in Bioequivalence"\cr
-Journal of Pharmacokinetics and Biopharmaceutics, 18, 137-144.
+J. of Pharmacokinetics and Biopharmaceutics, 18, 137-144.
 
 Diletti, D., Hauschke, D., and Steinijans, V. W. (1991)\cr
-"Sample Size Determination for Bioequivalence Assessment\cr
-by Means of Confidence Intervals"\cr
-Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29 (1), 1-8 (1991)\cr 
+"Sample Size Determination for Bioequivalence Assessment by Means of Confidence 
+Intervals"\cr
+Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29(1), 1-8 (1991)\cr 
 30 Suppl.No.1, S51-58 (1992)
 
 Diletti, D., Hauschke, D., and Steinijans, V. W. (1992)\cr
@@ -111,8 +112,9 @@ Diletti, D., Hauschke, D., and Steinijans, V. W. (1992)\cr
 and bioequivalence ranges of 0.9 to 1.11 and 0.7 to 1.43"\cr
 Int. J. of Clinical Pharmacology, Therapy and Toxicology, 30 Suppl.No.1, S59-62
 
-See here (R_HOME/library/PowerTOST/doc) for a short description:\cr
-\url{../doc/BE_power_sample_size_excerpt.pdf}.
+Zhang P.\cr
+"A Simple Formula for Sample Size Calculation in Equivalence Studies"\cr
+J. Biopharm. Stat. 13(3), 529-538 (2003)
 }
 \author{
 D. Labes
