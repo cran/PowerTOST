@@ -17,7 +17,7 @@
 
 sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
                            theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"), 
-                           regulator=c("EMA", "FDA"), nsims=1E5,
+                           regulator=c("EMA", "ANVISA", "FDA"), nsims=1E5,
                            nstart, print=TRUE, details=TRUE, setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
@@ -39,17 +39,14 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
   
+  # check regulator
+  regulator <- toupper(regulator)
   regulator <- match.arg(regulator)
-  if (regulator=="FDA"){
-    CVcap    <- Inf
-    CVswitch <- 0.3
-    r_const  <- log(1.25)/0.25
-  } else {
-    # regulatory settings for EMA
-    CVcap    <- 0.5
-    CVswitch <- 0.3
-    r_const  <- 0.760
-  }
+  # constants acc. to regulatory bodies
+  rc       <- reg_const(regulator)
+  CVcap    <- rc$CVcap
+  CVswitch <- rc$CVswitch
+  r_const  <- rc$r_const
   
   # check design
   design <- match.arg(design)
@@ -127,14 +124,20 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   }
   if (missing(nstart)){
     # start from ABE start with widened limits
-    n01 <- .sampleN0(alpha=alpha, targetpower, ltheta1, ltheta2, diffm=mlog, 
+    n01 <- .sampleN0_2(alpha=alpha, targetpower, ltheta1, ltheta2, diffm=mlog, 
                      se=sqrt(Emse), steps=seqs, bk=bk)
     # empirical correction in the vicinity of CV=0.3 for ratios 
     # outside 0.86 ... 1/0.86
-    if(Emse < CV2mse(0.305) & Emse > CV2mse(0.295) & abs(mlog)>log(1/0.865)) {
-      if (regulator=="EMA") n01 <- 0.9*n01 else  n01 <- 0.8*n01
+    # does this fit also for CVswitch in case of ANVISA = 0.4?
+    #if(Emse < CV2mse(0.305) & Emse > CV2mse(0.295) & abs(mlog)>log(1/0.865)) {
+    if(Emse < CV2mse(CVswitch+0.005) & Emse > CV2mse(CVswitch-0.005) 
+        & abs(mlog)>log(1/0.865)) {
+      if (regulator=="EMA")     n01 <- 0.9*n01
+      if (regulator=="FDA")     n01 <- 0.65*n01
+      if (regulator=="ANVISA")  n01 <- 0.6*n01
       n01 <- seqs*trunc(n01/seqs)
-    }  
+    }
+    
     # start from PE constraint sample size
     n02 <- .sampleN0.2(targetpower, ltheta2=log(theta2), diffm=mlog, 
                        se=sqrt(Emse), steps=seqs, bk=bk)

@@ -27,7 +27,6 @@ export(
   , power.noninf
   , power.RatioF
   , power.TOST
-  , power2.TOST
   , power.NTIDFDA
   , power.RSABE
   , power.scABEL
@@ -43,6 +42,7 @@ export(
   , sampleN.dp
   , se2CV
   , mse2CV
+  , scABEL
 )         
 
 # Import all packages listed as Imports or Depends

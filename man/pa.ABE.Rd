@@ -8,7 +8,8 @@ Power analysis for average bioequivalence (ABE)
 \description{
 An analysis tool for exploration/visualization of the impact of expected values 
 (CV, GMR, reduced sample size due to drop-outs) on power of BE decision via ABE
-if these values deviate from the ones assumed in planning the sample size of the study.
+if these values deviate from the ones assumed in planning the sample size of 
+the study.
 }
 \usage{
 pa.ABE(CV, theta0 = 0.95, targetpower = 0.8, minpower = 0.7, design = "2x2", \dots)
@@ -42,10 +43,10 @@ Character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.
 }
   \item{\dots}{
-More arguments to pass to \code{power2.TOST()}.\cr
+More arguments to pass to \code{power.TOST()}.\cr
 F. i. \code{alpha}, \code{theta1}, \code{theta2} or \code{robust} if other values
 then the defaults for these arguments are needed. \cr
-See man page of \code{power2.TOST()}.\cr\cr
+See man page of \code{power.TOST()}.\cr\cr
 More arguments passed to the S3 methods. Here currently ignored.
 }
 Additional arguments of the S3 methods:
@@ -70,7 +71,7 @@ with \code{power>targetpower}. From \code{targetpower} toward \code{minpower}
 the color changes gradually to \code{cols[2]}.}
 }
 \details{
-Power calculations are done via \code{power2.TOST()} and calculations of CV and theta0
+Power calculations are done via \code{power.TOST()} and calculations of CV and theta0
 which gave a power=\code{minpower} are derived via R base \code{uniroot()}.
 While one of the parameters (CV, GMR, n) is varied, the respective two others are
 kept constant. The tool shows the relative impact of single parameters on power.\cr
@@ -109,7 +110,7 @@ This results in a lesser drop of power than more extreme drop-out patterns.
 }
 
 \seealso{
-\code{\link{power2.TOST}}, \code{\link{known.designs}}, \code{\link{pa.scABE}}
+\code{\link{power.TOST}}, \code{\link{known.designs}}, \code{\link{pa.scABE}}
 }
 \examples{
 # using the defaults

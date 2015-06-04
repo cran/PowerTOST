@@ -9,7 +9,8 @@ scaled (widened) BE acceptance limits by simulations.
 }
 \usage{
 power.scABEL(alpha = 0.05, theta1, theta2, theta0, CV, n, 
-             design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("EMA", "FDA"), 
+             design = c("2x3x3", "2x2x4", "2x2x3"), 
+             regulator = c("EMA", "ANVISA", "FDA"), 
              nsims = 1e+05, details = FALSE, setseed = TRUE)
 }
 \arguments{
@@ -57,7 +58,8 @@ Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
 Regulatory body settings for the widening of the BE acceptance limits.\cr
-Defaults to \code{regulator="EMA"}
+Defaults to \code{regulator="EMA"}\cr
+This argument may be given also in lower case.
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the empirical power.
@@ -88,7 +90,9 @@ subjects variability of the Reference. r_const=0.76 is used in case of
 r_const=0.89257...=log(1.25)/0.25. If the CVwR of the Reference is < CVswitch=0.3 
 the conventional ABE limits apply (mixed procedure). In case of 
 \code{regulator="EMA"} a cap is placed on the widened limits if CVwr>0.5, i.e.
-the widened limits are held at value calculated for CVwR=0.5.\cr\cr
+the widened limits are held at value calculated for CVwR=0.5.\cr
+In case of \code{regulator="ANVISA"} the EMA settings are used but CVswitch=0.3
+is used. See http://forum.bebac.at/mix_entry.php?id=14877\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL.\cr
 For more details see a document "Implementation_scaledABE_simsVx.yy.pdf" in the 

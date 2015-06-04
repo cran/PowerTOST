@@ -29,7 +29,7 @@
 
 power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
                          design=c("2x3x3", "2x2x4", "2x2x3"), 
-                         regulator=c("EMA","FDA"),
+                         regulator=c("EMA", "ANVISA", "FDA"),
                          nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
@@ -48,19 +48,14 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
   
+  regulator <- toupper(regulator)
   regulator <- match.arg(regulator)
-  if (regulator=="FDA"){
-    CVcap    <- Inf
-    CVswitch <- 0.3
-    r_const  <- log(1.25)/0.25  # 0.8925742
-  } else {
-    # regulatory settings for EMA
-    CVcap    <- 0.5
-    CVswitch <- 0.3
-    r_const  <- 0.760           # exact: log(1.25)/CV2se(0.3)=0.7601283
-  }
+  # constants acc. to regulatory bodies
+  rc <- reg_const(regulator)
+  CVcap    <- rc$CVcap
+  CVswitch <- rc$CVswitch
+  r_const  <- rc$r_const
   
-
   design <- match.arg(design)
   if (design=="2x3x3") {
     seqs <- 3
@@ -140,8 +135,8 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (details) {
     cat(nsims,"sims. Time elapsed (sec):\n")
     print(proc.time()-ptm)
-    cat("p(BE-ABE)=", p["BEabe"],"; p(BE-wABEL)=", p["BEwl"],
-        "; p(BE-PE)=", p["BEpe"],"\n")
+    cat("p(BE-ABE)=", p["BEabe"],"; p(BE-wABEL)=", p["BEwl"], "; p(BE-PE)=", 
+        p["BEpe"],"\n")
     cat("\n")
   }
   # return the 'power'

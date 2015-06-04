@@ -25,6 +25,7 @@ print.pwrA <- function(x, digits=4, plotit=TRUE, ...)
   method <- x$method
   if (method=="scABE") {
     meth <- ifelse(x$regulator=="EMA", " (EMA/scABEL)", " (FDA/RSABE)")
+    meth <- ifelse(x$regulator=="ANVISA", " (ANVISA/scABEL)", " (FDA/RSABE)")
     method <- paste0(method, meth)
   }
   cat("Sample size plan ", method, "\n",sep="")
@@ -98,7 +99,7 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
   
   mklegend <- function(method){
     if (method=="scABE"){
-      algo <- ifelse(reg == "EMA", "scABEL", "RSABE")
+      algo <- ifelse(reg == "FDA", "RSABE", "scABEL")
       legend("topright", legend=c(algo, paste0("(",reg,")")), bty="n", cex=0.90)
     }
     if (method=="RSABE NTID"){

@@ -11,7 +11,8 @@ in planning the sample size of the study.
 }
 \usage{
 pa.scABE(CV, theta0=0.9, targetpower=0.8, minpower=0.7, 
-         design=c("2x3x3", "2x2x4", "2x2x3"), regulator=c("EMA", "FDA"), ...) 
+         design=c("2x3x3", "2x2x4", "2x2x3"), 
+         regulator=c("EMA", "ANVISA", "FDA"), ...) 
 }
 \arguments{
   \item{CV}{
@@ -40,7 +41,8 @@ Character string describing the study design.\cr
 Defaults to \code{2x3x3}, the partial replicate design (TRR/RTR/RRT).
 }
   \item{regulator}{
-Character string describing the scaled ABE method recommended by the regulatory bodies EMA or FDA.\cr
+Character string describing the scaled ABE method recommended by the regulatory 
+bodies EMA, ANVISA or FDA.\cr
 Defaults to \code{EMA}, method of scaled (widened) bioequivalence limits.
 }
   \item{\dots}{

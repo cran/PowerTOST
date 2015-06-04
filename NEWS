@@ -1,3 +1,13 @@
+Version 1.2-07
+Released 2015-06-03
+      - Functions power.scABEL(), sampleN.scABEL() now allow the power and 
+        sample size calculations for scaled ABEL according to the (inofficial)
+        regulatory settings of Brasilian ANVISA
+      - Function pa.scABE() also allows regulator="ANVISA"
+      - New helper function scABEL for calculation of the (widened) ABE acceptance
+        limits
+      - Function power2.TOST() now removed
+
 Version 1.2-06
 Released 2015-01-23
       - Function power.TOST() now handles balanced as well as unbalanced studies

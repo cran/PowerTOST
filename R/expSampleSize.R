@@ -137,7 +137,6 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     cat("BE margins         =",theta1,"...", theta2,"\n")
     if (logscale) cat("Null (true) ratio  = ",theta0, sep="")
       else  cat("Null (true) diff.  = ",theta0, sep="")
-    # can use lower.tail=FALSE and 1-0.05 in qchisq, H. Schuetz in his lectures
     if (length(CV)>1){
       cat("Variability data\n")
       print(data.frame(CV=CV,df=dfCV), row.names = FALSE)

@@ -29,6 +29,9 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
   
   if (missing(theta2)) theta2 <- 1/theta1
   
+  # without set.seed() each run gives different power values
+  # due to the implementation of pmvt() and pmvnorm(), 
+  # especially if power is small
   if (setseed) set.seed(123456789)
   power <- .power.RatioF(alpha, theta1, theta2, theta0, CV, CVb, n, design)
 
@@ -71,24 +74,22 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
   # upper limits of integration
   upper <- c(Inf,0)
   upper[2] <- -qt(1-alpha,df)
-  # without set.seed() each run gives different
-  # power values especially if power is small
+
+  # TODO: vectorized form of that
   if (df<4000){
     power <- pmvt(upper=upper, delta=delta, corr=corr, df=df, abseps=1e-9)
     upper[1] <- qt(1-alpha,df)
     power <- power - pmvt(upper=upper, delta=delta, corr=corr, df=df,
                           abseps=1e-9)
-    # may happen due to numeric inaccuracies
-    if (power<0) power <- 0
   } else {
     # large sample approx. multivariate normal distri.
     power <- pmvnorm(upper=upper, mean=delta, corr=corr)
     upper[1] <- qt(1-alpha,df)
     power <- power - pmvnorm(upper=upper, mean=delta, corr=corr)
-    # may happen due to numeric inaccuracies
-    if (power<0) power <- 0
   }
   attributes(power) <- NULL
+  # power<0 may happen due to numeric inaccuracies
+  ifelse(power<0,0,power)
   return(power)
 }
 # ------------------------------------------------------------------------
@@ -96,7 +97,6 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
 .sampleN0.RatioF <- function(alpha=0.025, targetpower, theta1, theta2, theta0,
                              CV, CVb, design="2x2")
 {
-  if (missing(alpha)) alpha <- 0.025
   # Hauschke D., Steinijans V. and Pigeot I.
   # "Bioequivalence studies in Drug Development"
   # Chapter 10.3.3

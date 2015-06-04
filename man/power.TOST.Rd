@@ -1,6 +1,5 @@
 \name{power.TOST}
 \alias{power.TOST}
-\alias{power2.TOST}
 \title{
 Power of the classical TOST procedure
 }
@@ -11,9 +10,6 @@ procedure for various study designs used in BE studies.
 \usage{
 power.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n, 
            design = "2x2", method="exact", robust=FALSE)
-
-power2.TOST(alpha = 0.05, logscale = TRUE, theta1, theta2, theta0, CV, n, 
-            design = "2x2", method="exact", robust=FALSE)
 }
 \arguments{
   \item{alpha}{
@@ -88,22 +84,18 @@ into account. They are solely based on the paired t-test (TOST of differences = 
 Value of power according to the input arguments.
 }
 \note{
-Of course it is highly recommended to use the default \code{method="exact"} :-)). \cr
+Of course it is highly recommended to use the default \code{method="exact"} :-)).\cr
 There is no reason beside testing and comparative purposes to use an 
 approximation if the exact method is available.\cr\cr
 If n is given as scalar (total sample size) and this number is not 
 divisible by the number of (sequence) groups of the design an unbalanced design 
 with small imbalance is assumed. A corresponding message is thrown showing the 
 assumed numbers of subjects in (sequence) groups.\cr
-}
-\section{Warning }{
-The function does not vectorize if design is a vector.\cr
+The function does not vectorize propperly if design is a vector.\cr
 The function vectorizes properly if CV or theta0 are vectors.\cr
 Other vector input is not tested yet.\cr\cr
 Function \code{power2.TOST()} formerly designd to handle unbalanced studies is 
-now only an alias to \code{power.TOST()} which now handles balanced 
-as well as unbalanced designs.\cr
-This function is depreciated from V1.2-06 on and will not be contained in later versions.
+now removed since \code{power.TOST()} handles balanced as well as unbalanced designs.
 }
 \references{
 Phillips, K. F. (1990) \cr 
@@ -119,7 +111,7 @@ Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29, 1-8
 D. Labes
 }
 \seealso{
- \code{\link{sampleN.TOST}, \link{known.designs}, \link{power2.TOST}}
+ \code{\link{sampleN.TOST}, \link{known.designs}}
 }
 \examples{
 # power for the 2x2 cross-over design with 24 subjects and CV 25\%

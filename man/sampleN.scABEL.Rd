@@ -9,7 +9,8 @@ scaled (widened) BE acceptance limits based on simulations.
 }
 \usage{
 sampleN.scABEL(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
-               design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("EMA", "FDA"), 
+               design = c("2x3x3", "2x2x4", "2x2x3"), 
+               regulator = c("EMA", "ANVISA", "FDA"), 
                nsims = 1e+05, nstart, print = TRUE, details = TRUE, setseed = TRUE)
 }
 \arguments{
@@ -50,7 +51,8 @@ Defaults to \code{design="2x3x3"}
 }
   \item{regulator}{
 Regulatory body settings for the widening of the BE acceptance limits.\cr
-Defaults to \code{design="EMA"}.
+Defaults to \code{design="EMA"}.\cr
+This argument may be given also in lower case.
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the (empirical) power.
@@ -127,7 +129,11 @@ the power value agreement to those obtained from simulations via subject data.
 # ABE limits, PE constraint 0.8 - 1.25
 # EMA regulatory settings
 sampleN.scABEL(CV=0.3)
-# results in a sample size n=27, power=0.82566
+# results in a sample size n=27, power=0.8257
+#
+# same with ANVISA settings, CVswitch=40%
+sampleN.scABEL(CV=0.3, regulator="anvisa")
+# results in n=30, power=0.8220
 
 # for the full replicate design, target power = 90\%
 # true assumed ratio = 0.9, FDA regulatory settings
