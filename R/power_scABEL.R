@@ -23,6 +23,7 @@
 # Another possibility is using the contrasts R-R and analyze by sequence. 
 # Then the dfRR = n-seq.
 # 2x3x3  dfRR = n-3
+# 2x2x2  dfRR = n/2 - 1 (only sequence TRR or RTR)
 # 2x2x4  dfRR = n-2
 # This is used in the xxx.RSABE() functions
 
@@ -86,12 +87,12 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     Emse  <- (s2wT + s2wR)/2
     cvec  <- c(1,1)
   }
-  if (design=="2x2x3") { # TRT|RTR design
+  if (design=="2x2x3") { # TRT|RTR design or TRR|RTT
     seqs  <- 2
     bkni  <- 3/8
     bk    <- 1.5
     dfe   <- parse(text="2*n-3", srcfile=NULL)
-    dfRRe <- parse(text="n/2-1", srcfile=NULL)
+    dfRRe <- parse(text="n/2-1", srcfile=NULL) # balanced design
     Emse  <- (s2wT + s2wR)/2
     cvec  <- c(2,1) # dummy
   }

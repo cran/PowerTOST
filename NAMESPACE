@@ -1,3 +1,17 @@
+# Import all packages listed as Imports or Depends
+# not selective
+#import(
+#  mvtnorm, stats, graphics, grDevices, utils
+#)
+## import selectively only the used functions
+importFrom(mvtnorm, pmvt, pmvnorm)
+importFrom(graphics, plot, close.screen, legend, text, points, 
+           abline, screen, split.screen, par, segments)
+importFrom(grDevices, colorRampPalette)
+importFrom(stats, dnorm, pnorm, qnorm, rnorm, pt, qt, dchisq, qchisq, rchisq, 
+           qf, uniroot, integrate)
+importFrom(utils, tail, head, read.table)
+
 # Export all names except those beginning with .
 # exportPattern("^[^\\.]")
 #
@@ -45,10 +59,6 @@ export(
   , scABEL
 )         
 
-# Import all packages listed as Imports or Depends
-import(
-  mvtnorm
-)
 
 # Define S3 methods for the pooled CV
 S3method(print, CVp)

@@ -10,8 +10,8 @@ replicate design 2x2x4.
 }
 \usage{
 sampleN.NTIDFDA(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
-                nsims = 1e+05, nstart, print = TRUE, details = TRUE, 
-                setseed = TRUE)
+                design=c("2x2x4", "2x2x3"), nsims = 1e+05, nstart, print = TRUE, 
+                details = TRUE, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -41,6 +41,12 @@ If \code{length(CV) = 1} the same CV is assumed for Test and Reference.\cr
 If \code{length(CV) = 2} the CV for Test must be given in CV[1] and for 
 Reference in CV[2].
 }
+  \item{design}{
+Design of the study to be planned.\cr
+2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
+2x2x3 is the 3-period replicate design with sequences TRT|RTR.\cr
+Defaults to \code{design="2x2x4"}.
+}
   \item{nsims}{
 Number of simulations to be performed to obtain the empirical power.
 Defaults to 100 000 = 1e+5.
@@ -65,7 +71,8 @@ generator. To avoid differences in power values for different runs a
 }
 \details{
 The linearized scaled ABE criterion is calculated according to the SAS code
-given in the FDA Warfarine guidance. For deciding BE the study must pass that criterion, the conventional ABE test and additional the test that the ratio of 
+given in the FDA Warfarine guidance. For deciding BE the study must pass that criterion, 
+the conventional ABE test and additional the test that the ratio of 
 sWT/sWR is < 2.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on these method.\cr
@@ -85,8 +92,7 @@ http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guida
 D. Labes
 }
 \note{
-The design recommended by the FDA is the full replicate design 2x2x4. 
-Only this design is implemented.\cr
+The design recommended by the FDA is the full replicate design 2x2x4.\cr 
 The sample size estimation is done only for balanced studies since the 
 break down of the total subject number in case of unbalanced sequence groups
 is not unique. Moreover the formulas used are only valid for balanced designs.\cr
@@ -102,10 +108,12 @@ near to the implied scaled (tightened/widened) ABE limits according to
 In case of a failed sample size search you may restart with setting tha argument \code{nstart}.\cr
 In case of theta0 values outside the implied scaled (tightened/widened) ABE limits
 no sample size estimation is possible and the function throws an error 
-(f.i. CV=0.04, theta0=0.95).
+(f.i. CV=0.04, theta0=0.95).\cr\cr
+The results for the design "2x2x3" are to be considered as experimental since
+at present not thorougly tested.
 }
 
-\seealso{
+\seealso{ 
 \code{\link{power.NTIDFDA}}
 }
 \examples{
@@ -117,5 +125,10 @@ sampleN.NTIDFDA(CV=0.04,theta0=0.975)
 sampleN.NTIDFDA(CV=c(0.04,0.06),theta0=0.975)
 # should give
 # n=20 with an (empirical) power of 0.0.814610
+#
+# alternative 3-period design
+sampleN.NTIDFDA(CV=0.04,theta0=0.975, design="2x2x3")
+# should give
+# n=86 with power = 0.80364
 }
 

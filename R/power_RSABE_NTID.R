@@ -1,13 +1,13 @@
 #---------------------------------------------------------------------------
-# Simulate full replicate design and calculate scaled ABE power
+# Simulate full replicate designs and calculate scaled ABE power
 # according to FDA Warfarin guidance
 #
 # Author: dlabes
 #---------------------------------------------------------------------------
-# 2x2x4  dfRR = n-2
 
-power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                          nsims=1E5, details=FALSE, setseed=TRUE)
+power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n, 
+                          design=c("2x2x4", "2x2x3"), nsims=1E5, details=FALSE, 
+                          setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
   if (missing(n))  stop("Number of subjects n must be given!", call.=FALSE)
@@ -16,25 +16,28 @@ power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
   
-  ptm <- proc.time()
+  design <- match.arg(design)
+  if(design=="2x2x4"){
+    seqs  <- 2
+    dfe   <- parse(text="n-2", srcfile=NULL)
+    dfRRe <- parse(text="n-2", srcfile=NULL)
+    dfTTe <- parse(text="n-2", srcfile=NULL)
+  }
+  if(design=="2x2x3"){
+    seqs  <- 2
+    dfe   <- parse(text="n-2", srcfile=NULL) 
+    dfRRe <- parse(text="n/2-1", srcfile=NULL) # balanced only, not used here
+    dfTTe <- parse(text="n/2-1", srcfile=NULL) # balanced only, not used here
+  }
   
-  # for later enhancement taking into account the 
-  # subject-by-formulation interaction
-  s2D  <- 0 
   CVwT <- CV[1]
-  if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
-  s2wT <- log(1.0 + CVwT^2)
-  s2wR <- log(1.0 + CVwR^2)
+  if (length(CV)>1) CVwR <- CV[2] else CVwR <- CVwT
+  if (length(CV)>2) warning("Only first 2 entries from CV vector used.")
+  s2wT <- CV2mse(CVwT)
+  s2wR <- CV2mse(CVwR)
 
   # FDA constant
   r_const  <- -log(0.9)/0.10
-  
-  # design only 2x2x4
-  seqs  <- 2
-  dfe   <- parse(text="n-2", srcfile=NULL)
-  dfRRe <- parse(text="n-2", srcfile=NULL)
-  # sd^2 of the differences T-R from their components
-  Emse  <- (s2D + (s2wT + s2wR)/2) 
   
   if (length(n)==1){
     # we assume n=ntotal
@@ -47,20 +50,37 @@ power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     C3 <- sum(1/nv)/seqs^2
     n  <- sum(nv)
   } else {
-    # we assume n = vector of n's in sequences
+    # we assume n = vector of n's in sequence groups
     # check length
     if (length(n)!=seqs) stop("n must be a vector of length=",seqs,"!", call.=FALSE)
+    nv <- n
     C3 <- sum(1/n)/seqs^2
     n  <- sum(n)
   }
+  
+  if(design=="2x2x4"){
+    dfRR <- eval(dfRRe)
+    dfTT <- dfRR       
+    # expectation of mse of the ANOVA of intra-subject contrasts T-R
+    Emse  <- (s2wT + s2wR)/2 
+  }
+  if(design=="2x2x3"){
+    dfTT <- nv[1]-1
+    dfRR <- nv[2]-1
+    w1 <- dfRR/(dfRR+dfTT); w2 <- dfTT/(dfRR+dfTT)
+    # expectation of mse of the ANOVA of intra-subject contrasts T-R
+    # always via unbalanced formula
+    Emse <- w1*(s2wT+s2wR/2) + w2*(s2wT/2+s2wR)
+  }
+  
+  # start time measurement
+  ptm <- proc.time()
+  
+  df <- eval(dfe)
   # sd of the mean T-R (point estimator)
   sdm  <- sqrt(Emse*C3)
   mlog <- log(theta0)
-  df   <- eval(dfe)
-  dfRR <- eval(dfRRe)
   
-  dfTT <- dfRR       # at least for the 2x2x4 design
- 
   if(setseed) set.seed(123456)
   
   p <- .power.NTID(mlog, sdm, C3, Emse, df, s2wR, dfRR, s2wT, dfTT, nsims, 
@@ -133,13 +153,6 @@ power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # upper limit <= 2.5?
     BEsratio  <- ul_sratio <= 2.5
     
-    # debug print
-    if (nsims<=50){
-      print(head(data.frame(pe=means,lCL=lCL,uCL=uCL, BEABE, s2wT=s2wTs, s2wR=s2wRs, 
-                            SABEc95, BEscABE, sratio=sqrt(s2wTs/s2wRs), ul_sratio, 
-                            BEsratio), n=50))
-    } 
-    
     counts["BEabe"]    <- counts["BEabe"]    + sum(BEABE)
     counts["BEul"]     <- counts["BEul"]     + sum(BEscABE)
     counts["BEsratio"] <- counts["BEsratio"] + sum(BEsratio)
@@ -148,6 +161,7 @@ power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     counts["BE"]       <- counts["BE"]       + sum(BEscABE & BEABE & BEsratio)
     
   } # end over chunks
+  
   # return the pBEs
   counts/nsims
 }

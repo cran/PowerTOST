@@ -1,6 +1,6 @@
-4edabc07511772557c49bfd6879398fa *DESCRIPTION
-487050620fe534588504d5385c124169 *NAMESPACE
-80afbf36469c620ceed897fd53084511 *NEWS
+4475fc14e9222c59d4f153b29f087e43 *DESCRIPTION
+8b3b2ffdd6991256c0af77c908ef1739 *NAMESPACE
+9f50e1d5546a83ce2b7ae7ca74590fb0 *NEWS
 d00b3aee6203d7bfdba314e04b3e1345 *R/BE_CI.R
 33067d9fdc4969374af152cba6a239a7 *R/BIBs.R
 d0518c457aaa497dccf8035f869244dd *R/CVfromCI_BL.R
@@ -23,15 +23,15 @@ bf9f31bbf52c842388156b0f99c33cd7 *R/helper.R
 0795de0d4c05ddf8e8ef67a0805f2fda *R/pa.NTID.R
 016ddfda49ebf0b7cd7008c2220c5a36 *R/pa.scABE.R
 e4673f8c1ef1de34803166826f68bb45 *R/power.R
-b542f6b4fae58ab697a4a08df0c3de65 *R/power_RSABE.R
-88e96255a61ae7074c9870e405062770 *R/power_RSABE_NTID.R
+df00115eecb23ef92271743594f5bc00 *R/power_RSABE.R
+cb3a397554bdc6ad587167a99ff3a911 *R/power_RSABE_NTID.R
 3ce403cc9e18b807ee399723a73d88c6 *R/power_doseprop.R
 d9f1b31c8304e2fb7f0ae8943b69d791 *R/power_noninf.R
-4353701a2c125d11b3eb54a3f2605b40 *R/power_scABEL.R
+969e1fc74bdaa88883fcc7437b6dfdf4 *R/power_scABEL.R
 27f444f01c92f2294159975439190130 *R/pvalue.TOST_Benjamin.R
 02e4ae8b448a02c9b7d7221350548a7f *R/pwrA_S3methods.R
 c1a027ddbf064deac47cbcac1f9f4173 *R/samplesize_RSABE.R
-464c7a45f86c014d15d5746ddcf4498b *R/samplesize_RSABE_NTID.R
+44eea569d8cbea20c17b832fb5394543 *R/samplesize_RSABE_NTID.R
 2455e3bb4c0411cdc4707abd56d49282 *R/samplesize_scABEL.R
 267a279ac0d008415d479756a333ecd0 *R/scABEL.R
 d167029b2d945596a9312d8f7f253484 *data/data2x2.rda
@@ -39,7 +39,7 @@ d167029b2d945596a9312d8f7f253484 *data/data2x2.rda
 958b6d7393f6e426f3ac9aaeffd818d7 *data/data2x4x4.rda
 01e37462e6df603ebf8d5c78ab966434 *data/data_parallel.rda
 55029de580a332d4018190258816c654 *inst/doc/BE_power_sample_size_excerpt.pdf
-b3e6b7dcecf59d878ccbabdc2b28435c *inst/doc/Implementation_scaledABE_sims.pdf
+ab3d6761d365e765906301fc73b6a86c *inst/doc/Implementation_scaledABE_sims.pdf
 5667ab5cc6eaffc5ee999e004561b67c *inst/tests/test_2x2.R
 2b3cae929c74384344aaee2e67a8c50a *inst/tests/test_2x2x3.R
 a2797c525c346883ac0be4ff3aaee2ed *inst/tests/test_2x4x2.R
@@ -70,7 +70,7 @@ dcf10f350bb1eb694de81cb520fe1cf0 *man/data_parallel.Rd
 5f9ba58f21ad52b3ecd8c617fba51c08 *man/pa.ABE.Rd
 75c20f9239751696c9770e32d911f5e1 *man/pa.NTIDFDA.Rd
 00fcbfcc09ba21eda0b81bfb361ca9a2 *man/pa.scABE.Rd
-d79b9c1b7540d9a947d7526a4c89402c *man/power.NTIDFDA.Rd
+bfe400e4678546a308eafdba1a3295ea *man/power.NTIDFDA.Rd
 f85c2cf01b00207ade10f7529772eab9 *man/power.RSABE.Rd
 df4913dc8ac426c381263aed223f4a1c *man/power.RatioF.Rd
 21e27f4c4ef23772acd91f2c6383b93f *man/power.TOST.Rd
@@ -78,7 +78,7 @@ df4913dc8ac426c381263aed223f4a1c *man/power.RatioF.Rd
 22c59349d02f8c9b541d318bf08ec185 *man/power.noninf.Rd
 8aa434634445d9b1330d375ff7a69dc9 *man/power.scABEL.Rd
 35c7a599bff80f3d1fb8a6a54137b9a4 *man/pvalue.TOST.Rd
-e4e6265579ab1013fad0981aca23af05 *man/sampleN.NTIDFDA.Rd
+b8b6ea458139cf25b6d4e860a10ed570 *man/sampleN.NTIDFDA.Rd
 37d7f378f4958978fa92045259901474 *man/sampleN.RSABE.Rd
 967d07a7745e8fbd46dd422de8a4b15b *man/sampleN.RatioF.Rd
 db8d939adef381bec3f208b6379df6d2 *man/sampleN.TOST.Rd

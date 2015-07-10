@@ -6,7 +6,8 @@
 #---------------------------------------------------------------------------
 
 sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2, 
-                            CV, nsims=1E5, nstart, print=TRUE, details=TRUE, 
+                            CV, design=c("2x2x4", "2x2x3"),
+                            nsims=1E5, nstart, print=TRUE, details=TRUE, 
                             setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
@@ -23,16 +24,14 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
   # no widening/shrinking after CVcap
   # scap = 0.2117905, CVcap=0.2142 if theta2=1.25
   CVcap     <- se2CV(log(theta2)/r_const)               
-  # for later enhancement taking into account the 
-  # subject-by-formulation interaction
-  s2D  <- 0 
+
   CVwT <- CV[1]
-  if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
-  s2wT <- log(1.0 + CVwT^2)
-  s2wR <- log(1.0 + CVwR^2)
+  if (length(CV)>1) CVwR <- CV[2] else CVwR <- CVwT
+  if (length(CV)>2) warning("Only first 2 entries from CV vector used.")
+  s2wT <- CV2mse(CVwT)
+  s2wR <- CV2mse(CVwR)
   
-  # design only 2x2x4: full replicate
-  design <- "2x2x4"
+  design <- match.arg(design)
   # we are treating only balanced designs
   # thus we use here bk - the design constant for ntotal
   # expressions for the df's
@@ -41,20 +40,33 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
     bk    <- 1.0    # needed for n0
     dfe   <- parse(text="n-2", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
-    # expectation of mse of the ANOVA of intra-subject contrasts
-    Emse  <- (s2D + (s2wT + s2wR)/2) 
+    dfTTe <- parse(text="n-2", srcfile=NULL)
+    # expectation of mse of the ANOVA of intra-subject contrasts T-R
+    Emse  <- (s2wT + s2wR)/2 
+  }
+  if (design=="2x2x3") {
+    seqs  <- 2
+    bk    <- 1.5    # needed for n0
+    dfe   <- parse(text="n-2", srcfile=NULL)
+    dfRRe <- parse(text="n/2-1", srcfile=NULL)  # balanced only
+    dfTTe <- parse(text="n/2-1", srcfile=NULL)  # balanced only
+    # expectation of mse of the ANOVA of intra-subject contrasts T-R
+    Emse  <- 1.5*(s2wT + s2wR)/2                # balanced only
   }
   
   mlog <- log(theta0)
   ltheta1 <- -r_const*sqrt(s2wR)
   ltheta2 <- -ltheta1
+
   # 'design' constant for nstart
-  bkk     <- 1.55          # this is purely empirical!
+  # this is purely empirical to accelarate n0!
+  if(design=="2x2x4") bkk <- 1.55 else bkk <- 1.65
   
-  if (CVwR > CVcap) {
+  # CVcap=0.2142 if theta2=1.25
+  if (CVwR > CVcap) { # outside the acceptance range shrinking
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
-    bkk     <- 1
+    bkk     <- bk
   }
   
   if (print){
@@ -100,8 +112,7 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
   sdm  <- sqrt(Emse*C3)
   df   <- eval(dfe)
   dfRR <- eval(dfRRe)
-  
-  dfTT  <- dfRR     # at least for the 2x2x4
+  dfTT <- eval(dfTTe)
   
   if(setseed) set.seed(123456)
   p <- .power.NTID(mlog, sdm, C3, Emse, df, s2wR, dfRR, s2wT, dfTT, nsims, 
@@ -133,7 +144,7 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
     sdm  <- sqrt(Emse*C3)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
-    dfTT <- dfRR
+    dfTT <- eval(dfTTe)
     
     if(setseed) set.seed(123456)
     p <- .power.NTID(mlog, sdm, C3, Emse, df, s2wR, dfRR, s2wT, dfTT, nsims, 
@@ -154,7 +165,7 @@ sampleN.NTIDFDA <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
     sdm  <- sqrt(Emse*C3)
     df   <- eval(dfe)
     dfRR <- eval(dfRRe)
-    dfTT <- dfRR
+    dfTT <- eval(dfTTe)
     
     if(setseed) set.seed(123456)
     p <- .power.NTID(mlog, sdm, C3, Emse, df, s2wR, dfRR, s2wT, dfTT, nsims, 

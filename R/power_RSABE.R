@@ -9,6 +9,7 @@
 # by sequence groups the df's = n-seq.
 # 2x3x3  dfRR = n-3
 # 2x2x4  dfRR = n-2
+# 2x2x3  dfRR = n/2 - 2
 
 power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
                         design=c("2x3x3", "2x2x4", "2x2x3"), 
@@ -57,8 +58,12 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (design=="2x2x3") {
     seqs  <- 2
     dfe   <- parse(text="n-2", srcfile=NULL)
-    dfRRe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
-    dfTTe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
+    # next was pre-V1.2-08
+#     dfRRe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
+#     dfTTe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
+    # correct should be (only 1 sequence for each, f.i. RR from RTR):
+    dfRRe <- parse(text="n/2-1", srcfile=NULL) # for balanced designs
+    dfTTe <- parse(text="n/2-1", srcfile=NULL) # for balanced designs
     # sd^2 of the differences T-R from their components
     Emse  <- 1.5*(s2wT + s2wR)/2               # for balanced design 
   }

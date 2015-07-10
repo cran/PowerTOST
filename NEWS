@@ -1,3 +1,12 @@
+Version 1.2-08
+Released 2015-07-10
+      - Maintenance release with NAMESPACE adapted to import the necessary
+        functions from base R installation (CRAN request)
+      - power.NTIDFDA() and sampleN.NTIDFDA() now have an design argument to
+        choose between 2x2x4 (full replicate 4-period) and 2x2x3 (full replicate 
+        3-period design)
+      - Some minor documentation improvements  
+
 Version 1.2-07
 Released 2015-06-03
       - Functions power.scABEL(), sampleN.scABEL() now allow the power and 

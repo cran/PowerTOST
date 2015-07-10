@@ -6,12 +6,12 @@
 \description{
 This function performs the power calculation of the BE decision via 
 the FDA method for narrow therapeutic index drugs (NTID's) by simulations.
-The study design is the full replicate design 2x2x4 
-(2-treatment-2-sequence-4period design)
+The study design could be the full replicate design 2x2x4 with 4-periods or the
+2x2x4 replicate design with sequences TRT|RTR.
 }
 \usage{
-power.NTIDFDA(alpha = 0.05, theta1, theta2, theta0, CV, n, nsims = 1e+05, 
-              details = FALSE, setseed = TRUE)
+power.NTIDFDA(alpha = 0.05, theta1, theta2, theta0, CV, n, design=c("2x2x4", "2x2x3"), 
+              nsims = 1e+05, details = FALSE, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -40,10 +40,19 @@ Reference in CV[2].
   \item{n}{
 Number of subjects under study.\cr
 May be given as vector. In that case it is assumed that n contains the number
-of subjects per sequence groups.\cr\cr
+of subjects per sequence groups.\cr
+Attention! In case of the 2x2x3 (TRT|RTR) design the order of n's important 
+if given as vector. n[1] is for sequence group 'TRT' and n[2] is for 
+sequence group 'RTR'.\cr\cr 
 If n is given as single number (total sample size) and this number is not 
 divisible by the number of sequences of the design an unbalanced design is assumed.
 A corresponding message is thrown showing the numbers of subjects in the sequence groups.
+}
+  \item{design}{
+Design of the study to be planned.\cr
+2x2x4 is the full replicate design with 2 sequences and 4 periods.\cr
+2x2x3 is the 3-period replicate design with sequences TRT|RTR.\cr
+Defaults to \code{design="2x2x4"}.
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the empirical power.
@@ -85,6 +94,10 @@ Detlew Labes
 \note{
 The FDA method is described for the ABE limits 0.8 ... 1.25 only. Setting theta1,
 theta2 to other values may not be reasonable and is not tested.
+}
+\section{Warning}{
+The results for the design "2x2x3" are to be considered as experimental since
+at present not thorougly tested.
 }
 \seealso{
 \code{\link{sampleN.NTIDFDA}}
