@@ -93,19 +93,19 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     cat("Study design: ",desi,"\n")
     cat("log-transformed data (multiplicative model)\n")
     cat(nsims,"studies for each step simulated.\n\n")
-    cat("alpha  = ",alpha,", target power = ", targetpower,"\n", sep="")
-    cat("CVw(T) = ",CVwT,"; CVw(R) = ",CVwR,"\n", sep="")
+    cat("alpha  = ", alpha,", target power = ", targetpower,"\n", sep="")
+    cat("CVw(T) = ", CVwT,"; CVw(R) = ", CVwR,"\n", sep="")
     cat("Null (true) ratio = ",theta0,"\n", sep="")
-    cat("ABE limits / PE constraints =",theta1,"...", theta2,"\n")
-    cat("Regulatory settings:",regulator,"\n")
+    cat("ABE limits / PE constraints =", theta1,"...", theta2,"\n")
+    cat("Regulatory settings:", regulator,"\n")
     if (details) { 
       cat("- CVswitch = ", CVswitch)
       if (is.finite(CVcap)){
-        cat(", cap on ABEL if CVw(R) > ", CVcap,"\n",sep="")
+        cat(", cap on scABEL if CVw(R) > ", CVcap,"\n",sep="")
       } else {
-        cat(", no cap on ABEL\n",sep="")
+        cat(", no cap on scABEL\n", sep="")
       }  
-      cat("- Regulatory constant =",r_const,"\n")
+      cat("- Regulatory constant =", r_const,"\n")
     }     
   }
   
@@ -239,13 +239,11 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   res <- data.frame(design=design, alpha=alpha, CVwT=CVwT, CVwR=CVwR,
                     theta0=theta0, theta1=theta1, theta2=theta2, n=n, power=pwr, 
                     targetpower=targetpower,nlast=nlast)
-  names(res) <-c("Design","alpha","CVwT","CVwR","theta0","theta1","theta2",
-                 "Sample size", "Achieved power", "Target power","nlast")
+  names(res) <-c("Design", "alpha", "CVwT", "CVwR", "theta0", "theta1", "theta2",
+                 "Sample size", "Achieved power", "Target power", "nlast")
 
   #cat("iter=",iter,"\n")
   
   if (print | details) return(invisible(res)) else return(res)
   
 } # end function
-
-

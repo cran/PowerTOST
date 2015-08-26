@@ -1,3 +1,14 @@
+Version 1.2-09
+Released 2015-08-26
+      - power.TOST() with method="exact" reworked to give correct values in 
+        case alpha>0.5. OwensQOwen adapted to deal with upper integration
+        limit R==Inf.
+      - New power calculation method introduced, direct integration of the
+        bivariate non-central t-distribution (pmvt() from package mvtnorm), 
+        also an exact calculation method but with somewhat lower precision
+        and longer run-time. Contributed by Benjamin Lang.
+      - New function power.TOST.sim() to obtain the power via simulations of
+        the TOST. Only intended for checking purposes.
 Version 1.2-08
 Released 2015-07-10
       - Maintenance release with NAMESPACE adapted to import the necessary

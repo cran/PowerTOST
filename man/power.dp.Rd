@@ -49,7 +49,8 @@ Crossover design means Latin square design with number of doses as dimension.
 This matrix contains the sequences in rows and periods in columns. 
 The entry (i,j) of the design matrix corresponds to the dose (index) a subject 
 with i-th sequence gets in the j-th period.
-Can be obtained f.i. via functions of package 'crossdes' or via.
+Can be obtained f.i. via functions of package 'crossdes' or via function 
+\code{bib.CL()}.
 }
   \item{CVb}{
 Coefficient of variation of the between-subject variability.\cr

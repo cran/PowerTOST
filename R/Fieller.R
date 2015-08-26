@@ -87,9 +87,11 @@ power.RatioF <- function(alpha=0.025, theta1=0.8, theta2, theta0=0.95, CV, CVb,
     upper[1] <- qt(1-alpha,df)
     power <- power - pmvnorm(upper=upper, mean=delta, corr=corr)
   }
+  
+  # get rid of the attributes
   attributes(power) <- NULL
   # power<0 may happen due to numeric inaccuracies
-  ifelse(power<0,0,power)
+  power <- ifelse(power<0, 0, power)
   return(power)
 }
 # ------------------------------------------------------------------------

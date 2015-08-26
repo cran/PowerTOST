@@ -47,13 +47,17 @@ Character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.
   }
   \item{method}{
+Method for calculation of the power.\cr  
 Defaults to "exact" in which case the calculation is done based on formulas 
-with Owen's Q.\cr
-The exact calculation can also be choosen with \code{method="owenq"}.\cr
+with Owen's Q. The calculation via Owen's Q can also be choosen with 
+\code{method="owenq"}.\cr
+Another exact method via direct use of the bivariate non-central t-distribution
+may be chosen with \code{method="mvt"}. This may have somewhat lower precision
+compared to Owen's Q and has much longer run-time.\cr  
 Approximate calculations can be choosen via \code{method="noncentral"} or 
-\code{method="nct"} for the approximation using the non-central t-distribution
-or via \code{method="central"} or \code{method="shifted"} for the 
-approximation via 'shifted' central t-distribution.\cr
+\code{method="nct"} for the approximation using the non-central t-distribution.
+With \code{method="central"} or \code{method="shifted"} the relative crude
+approximation via 'shifted' central t-distribution is chosen.\cr
 The strings for \code{method} may be abbreviated.
   }
   \item{robust}{

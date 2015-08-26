@@ -28,7 +28,7 @@ OwensQ <- function (nu, t, delta, a, b)
   #if (b>1E6) b <- Inf
 	# in case of alpha=0.5 b is infinite
   # also in case of se=0 and diffm != ltheta1 or !=ltheta2
-  if (is.finite(b)){
+	if (is.finite(b)){
   	if (nu >= 1000 || abs(delta*b) > 30 || b>50){
       # all adaptions don't cover all extremal cases!
       
@@ -93,7 +93,7 @@ OwensQ <- function (nu, t, delta, a, b)
                #abs.tol = .Machine$double.eps^0.5,
 			         rel.tol = 1.e-9, abs.tol=1.e-9, stop.on.error = TRUE)[[1]]
 	# error handling? How?
-  if(a==0){
+	if(a==0){
     # approx. via nct?
     # this seems not correct for all cases!
     # f.i. 

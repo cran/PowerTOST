@@ -3,8 +3,8 @@
 #import(
 #  mvtnorm, stats, graphics, grDevices, utils
 #)
-## import selectively only the used functions
-importFrom(mvtnorm, pmvt, pmvnorm)
+# import selectively only the used functions (good practice)
+importFrom(mvtnorm, pmvt, pmvnorm, GenzBretz)
 importFrom(graphics, plot, close.screen, legend, text, points, 
            abline, screen, split.screen, par, segments)
 importFrom(grDevices, colorRampPalette)
@@ -41,6 +41,7 @@ export(
   , power.noninf
   , power.RatioF
   , power.TOST
+  , power.TOST.sim
   , power.NTIDFDA
   , power.RSABE
   , power.scABEL

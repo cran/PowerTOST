@@ -16,7 +16,7 @@ OT_integrand <- function(x, h) exp(-0.5*h^2*(1+x^2))/(1+x^2)/(2*pi)
 OwensT <- function(h, a)
 { 
   int <- integrate(OT_integrand, lower=0, upper=abs(a), h=h)$value
-  # in case of a=Inf or -Inf the condition T(h,-a)=-T(h,a) is not maintained
+  # in case of a=Inf or -Inf the condition T(h,-a)=-T(h,a) is not maintained!
   int <- ifelse(a<0, -int, int)
   return(int) 
 }
@@ -44,18 +44,26 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
   ll <- ifelse((upr-1)>0, upr-1, 0)
   L  <- vector(mode="numeric", length=ll)
   # k-1 of the formulas transformes to k here
-  for (k in seq_along(L)){
-    if (k==1) L[1] <- 0.5*A*B*b*dnorm(b)*dnorm(A*b-delta)
-        else  L[k] <- av[k+3]*b*L[k-1]
-  }
+  if(is.finite(b)){
+    # all L[k] are NaN if b==Inf, since dnorm(Inf)==0 and 0*Inf=NaN
+    # we use L[k]=0 instead
+    for (k in seq_along(L)){
+                       # gives NaN 
+      if (k==1) L[1] <- 0.5*A*B*b*dnorm(b)*dnorm(A*b-delta)
+        else L[k] <- av[k+3]*b*L[k-1]
+    }
+  } 
   # the series 0 to k is stored as 1 to k+1
   ll <- ifelse((upr+1)>0, upr+1, 0)
   H  <- vector(mode="numeric", length=ll)
   # k+1 of the formulas transformes to k here
-  for (k in seq_along(H)){
-    if (k==1) H[1] <- - dnorm(b)*pnorm(A*b-delta)
-        else  H[k] <- av[k+1]*b*H[k-1]
-  }
+  if(is.finite(b)){
+    # since H[1]==0 we also get NaN here if b==Inf  
+    for (k in seq_along(H)){
+      if (k==1) H[1] <- - dnorm(b)*pnorm(A*b-delta)
+        else H[k] <- av[k+1]*b*H[k-1]
+    }
+  }  
   M    <- vector(mode="numeric", length=ll)
   sB   <- sqrt(B)
   # k+1 in the formulas transformes to k here
@@ -79,9 +87,12 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
       k    <- seq(1, upr, by=2)
       sumt <- sum(M[k+1]) + sum(H[k+1])
     }
-    qv <- pnorm(b) - 2*OwensT(b, (A*b-delta)/b) - 
-                     2*OwensT(delta*sB, (delta*A*B-b)/B/delta) +
-                     2*OwensT(delta*sB, A) - (delta>=0) + 2*sumt
+    # if b==Inf what then?
+    # rewrite second argument in first OwensT call (A*b-delta)/b which 
+    # gives NaN to A-delta/b which gives A if b==Inf
+      qv <- pnorm(b) - 2*OwensT(b, A-delta/b) - 
+                       2*OwensT(delta*sB, (delta*A*B-b)/B/delta) +
+                       2*OwensT(delta*sB, A) - (delta>=0) + 2*sumt
   } else {
     # even values of nu
     # sum over even indices 0, 2, ..., nu-2
@@ -95,11 +106,6 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
   }
   return(qv)
 }
-
-# ----------------------------------------------------------------------------
-# precompiled to 'byte code' via compiler package
-# now (31Jan2014) decided to pre-compile the whole package
-# OwensQOwen <- cmpfun(OwensQOwen)
 
 # ----------------------------------------------------------------------------
 # raw power function using OwensQOwen
@@ -117,9 +123,9 @@ OwensQOwen <- function(nu, t, delta, a=0, b)
   delta1[is.nan(delta1)] <- 0
   delta2[is.nan(delta2)] <- 0
     
-  # R is infinite in case of alpha=0.5
-  R <- (delta1-delta2)*sqrt(df)/(2.*abs(tval))
-  
+  # R is infinite in case of alpha>=0.5
+  R <- (delta1-delta2)*sqrt(df)/(2.*tval)
+  R[R<0] <- Inf
   # to avoid numerical errors in OwensQ implementation
   if (min(df)>10000) { 
     # Joulious formula (57) or (67), normal approximation

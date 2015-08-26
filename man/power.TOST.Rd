@@ -51,25 +51,31 @@ Character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.
   }
   \item{method}{
+Method for calculation of the power.\cr  
 Defaults to "exact" in which case the calculation is done based on formulas 
-with Owen's Q.\cr
-The exact calculation can also be choosen with \code{method="owenq"}
+with Owen's Q. The calculation via Owen's Q can also be choosen with 
+\code{method="owenq"}.\cr
+Another exact method via direct integration of the bivariate non-central 
+t-distribution may be chosen with \code{method="mvt"}. This may have somewhat 
+lower precision compared to Owen's Q and longer run-time.\cr  
 Approximate calculations can be choosen via \code{method="noncentral"} or 
-\code{method="nct"} for the approximation using the non-central t-distribution\cr
-or via \code{method="central"} or \code{method="shifted"} for the 
-approximation via 'shifted' central t-distribution.\cr
+\code{method="nct"} for the approximation using the non-central t-distribution.
+With \code{method="central"} or \code{method="shifted"} the relative crude
+approximation via 'shifted' central t-distribution is chosen.\cr
 The strings for \code{method} may be abbreviated.
   }
   \item{robust}{
 Defaults to FALSE. With that value the usual degrees of freedom will be used.\cr
-Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
-(aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
+Set to \code{TRUE} will use the degrees of freedom according to the 'robust' 
+evaluation (aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
 See \code{known.designs()$df2} for designs covered in this package.\cr
 Has only effect for higher-order crossover designs.
   }
 }
 \details{
-The exact calculations of power are based on Owen's Q-function.\cr
+The exact calculations of power are based on Owen's Q-function or via direct 
+integration of the bivariate non-central t-distribution via function
+\code{pmvt()} of package \code{mvtnorm}.\cr
 The approximate power is implemented via non-central t-distribution
 or via 'shifted' central t-distribution.\cr\cr
 The formulas cover now balanced and unbalanced studies w.r.t (sequence) groups.\cr\cr
@@ -94,7 +100,7 @@ assumed numbers of subjects in (sequence) groups.\cr
 The function does not vectorize propperly if design is a vector.\cr
 The function vectorizes properly if CV or theta0 are vectors.\cr
 Other vector input is not tested yet.\cr\cr
-Function \code{power2.TOST()} formerly designd to handle unbalanced studies is 
+Former function \code{power2.TOST()} designd to handle unbalanced studies is 
 now removed since \code{power.TOST()} handles balanced as well as unbalanced designs.
 }
 \references{
@@ -108,7 +114,8 @@ Confidence Intervals" \cr
 Int. J. of Clinical Pharmacology, Therapy and Toxicology, 29, 1-8 
 }
 \author{
-D. Labes
+D. Labes\cr
+Direct integration of bivariate non-central t-distribution by Benjamin Lang.
 }
 \seealso{
  \code{\link{sampleN.TOST}, \link{known.designs}}

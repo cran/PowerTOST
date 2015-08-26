@@ -249,10 +249,12 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   }
   if (details && print) {
     if (method=="exact" || method=="owenq") 
-      cat("\nExact power calculation with\nOwen's Q functions.\n")
+      cat("\nExact power calculation with\nOwen's Q functions.")
+    if (method=="mvt") 
+      cat("\nExact power calculation with\nbivariate non-central t-distribution.")
   }
   # always print if approx.
-  if (print && method!="exact"){
+  if (print && (method!="exact" || method!="mvt")){
     approx <- switch(
       method,
       nct="Approximate power calculation with\nnon-central t-distribution.",
