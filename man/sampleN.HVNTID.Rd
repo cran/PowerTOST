@@ -1,17 +1,20 @@
-\name{sampleN.NTIDFDA}
-\alias{sampleN.NTIDFDA}
+\name{sampleN.HVNTID}
+\alias{sampleN.HVNTID}
 \title{
-Sample size estimation for BE decision via FDA method for narrow therapeutic index drugs (NTID's)
+Sample size estimation for BE decision via FDA method for highly variable 
+narrow therapeutic index drugs (NTID's)
 }
 \description{
 This function performs the Sample size estimation for the BE decision via 
-FDA method for NTID's based on simulations. The study design is the full 
-replicate design 2x2x4 or the 3-period replicate design with sequeences TRT|RTR.
+FDA method for highly variable NTID's as described in the FDA Dabigatran / 
+Rivaroxaban guidances based on simulations. \cr
+The study designs may be the full replicate design 2x2x4 with 4 periods and 
+the 3-period replicate design 2x2x3 with sequences RTR|TRT.
 }
 \usage{
-sampleN.NTIDFDA(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
-                design=c("2x2x4", "2x2x3"), nsims = 1e+05, nstart, print = TRUE, 
-                details = TRUE, setseed = TRUE)
+sampleN.HVNTID(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
+               design=c("2x2x4", "2x2x3"), nsims = 1e+05, nstart, print = TRUE, 
+               details = TRUE, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -23,9 +26,7 @@ Typical values are 0.8 or 0.9.
 }
   \item{theta0}{
 'True' or assumed bioequivalence ratio. \cr
-Attention! Defaults here to 0.975 if not given explicitly. The value was chosen 
-nearer to 1 because the potency (contents) settings for NTID's are tightened 
-by the FDA.
+Defaults to 0.95 if not given explicitly.
 }
   \item{theta1}{
 Conventional lower ABE limit to be applied in the FDA procedure.\cr
@@ -70,24 +71,27 @@ generator. To avoid differences in power values for different runs a
 }
 }
 \details{
-The linearized scaled ABE criterion is calculated according to the SAS code
-given in the FDA Warfarine guidance. For deciding BE the study must pass that criterion, 
-the conventional ABE test and additional the test that the ratio of 
-sWT/sWR is <= 2.5.\cr\cr
+For deciding BE the study must pass the conventional ABE test and additionally
+the test that the ratio of sWT/sWR is <= 2.5.\cr\cr
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on these method.\cr
 Details can be found in a document "Implementation_scaledABE_sims" located in 
 the doc subdirectory of the package.
 }
 \value{
-Returns a data.frame with the input and sample size results.\cr
+Returns now a data.frame with the input and sample size results.\cr
 The "Sample size" column contains the total sample size.\cr
 The "nlast" column contains the last n value. May be useful for re-starting.
 }
 \references{
-FDA "Draft Guidance on Warfarin Sodium"\cr
-Recommended Dec 2012\cr
-http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM201283.pdf}
+FDA "Draft Guidance on Dabigatran Etexilate Mesylate"\cr
+Recommended Jun 2012; Revised Sept 2015\cr
+http://www.fda.gov/downloads/drugs/guidancecomplianceregulatoryinformation/guidances/ucm308030.pdf
+
+FDA "Draft Guidance on Rivaroxaban"\cr
+Recommended Sept 2015\cr
+http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM461150.pdf
+}
 \author{
 D. Labes
 }
@@ -96,40 +100,30 @@ The design recommended by the FDA is the full replicate design 2x2x4.\cr
 The sample size estimation is done only for balanced studies since the 
 break down of the total subject number in case of unbalanced sequence groups
 is not unique. Moreover the formulas used are only valid for balanced designs.\cr
-The FDA method is described for the ABE limits 0.8 ... 1.25 only. Setting theta1, 
-theta2 to other values may not be reasonable and is not tested.\cr\cr
-The results for the design "2x2x3" are to be considered as experimental since
-at present not thorougly tested.
+The FDA method is described for the ABE limits 0.8 ... 1.25 only. Setting theta1, theta2
+to other values may not be reasonable and is not tested.
 }
 \section{Warning }{
 For some input constellations the sample size search may be very time 
 consuming and will eventually also fail since the start values chosen may
-not really reasonable for them. This applies especially for theta0 values
-near to the implied scaled (tightened/widened) ABE limits according to
-\code{exp(+-1.053605*swR)}.\cr
+not really reasonable for them.\cr
 In case of a failed sample size search you may restart with setting the argument 
 \code{nstart}.\cr
-In case of theta0 values outside the implied scaled (tightened/widened) ABE limits
-no sample size estimation is possible and the function throws an error 
-(f.i. CV=0.04, theta0=0.95).
 }
 
 \seealso{ 
-\code{\link{power.NTIDFDA}}
+\code{\link{power.HVNTID}}
 }
 \examples{
-sampleN.NTIDFDA(CV=0.04,theta0=0.975)
+# using all defaults but CV
+sampleN.HVNTID(CV=0.3)
 # should give
-# n=54 with an (empirical) power of 0.809590
-#
-# Test formulation with lower variability
-sampleN.NTIDFDA(CV=c(0.04,0.06),theta0=0.975)
-# should give
-# n=20 with an (empirical) power of 0.0.814610
-#
-# alternative 3-period design
-sampleN.NTIDFDA(CV=0.04,theta0=0.975, design="2x2x3")
-# should give
-# n=86 with power = 0.80364
+# n=22 with an (empirical) power of 0.829700
+
+# Test formulation with lower variability but same pooled CV
+CVs <- CVp2CV(0.3, ratio=0.25)
+sampleN.HVNTID(CV=CVs)
+# should give (no distinct difference to example above)
+# n=22 with an (empirical) power of 0.837520
 }
 

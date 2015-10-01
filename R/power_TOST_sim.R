@@ -84,6 +84,18 @@ power.TOST.sim <- function(alpha = 0.05, logscale = TRUE, theta1, theta2,
   p2 <- pt(t2, df)
   #BE decision
   BE <- (p1<alpha & p2<alpha)
+  
+  # check against CI, debug code
+#   tval <- qt(1-alpha, df)
+#   hw   <- tval*sqrt(mses)*se.fac
+#   lwr  <- pes - hw
+#   upr  <- pes + hw
+#   browser()
+#   BE2  <- lwr>ltheta1 & upr<ltheta2
+  # seems to give the same answer as pvalues, even if alpha>=0.5
+  # will result in lwr>upr, which is not easily interpretable
+  
+  # number of studies found BE to number simulated
   pBE <- sum(BE)/nsims
   pBE
 }

@@ -69,7 +69,7 @@ If simulations are aimed for empirical alpha \code{nsims=1e+06} is recommended.
   \item{details}{
 If set to \code{TRUE} the computational time is shown as well as the components
 for the BE decision.\cr
-p(BE-wABEL) is the probability that the CI is within widened limits.\cr
+p(BE-wABEL) is the probability that the CI is within (widened) limits.\cr
 p(BE-PE) is the probability that the point estimate is within theta1 ... theta2.\cr
 p(BE-ABE) is the simulated probability for the conventional ABE test.
 }
@@ -99,7 +99,12 @@ For more details see a document "Implementation_scaledABE_simsVx.yy.pdf" in the
 /doc subdirectory of the package.
 }
 \value{
-Returns the value of the 'empirical' power.
+Returns the value of the (empirical) power if argument \code{details=FALSE}.\cr\cr
+Returns a named vector if argument \code{details=TRUE}.\cr
+p(BE) is the power, p(BE-wABEL) is the power of the widened ABEL criterion alone 
+and p(BE-pe) is the power of the criterion 'point estimat within acceptance 
+range' alone.\cr
+p(BE-ABE) is the power of the conventional ABE test given for comparative purposes.
 }
 \references{
 Laszlo Tothfalusi and Laszlo Endrenyi\cr
@@ -139,10 +144,9 @@ power.scABEL(CV=0.4, n=29)
 # [1] 0.82854
 # with details=TRUE to view the computational time
 power.scABEL(CV=0.5, n=54, theta0=1.15, details=TRUE)
-# should give (times may differ depending on your machine).
-# 1e+05 sims. Time elapsed (sec):
-#    user  system elapsed 
-#    0.09    0.00    0.10 
-# p(BE-ABE)= 0.27542 ; p(BE-wABEL)= 0.82078 ; p(BE-PE)= 0.85385 
-# 0.81727
+# should give (times may differ depending on your machine):
+# 1e+05sims. Time elapsed (sec): 0.07
+# 
+#      p(BE) p(BE-wABEL)    p(BE-pe)   p(BE-ABE) 
+#    0.81727     0.82078     0.85385     0.27542 
 }

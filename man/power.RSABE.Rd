@@ -71,9 +71,10 @@ If simulations are aimed for empirical alpha \code{nsims=1e+06} is recommended.
   \item{details}{
 If set to \code{TRUE} the computational time is shown as well as the components
 for the BE decision.\cr
-p(BE-ABE) is the simulated probability for the conventional ABE test.
-p(BE-SABEc) is the probability that the 95\% CI of the ABE criterion is <0.\cr
-p(BE-PE) is the probability that the point estimate is within theta1 ... theta2.
+p(BE-sABEc) is the probability that the 95\% CI of the ABE criterion is <0.\cr
+p(BE-PE) is the probability that the point estimate is within theta1 ... theta2.\cr
+p(BE-ABE) is the simulated probability for the conventional ABE test given for
+comparision purposes.\cr
 }
   \item{setseed}{
 Simulations are dependent on the starting point of the (pseudo) random number 
@@ -90,7 +91,12 @@ Details can be found in a document "Implementation_scaledABE_simsVx.yy.pdf"
 located in the doc subdirectory of the package.
 }
 \value{
-Returns the value of the empirical power.
+Returns the value of the (empirical) power if argument \code{details=FALSE}.\cr\cr
+Returns a named vector if argument \code{details=TRUE}.\cr
+p(BE) is the power, p(BE-sABEc) is the power of the scaled ABE criterion alone 
+and p(BE-pe) is the power of the criterion 'point estimat within acceptance 
+range' alone.\cr
+p(BE-ABE) is the power of the conventional ABE test given for comparative purposes.
 }
 \section{Warning }{
 In case of the design 2x2x3 heteroscedasticity (CVwT not equal to CVwR) may 

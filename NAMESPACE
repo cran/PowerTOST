@@ -43,6 +43,7 @@ export(
   , power.TOST
   , power.TOST.sim
   , power.NTIDFDA
+  , power.HVNTID
   , power.RSABE
   , power.scABEL
   , power.dp
@@ -52,6 +53,7 @@ export(
   , sampleN.RatioF
   , sampleN.TOST
   , sampleN.NTIDFDA
+  , sampleN.HVNTID
   , sampleN.RSABE
   , sampleN.scABEL
   , sampleN.dp

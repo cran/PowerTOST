@@ -36,7 +36,7 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   CVswitch  <- 0.3
   regulator <- match.arg(regulator)
   if (regulator=="FDA") r_const <- log(1.25)/0.25 # or better log(theta2)/0.25?
-  if (regulator=="EMA") r_const <- 0.76 # or better log(theta2)/CV2se(0.3)
+  if (regulator=="EMA") r_const <- 0.76 # or better log(theta2)/CV2se(0.3)?
   
   design <- match.arg(design)
   if (design=="2x3x3") {
@@ -108,19 +108,21 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   mlog <- log(theta0)
   
   if(setseed) set.seed(123456)
-  p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
-                    CVswitch, r_const, 
+  p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, r_const, 
                     ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
   if (details) {
-    cat(nsims,"sims. Time elapsed (sec):\n")
-    print(proc.time()-ptm)
-    cat("p(BE-ABE)=", p["BEabe"],"; p(BE-SABEc)=", p["BEul"],
-        "; p(BE-PE)=", p["BEpe"],"\n")
-    cat("\n")
+    ptm <- summary(proc.time()-ptm)
+    message(nsims,"sims. Time elapsed (sec): ", 
+            formatC(ptm["elapsed"], digits=2), "\n")
+    #print(ptm)
+    # return also the components
+    names(p) <- c("p(BE)", "p(BE-sABEc)", "p(BE-pe)", "p(BE-ABE)")
+    p
+  } else {
+    # return only the 'power'
+    as.numeric(p["BE"])
   }
-  # return the 'power'
-  as.numeric(p["BE"])
 }
 
 # working horse of RSABE
@@ -134,7 +136,7 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   s2switch <- log(CVswitch^2+1) 
   
   counts <- rep.int(0, times=4)
-  names(counts) <- c("BE", "BEpe", "BEul","BEabe")
+  names(counts) <- c("BE", "BEul", "BEpe", "BEabe")
   # to avoid memory problems for high number of sims
   chunks <- 1
   nsi    <- nsims

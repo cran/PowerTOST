@@ -134,14 +134,17 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
   if (details) {
-    cat(nsims,"sims. Time elapsed (sec):\n")
-    print(proc.time()-ptm)
-    cat("p(BE-ABE)=", p["BEabe"],"; p(BE-wABEL)=", p["BEwl"], "; p(BE-PE)=", 
-        p["BEpe"],"\n")
-    cat("\n")
+    ptm <- summary(proc.time()-ptm)
+    message(nsims,"sims. Time elapsed (sec): ", 
+            formatC(ptm["elapsed"], digits=2), "\n")
+    #print(ptm)
+    # return the vector of all counts
+    names(p) <- c("p(BE)", "p(BE-wABEL)", "p(BE-pe)", "p(BE-ABE)")
+    p
+  } else {
+    # return only the 'power'
+    as.numeric(p["BE"])
   }
-  # return the 'power'
-  as.numeric(p["BE"])
 }
 
 # --- working horse for power calculation
@@ -158,8 +161,8 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   denom    <- sum(cvec)
   
   # result vector
-  counts        <- rep.int(0, times=5)
-  names(counts) <- c("BE", "BEpe", "BEwl","BEabe")
+  counts        <- rep.int(0, times=4)
+  names(counts) <- c("BE", "BEwl", "BEpe", "BEabe")
   # to avoid memory problems
   chunks <- 1
   nsi    <- nsims
