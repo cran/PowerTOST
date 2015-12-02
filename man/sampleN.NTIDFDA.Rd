@@ -87,7 +87,19 @@ The "nlast" column contains the last n value. May be useful for re-starting.
 \references{
 FDA "Draft Guidance on Warfarin Sodium"\cr
 Recommended Dec 2012\cr
-http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM201283.pdf}
+http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM201283.pdf
+
+LX Yu et al.\cr
+"Novel bioequivalence approach for narrow therapeutic index drugs"\cr
+Clin Pharm & Ther Vol 97, Issue 3, pages 286-291, March 2015\cr
+First published online: 15 DEC 2014
+
+W Jiang et al.\cr
+"A Bioequivalence Approach for Generic Narrow Therapeutic Index Drugs: \cr
+Evaluation of the Reference-Scaled Approach and Variability Comparison Criterion"\cr
+The AAPS Journal, July 2015, Volume 17, Issue 4, pp 891-901\cr
+First published online: 04 April 2015
+}
 \author{
 D. Labes
 }

@@ -1,5 +1,6 @@
 #-----------------------------------------------------------------------------
 # Author: dlabes
+# Adapted for power.2TOST by Benjamin Lang
 #-----------------------------------------------------------------------------
 
 # ----- helper functions for sampleN.TOST and other --------------------------
@@ -92,15 +93,32 @@
 # diff if empty is set to 0.95 or 0.05 depending on logscale
 # leave upper BE margin (theta2) empty and the function will use -lower
 # in case of additive model or 1/lower if logscale=TRUE
-sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0, 
-                         theta1, theta2, CV, design="2x2", method="exact",
-                         robust=FALSE, print=TRUE, details=FALSE, imax=100)
+sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE, 
+                          theta0, theta1, theta2, CV, rho, design="2x2", 
+                          setseed=TRUE, robust=FALSE, print=TRUE, details=FALSE,
+                          imax=100)
 {
+  if (length(alpha) != 2)
+    stop("Two alpha values must be given!")
+  if (!missing(theta0) && length(theta0) != 2)
+    stop("Two theta0 values must be given!")
+  if (!missing(theta1) && length(theta1) != 2)
+    stop("Two theta1 values must be given!")
+  if (!missing(theta2) && length(theta2) != 2)
+    stop("Two theta2 values must be given!")
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
+  if (length(CV) != 2)
+    stop("Two CVs must be given!")
   if(any(CV<0)) {
     message("Negative CV changed to abs(CV).")
     CV <- abs(CV)
   }
+  if (missing(rho))
+    stop("Correlation between the two endpoints must be given!")
+  if (length(rho) != 1)
+    stop("One rho must be given!")
+  if (rho < -1 || rho > 1)
+    stop("Correlation must be >= -1 and =< 1.") 
   
   #number of the design and check
   d.no <- .design.no(design)
@@ -125,7 +143,7 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   nmin <- nmin + steps*(nmin<n)
   # print the configuration:
   if (print) {
-    cat("\n+++++++++++ Equivalence test - TOST +++++++++++\n")
+    cat("\n+++++++++++ Equivalence test - 2 TOSTs +++++++++++\n")
     cat("            Sample size estimation\n")
     cat("-----------------------------------------------\n")
     cat("Study design: ",d.name,"\n")
@@ -138,30 +156,36 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
     }     
   }
   
-  # regularize the method giving
-  method <- .powerMethod(method)
-  
   # handle the log transformation
   if (logscale) {
-    if (missing(theta1) & missing(theta2)) theta1 <- 0.8
-    if (missing(theta0)) theta0 <- 0.95
-    if (missing(theta2)) theta2=1/theta1
-    if ( (theta0<=theta1) | (theta0>=theta2) ) {
-      stop("Null ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
-           call.=FALSE)
-     }
+    if (missing(theta1)) theta1 <- c(0.8, 0.8)
+    if (missing(theta2)) theta2 <- 1/theta1
+    if (any(theta1 <= 0) || any(theta1 > theta2))
+      stop("theta1 and/or theta2 not correctly specified.")
+    if (missing(theta0)) theta0 <- c(0.95, 0.95)
+    if (any(theta0 <= 0))
+      stop("theta0 must be > 0.")
+    if (any(theta0 <= theta1) || any(theta0 >= theta2)) {
+      stop("One assumed ratio is not between respective margins!", 
+           call. = FALSE)
+    }
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
     diffm   <- log(theta0)
     se      <- CV2se(CV)
     if (print) cat("log-transformed data (multiplicative model)\n\n")
   } else {
-    if (missing(theta1) & missing(theta2)) theta1 <- -0.2
-    if (missing(theta0)) theta0 <- 0.05
-    if (missing(theta2)) theta2=-theta1
-    if ( (theta0<=theta1) | (theta0>=theta2) ) {
-      stop("Null diff. ",theta0," not between margins ",theta1," / ",theta2,"!", 
-           call.=FALSE)
+    if (missing(theta0)) 
+      theta0 <- c(0.05, 0.05)
+    if (missing(theta1)) 
+      theta1 <- c(-0.2, -0.2)
+    if (missing(theta2)) 
+      theta2 <- -theta1
+    if (any(theta1 > theta2))
+      stop("theta1 and/or theta2 not correctly specified.")
+    if (any(theta0 <= theta1) || any(theta0 >= theta2)) {
+      stop("One assumed difference is not between respective margins!", 
+           call. = FALSE)
     }
     ltheta1 <- theta1
     ltheta2 <- theta2
@@ -171,22 +195,47 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   }
   
   if (print) {
-    cat("alpha = ",alpha,", target power = ", targetpower,"\n", sep="")
-    cat("BE margins        =",theta1,"...", theta2,"\n")
-    if (logscale) cat("Null (true) ratio = ",theta0,",  CV = ",CV,"\n", sep="")
-    else          cat("Null (true) diff. = ",theta0,",  CV = ",CV,"\n", sep="")
+    cat("alpha = ",paste(as.character(alpha), collapse = ", "),
+        "; target power = ", targetpower,"\n", sep="")
+    cat("BE margins         =",theta1,"...", theta2,"\n")
+    if (logscale) cat("Null (true) ratios = ",paste(as.character(theta0), 
+                                                    collapse = ", "),
+                      "; CV = ",paste(as.character(CV), collapse = ", "),
+                      "\n", sep="")
+    else          cat("Null (true) diffs = ",paste(as.character(theta0), 
+                                                    collapse = ", "),
+                      "; SD = ",paste(as.character(CV), collapse = ", "),
+                      "\n", sep="")
+    cat("Correlation between the two parameters = ",rho,"\n", sep="")
   }
   
-  # start value from large sample approx. (hidden func.)
-  # Jan 2015 attempt to change to pure Zhang's formula
-  # but this gives many iterations if theta0 near acceptance limits
-  n <- .sampleN0_3(alpha, targetpower, ltheta1, ltheta2, diffm, se, steps, bk)
-  if (n<nmin) n <- nmin
-
+  # if both theta0 are near acceptance limits then starting value may not be
+  # ideal resulting in a lot of iteration steps
+  idx.d <- which.max(abs(diffm))
+  n <- n.tmp <- max(.sampleN0_3(alpha[1], targetpower, ltheta1[1], 
+                                ltheta2[1], diffm[1], se[1], steps, bk),
+                    .sampleN0_3(alpha[2], targetpower, ltheta1[2], 
+                                ltheta2[2], diffm[2], se[2], steps, bk))
   df <- eval(dfe)
-  pow <- .calc.power(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, diffm=diffm, 
-                     sem=se*sqrt(bk/n), df=df, method=method)
-
+  pow <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
+                      ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
+                      alpha = alpha, setseed = setseed)
+  if (!isTRUE(all.equal(pow, targetpower, tolerance = 1e-04))) {
+    n <- .sampleN0_3(min(alpha), targetpower, ltheta1[idx.d], ltheta2[idx.d], 
+                     diffm[idx.d], max(se), steps, bk)
+    df <- eval(dfe)
+    pow.tmp <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
+                            ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
+                            alpha = alpha, setseed = setseed)
+    if (abs(pow.tmp - targetpower) <= abs(pow - targetpower)) {
+      pow <- pow.tmp
+    } else {
+      n <- n.tmp
+      df <- eval(dfe)
+    }
+  }
+  if (n < nmin) n <- nmin
+  
   if (details) {
     cat("\nSample size search (ntotal)\n")
     cat(" n     power\n")
@@ -207,12 +256,12 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
       break
     }
     down <- TRUE
-    n    <- n-steps     # step down if start power is to high
+    n    <- n-steps     # step down if start power is too high
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .calc.power(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, diffm=diffm, 
-                       sem=se*sqrt(bk/n), df=df, method=method)
-      
+    pow <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
+                        ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
+                        alpha = alpha, setseed = setseed)
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -222,57 +271,44 @@ sampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, theta0,
   # --- loop until power >= target power
   while (pow<targetpower) {
     up   <- TRUE; down <- FALSE
-    n    <- n+steps
+    n <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .calc.power(alpha, ltheta1, ltheta2, diffm, sem=se*sqrt(bk/n), df, method)
+    pow <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
+                        ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
+                        alpha = alpha, setseed = setseed)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
-  #browser()
-  # for very large n the search usually fails, but doesn't matter
+  
   nlast <- n
-  if (up & pow<targetpower & n<10000) {
-    n <- NA
-    if (details) cat("Sample size search failed!\n")
+  if (up & pow<targetpower) {
+    n <- if (isTRUE(all.equal(pow, targetpower, 1e-04))) nlast else NA
+    if (details && is.na(n)) 
+      cat("Sample size search failed; last n = ", nlast,
+          " (power = ", pow, ")\n", sep="")
   }
-  if (down & pow>targetpower & n<10000) {
-    n <- NA
-    if (details) cat("Sample size search failed!\n")
+  if (down & pow>targetpower) {
+    n <- if (isTRUE(all.equal(pow, targetpower, 1e-04))) nlast else NA
+    if (details && is.na(n)) 
+      cat("Sample size search failed; last n = ", nlast,
+          " (power = ", pow, ")\n", sep="")
   } 
   if (print && !details) {
     cat("\nSample size (total)\n")
     #if (d.no == 0) cat("(n is sample size per group)\n") #parallel group design
     cat(" n     power\n")
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
-    if (is.na(n)) cat("Sample size search failed!\n")
+    if (is.na(n)) 
+      cat("Sample size search failed; last n = ", nlast, 
+          " (power = ", pow, ")\n", sep="")
   }
-  if (details && print) {
-    if (method=="exact" || method=="owenq") 
-      cat("\nExact power calculation with\nOwen's Q functions.\n")
-    if (method=="mvt") 
-      cat("\nExact power calculation with\nbivariate non-central t-distribution.\n")
-  }
-  # always print if approx.
-  if (print & (method!="exact" & method!="mvt")){
-    approx <- switch(
-      method,
-      nct="Approximate power calculation with\nnon-central t-distribution.",
-      noncentral="Approximate power calculation with\nnon-central t-distribution.",
-      shifted="Approximate power calculation with\nshifted central t-distribution.",
-      central="Approximate power calculation with\nshifted central t-distribution."
-      )
-    cat("\n",approx,"\n",sep="")
-  } 
   if (print) cat("\n")
   
-  #return results as data.frame
-  res <- data.frame(design=design, alpha=alpha, CV=CV, theta0=theta0, 
-                    theta1=theta1, theta2=theta2, n=n, power=pow, 
-                    targetpower=targetpower)
-  names(res) <-c("Design","alpha","CV","theta0","theta1","theta2",
-                 "Sample size", "Achieved power", "Target power")
+  res <- list(design=design, alpha=alpha, CV=CV, theta0=theta0, theta1=theta1,
+              theta2=theta2, n=n, power=pow, targetpower=targetpower)
+  names(res) <- c("Design","alpha","CV","theta0","theta1","theta2",
+                  "Sample size", "Achieved power", "Target power")
   
   if (print) return(invisible(res)) else return(res)
-  
 }

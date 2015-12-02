@@ -9,7 +9,7 @@ importFrom(graphics, plot, close.screen, legend, text, points,
            abline, screen, split.screen, par, segments)
 importFrom(grDevices, colorRampPalette)
 importFrom(stats, dnorm, pnorm, qnorm, rnorm, pt, qt, dchisq, qchisq, rchisq, 
-           qf, uniroot, integrate)
+           qf, uniroot, integrate, optim)
 importFrom(utils, tail, head, read.table)
 
 # Export all names except those beginning with .
@@ -38,6 +38,8 @@ export(
   , pa.ABE
   , pa.scABE
   , pa.NTIDFDA
+  , power.2TOST
+  , type1error.2TOST
   , power.noninf
   , power.RatioF
   , power.TOST
@@ -51,6 +53,7 @@ export(
   , pvalues.TOST
   , sampleN.noninf
   , sampleN.RatioF
+  , sampleN.2TOST
   , sampleN.TOST
   , sampleN.NTIDFDA
   , sampleN.HVNTID

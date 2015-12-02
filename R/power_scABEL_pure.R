@@ -1,5 +1,5 @@
 #---------------------------------------------------------------------------
-# Simulate partial and full replicate design and scaled ABEL power
+# Simulate partial and full replicate design and pure scaled ABEL power
 # 
 # Author: dlabes
 #---------------------------------------------------------------------------
@@ -27,11 +27,10 @@
 # 2x2x4  dfRR = n-2
 # This is used in the xxx.RSABE() functions
 
-
-power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                         design=c("2x3x3", "2x2x4", "2x2x3"), 
-                         regulator=c("EMA", "ANVISA", "FDA"),
-                         nsims=1E5, details=FALSE, setseed=TRUE)
+pwr.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
+                       design=c("2x3x3", "2x2x4", "2x2x3"), 
+                       regulator=c("EMA", "ANVISA", "FDA"),
+                       nsims=1E5, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
@@ -51,12 +50,12 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   
   regulator <- toupper(regulator)
   regulator <- match.arg(regulator)
-  # constants acc. to regulatory bodies (function in scABEL.R)
+  # constants acc. to regulatory bodies
   rc <- reg_const(regulator)
   CVcap    <- rc$CVcap
   CVswitch <- rc$CVswitch
   r_const  <- rc$r_const
-  # check design argument
+  
   design <- match.arg(design)
   if (design=="2x3x3") {
     seqs <- 3
@@ -129,26 +128,15 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   } 
   
   if(setseed) set.seed(123456)
-  p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT, 
-                     design, nsims, CVswitch, r_const, CVcap, 
-                     ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
+  p <- .pwr.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT, 
+                   design, nsims, CVswitch, r_const, CVcap, 
+                   ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
-  if (details) {
-    ptm <- summary(proc.time()-ptm)
-    message(nsims,"sims. Time elapsed (sec): ", 
-            formatC(ptm["elapsed"], digits=2), "\n")
-    #print(ptm)
-    # return the vector of all counts
-    names(p) <- c("p(BE)", "p(BE-wABEL)", "p(BE-pe)", "p(BE-ABE)")
-    p
-  } else {
-    # return only the 'power'
-    as.numeric(p["BE"])
-  }
+  as.numeric(p)
 }
 
-# --- working horse for power calculation
-.power.scABEL <- function(mlog, sdm, C2, Emse, cvec, df, 
+# --- working horse for power calculation for pure scABEL
+.pwr.scABEL <- function(mlog, sdm, C2, Emse, cvec, df, 
                           s2wR, dfRR, s2wT, dfTT, design,
                           nsims, CVswitch=0.3, r_const=0.760, CVcap=0.5,
                           ln_lBEL=log(0.8), ln_uBEL=log(1.25), alpha=0.05)
@@ -201,14 +189,16 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     #--- EMA widened limits in log-domain
     uABEL   <- +sqrt(s2wRs)*r_const
     lABEL   <- -uABEL
-    # use ABE limits if CV < CVswitch
-    lABEL[s2wRs<=s2switch] <- ln_lBEL
-    uABEL[s2wRs<=s2switch] <- ln_uBEL
-    # cap limits if CVcap not Inf
-    if (is.finite(CVcap)){
-      lABEL[s2wRs>s2cap] <- -capABEL
-      uABEL[s2wRs>s2cap] <- +capABEL
-    }
+    
+    # no 'mixed' procedure, no cap
+#     # use ABE limits if CV < CVswitch
+#     lABEL[s2wRs<=s2switch] <- ln_lBEL
+#     uABEL[s2wRs<=s2switch] <- ln_uBEL
+#     # cap limits if CVcap not Inf
+#     if (is.finite(CVcap)){
+#       lABEL[s2wRs>s2cap] <- -capABEL
+#       uABEL[s2wRs>s2cap] <- +capABEL
+#     }
     #--- 90% CIs for T-R
     hw  <- tcrit*sqrt(C2*mses)
     lCL <- means - hw 
@@ -216,17 +206,10 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     rm(hw)
     #--- 90% CI in 'widened' limits? 
     BE   <- (lABEL<=lCL) & (uCL<=uABEL)
-    #--- conventional ABE
-    BEABE <- (ln_lBEL<=lCL) & (uCL<=ln_uBEL)
-    #--- point est. constraint true?
-    BEpe <- (means>=ln_lBEL) & (means<=ln_uBEL)
-    
-    counts["BEabe"] <- counts["BEabe"] + sum(BEABE)
-    counts["BEpe"]  <- counts["BEpe"]  + sum(BEpe)
-    counts["BEwl"]  <- counts["BEwl"]  + sum(BE)
-    counts["BE"]    <- counts["BE"]    + sum(BE & BEpe)
+
+    counts["BE"] <- counts["BE"]  + sum(BE)
   } # end over chunks
   
   # return the counts
-  counts/nsims
+  counts["BE"]/nsims
 }

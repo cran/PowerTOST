@@ -1,6 +1,6 @@
-f885e61b5d69c3f766601d716019dcc0 *DESCRIPTION
-f8258a806404f923bb014de489dcb41f *NAMESPACE
-62775c123d4d0083203affa3f9a25869 *NEWS
+36b0424542f15dbb39943ddc40d34e24 *DESCRIPTION
+d16c80fd3cf6d9b83543f6c2f8f94100 *NAMESPACE
+f0e55df5e25c04b90ac44a76ba8d1964 *NEWS
 d00b3aee6203d7bfdba314e04b3e1345 *R/BE_CI.R
 33067d9fdc4969374af152cba6a239a7 *R/BIBs.R
 d0518c457aaa497dccf8035f869244dd *R/CVfromCI_BL.R
@@ -10,7 +10,7 @@ e7fad857c0d972431c35634c7896cbd6 *R/DesignHelpers.R
 8a978902bd5d9a9ae79aeb47b69d8b2e *R/Fieller.R
 4e3615a09c7096c956ceb1862a7c9887 *R/OwensQ.R
 e68e3b1ee218ff7fe65761641d833675 *R/OwensQOwen.R
-9adedfb8808e999739bd2cec540a9488 *R/SampleSize.R
+745258217fcd62d0e8cc72b34e36a8ef *R/SampleSize.R
 53710423deac92e704c43287889f83a8 *R/SampleSize_HVNTID.R
 068da7a545a71b97a3b53f975216dc5d *R/SampleSize_doseprop.R
 dd525cdc9172c9e2ee734942ff111a50 *R/SampleSize_noninf.R
@@ -28,12 +28,16 @@ e64d95239af459817b37b063f7761b4a *R/power.R
 710c773e36fe9189b481617f8cbeceb7 *R/power_PASS.R
 8447a7cb2bf93dd2c71c952cf0c247df *R/power_RSABE.R
 081d85fdf21c8ec4a1d699ee54273e11 *R/power_RSABE_NTID.R
+2659c13d8b8a3d3aed14b6141add7e15 *R/power_RSABE_pure.R
 1a8b62d9d31a91c5eb70c72205e0df1b *R/power_TOST_sim.R
 3ce403cc9e18b807ee399723a73d88c6 *R/power_doseprop.R
 d9f1b31c8304e2fb7f0ae8943b69d791 *R/power_noninf.R
-49c3ef781671c391ff76bf57ade315b8 *R/power_scABEL.R
+4636a25dc4cc250b32e6680337b09671 *R/power_scABEL.R
+5214020bbffe1d14e67468c7c077859a *R/power_scABEL_pure.R
+203c7abb2e418ce401b9b04f4a382f5b *R/power_type1_2TOST.R
 27f444f01c92f2294159975439190130 *R/pvalue.TOST_Benjamin.R
 02e4ae8b448a02c9b7d7221350548a7f *R/pwrA_S3methods.R
+a94df1d67d950178195c3d55549a459f *R/sampleN_2TOST.R
 c1a027ddbf064deac47cbcac1f9f4173 *R/samplesize_RSABE.R
 44eea569d8cbea20c17b832fb5394543 *R/samplesize_RSABE_NTID.R
 ab2bb7638716a310ed375372b7eb1207 *R/samplesize_scABEL.R
@@ -74,8 +78,9 @@ dcf10f350bb1eb694de81cb520fe1cf0 *man/data_parallel.Rd
 5f9ba58f21ad52b3ecd8c617fba51c08 *man/pa.ABE.Rd
 75c20f9239751696c9770e32d911f5e1 *man/pa.NTIDFDA.Rd
 00fcbfcc09ba21eda0b81bfb361ca9a2 *man/pa.scABE.Rd
+c96321b8e01a33bea58430e2e766e54c *man/power.2TOST.Rd
 6a4047ef3c26e34909d529bf3a10e915 *man/power.HVNTID.Rd
-dc2d1f09547a931c8e656ec7ed31b3fd *man/power.NTIDFDA.Rd
+70d3a265d98a29bfac17ceda5380aacc *man/power.NTIDFDA.Rd
 9f285b971fefcdf780987b9e8f52c644 *man/power.RSABE.Rd
 df4913dc8ac426c381263aed223f4a1c *man/power.RatioF.Rd
 88a716394711c3a8808f7633c5a9acd9 *man/power.TOST.Rd
@@ -84,8 +89,9 @@ fe1abad7a262a77b58cd5d01cf964b65 *man/power.dp.Rd
 22c59349d02f8c9b541d318bf08ec185 *man/power.noninf.Rd
 443340b52b0f461508c55e3e93fb8666 *man/power.scABEL.Rd
 35c7a599bff80f3d1fb8a6a54137b9a4 *man/pvalue.TOST.Rd
+f08a1e8705afd7c43a7bd03adab8880f *man/sampleN.2TOST.Rd
 8770897dc07f72e4c88ad94f5e15cb18 *man/sampleN.HVNTID.Rd
-7cca950d8c1de6e5317c6eae9f307f5e *man/sampleN.NTIDFDA.Rd
+3a2eedb69a9bf18bda2c2e149df51128 *man/sampleN.NTIDFDA.Rd
 37d7f378f4958978fa92045259901474 *man/sampleN.RSABE.Rd
 967d07a7745e8fbd46dd422de8a4b15b *man/sampleN.RatioF.Rd
 33d06db270a233ff8e40113b8655a714 *man/sampleN.TOST.Rd
@@ -93,3 +99,4 @@ e9d15c0b3e0468632e5391e0549b7be9 *man/sampleN.dp.Rd
 ce19d0d34d49ae51baf5ca23545c9242 *man/sampleN.noninf.Rd
 13dab977492f99fac3dbfea24b8504b3 *man/sampleN.scABEL.Rd
 9eb4210b33c15ac2384a0126f2270c36 *man/scABEL.Rd
+4e6d214d97f9f6e680e52af4529d9a1d *man/type1error.2TOST.Rd
