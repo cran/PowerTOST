@@ -1,3 +1,13 @@
+Version 1.3-3
+Released 2016-01-15 via CRAN
+Released 2016-01-04 to alpha testers
+      - New functions scABEL.ad() and sampleN.scABEL.ad() introduced to
+        iteratively adjust alpha in order to maintain the consumer risk
+        and adapt the sample size to compensate for the possible loss in
+        power for the EMA method of scaled ABE (ABEL). 
+        Contributed by Helmut Schuetz.
+      - Default theta0 changed to 0.9 in sample size estimation for scaled ABE
+        (as recommended by the Two Laszlo's).  
 Version 1.3-02
 Released 2015-12-02
       - New functions for calculation of power, type 1 errror and sample size

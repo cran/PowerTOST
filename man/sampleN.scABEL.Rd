@@ -1,3 +1,4 @@
+\encoding{utf-8}
 \name{sampleN.scABEL}
 \alias{sampleN.scABEL}
 \title{
@@ -23,7 +24,7 @@ Typical values are 0.8 or 0.9.
 }
   \item{theta0}{
 'True' or assumed bioequivalence ratio. \cr
-Defaults to 0.95 if given explicitly.
+Defaults to 0.90 according to the two Laszlo's if not given explicitly.
 }
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 
@@ -86,7 +87,8 @@ The "Sample size" column contains the total sample size.\cr
 The "nlast" column contains the last n value. May be useful for restarting.
 }
 \references{
-Laszlo Tothfalusi and Laszlo Endrenyi\cr
+\enc{Lászlo}{Laszlo} \enc{Tóthfalusi}{Tothfalusi} and 
+\enc{Lászlo}{Laszlo} \enc{Endrényi}{Endrenyi}\cr
 "Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
 J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
 }
@@ -125,15 +127,15 @@ the power value agreement to those obtained from simulations via subject data.
 \examples{
 # using all the defaults:
 # partial replicate design, targetpower=80\%,
-# true assumed ratio = 0.95, 1E+5 simulated studies
+# true assumed ratio = 0.90, 1E+5 simulated studies
 # ABE limits, PE constraint 0.8 - 1.25
 # EMA regulatory settings
 sampleN.scABEL(CV=0.3)
-# results in a sample size n=27, power=0.8257
+# results in a sample size n=54, power=0.8159
 #
 # same with ANVISA settings, CVswitch=40%
 sampleN.scABEL(CV=0.3, regulator="anvisa")
-# results in n=30, power=0.8220
+# results in n=60, power=0.8101
 
 # for the full replicate design, target power = 90\%
 # true assumed ratio = 0.9, FDA regulatory settings

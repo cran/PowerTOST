@@ -11,7 +11,8 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
                           print=TRUE, details=TRUE, setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
-  if (missing(theta0)) theta0 <- 0.95
+  # according to the two Laszlo's paper 0.9 (alas 1.10) should be considered
+  if (missing(theta0)) theta0 <- 0.90
   if (missing(theta2)) theta2=1/theta1
   if ( (theta0<=theta1) | (theta0>=theta2) ) {
     stop("Null ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 

@@ -1,3 +1,4 @@
+\encoding{utf-8}
 \name{sampleN.RSABE}
 \alias{sampleN.RSABE}
 \title{
@@ -22,7 +23,7 @@ Typical values are 0.8 or 0.9.
 }
   \item{theta0}{
 'True' or assumed bioequivalence ratio. \cr
-Defaults to 0.95 if given explicitly.
+Defaults to 0.90 according to the two Laszlo's if not given explicitly.
 }
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 
@@ -94,11 +95,12 @@ Recommended Apr 2010; Revised Feb 2011\cr
 http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/
 Guidances/UCM209294.pdf
 
-Laszlo Tothfalusi and Laszlo Endrenyi\cr
+\enc{Lászlo}{Laszlo} \enc{Tóthfalusi}{Tothfalusi} and 
+\enc{Lászlo}{Laszlo} \enc{Endrényi}{Endrenyi}\cr
 "Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
 J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
 
-Tothfalusi L., Endrenyi L. and A. Garcia Arieta\cr
+\enc{Tóthfalusi}{Tothfalusi} L., \enc{Endrényi}{Endrenyi} L. and A. Garcia Arieta\cr
 "Evaluation of Bioequivalence for Highly Variable Drugs with Scaled Average 
 Bioequivalence" \cr
 Clin. Pharmacokin. 48/11, 725-743 (2009)
@@ -127,9 +129,9 @@ error trap.
 }
 \examples{
 # using all the defaults:
-# design=2x3x3 (partial replicate design), theta0=0.95, 
+# design=2x3x3 (partial replicate design), theta0=0.90, 
 # ABE limits, PE constraint 0.8 - 1.25
 # targetpower=80\%, alpha=0.05, 1E5 sims
 sampleN.RSABE(CV=0.3)
-# results in a sample size n=27, power=0.84132
+# results in a sample size n=45, power=0.80344
 }

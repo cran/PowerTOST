@@ -43,3 +43,29 @@ scABEL <- function(CV, regulator=c("EMA", "ANVISA", "FDA", "USER"),
   }
   ret
 }
+
+# --------------------------------------------------------------------------
+# function to calculate "leveling-off" ABEL according to Karalis et al. 2011
+# Eur J Pharm Sci, 44, 497-505
+scABEL_LO <- function(CV)
+{
+  gamma <- 0.0336 # Karalis et al.
+  sw0   <- 0.3853
+
+  gamma <- 0.03361 # Own fit with stepsize 0.01 in CVwR
+  sw0   <- 0.38535
+  
+  beta  <- scABEL(CV=0.5)["upper"]
+  # sigmoidal
+  uppr <- 1.25 + (beta - 1.25)/(1 + exp(-(CV2se(CV)-sw0)/gamma))
+  # Weibull
+  
+  if (length(CV)>1){
+    ret <- cbind(1/uppr, uppr)
+    colnames(ret) <- c("lower", "upper")
+  } else {
+    ret <- c(1/uppr, uppr)
+    names(ret) <- c("lower", "upper")
+  }
+  ret
+}

@@ -16,10 +16,10 @@ Coefficient of variation (of the Reference) as ratio
 }
   \item{regulator}{
 Regulatory body settings for the widening of the BE acceptance limits.\cr
-Defaults to \code{design="EMA"}.
+Defaults to \code{regulator="EMA"}.
 }
   \item{r_const}{
-Regulatory constant for wideneing.
+Regulatory constant for widening.
 }
   \item{CVswitch}{
 CV for switch to the widened ABEL.
