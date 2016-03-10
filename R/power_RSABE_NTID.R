@@ -15,6 +15,7 @@ power.NTIDFDA <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (missing(theta0)) theta0 <- 0.975  # tighter content limits for NTID
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
+  if (missing(theta1)) theta1 <- 1/theta2
   
   design <- match.arg(design)
   if(design=="2x2x4"){

@@ -1,20 +1,21 @@
 #---------------------------------------------------------------------------
-# Simulate partial and full replicate designs and scaled ABE power
-# using the linearized reference scaled ABE criterion - pure
+# Simulate partial and full replicate design and scaled ABE power
+# using 'widened' limits (EMA)
+# But the estimation method via intra-subject contrasts (FDA)
 # Author: dlabes
 #---------------------------------------------------------------------------
 
 # degrees of freedom for the TR/RR  analysis: 
 # Using the intrasubject contrasts T-R and R-R and analyze them  
-# by sequence groups the df's = n-seq.
+# by sequence groups the df's = n-seq (robust df's).
 # 2x3x3  dfRR = n-3
 # 2x2x4  dfRR = n-2
 # 2x2x3  dfRR = n/2 - 2
 
-pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                        design=c("2x3x3", "2x2x4", "2x2x3"), 
-                        regulator = c("FDA", "EMA"), biascorr=TRUE,
-                        nsims=1E5, setseed=TRUE)
+power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
+                          design=c("2x3x3", "2x2x4", "2x2x3"), 
+                          regulator = c("EMA", "FDA"),
+                          nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
@@ -22,7 +23,6 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (missing(theta0)) theta0 <- 0.95
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
-  if (missing(theta1)) theta1 <- 1/theta2
   
   ptm <- proc.time()
   
@@ -34,15 +34,18 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
 
-  CVswitch  <- 0.3
   regulator <- match.arg(regulator)
+  CVswitch  <- 0.3
+  r_const   <- 0.76 # or better log(theta2)/CV2se(0.3)? EMA & ANVISA
   if (regulator=="FDA") r_const <- log(1.25)/0.25 # or better log(theta2)/0.25?
-  if (regulator=="EMA") r_const <- 0.76 # or better log(theta2)/CV2se(0.3)?
+  CVcap <- 0.5
+  if (regulator=="FDA") CVcap=Inf
   
   design <- match.arg(design)
   if (design=="2x3x3") {
     seqs  <- 3
     dfe   <- parse(text="n-3", srcfile=NULL)
+    dfCIe <- parse(text="2*n-3", srcfile=NULL)
     dfRRe <- parse(text="n-3", srcfile=NULL)
     #sd2  <- s2D + (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02
     # according to McNally et al.
@@ -52,6 +55,7 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (design=="2x2x4") {
     seqs  <- 2
     dfe   <- parse(text="n-2", srcfile=NULL)
+    dfCIe <- parse(text="3*n-4", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     # sd^2 of the differences T-R from their components
     Emse  <- (s2D + (s2wT + s2wR)/2) 
@@ -59,6 +63,7 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (design=="2x2x3") {
     seqs  <- 2
     dfe   <- parse(text="n-2", srcfile=NULL)
+    dfCIe <- parse(text="2*n-3", srcfile=NULL)
     # next was pre-V1.2-08
 #     dfRRe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
 #     dfTTe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
@@ -90,6 +95,8 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   }
   
   df   <- eval(dfe)
+  dfCI <- eval(dfCIe)
+
   if (design=="2x2x3"){
     dfTT <- nv[1]-1
     dfRR <- nv[2]-1
@@ -103,31 +110,42 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   } else {
     dfRR <- eval(dfRRe)
   }
-
+  #cat("dfRR=", dfRR," dfTT=",dfTT," E(s2I)=", Emse, "\n")
   # sd of the mean T-R (point estimator)
   sdm  <- sqrt(Emse*C3)
   mlog <- log(theta0)
   
   if(setseed) set.seed(123456)
-  p <- .pwr.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, r_const, 
-                  ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                  biascorr=biascorr, alpha=alpha)
+  p <- .pwr.scABEL.ISC(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
+                       CVswitch=CVswitch, r_const=r_const, CVcap=CVcap, 
+                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
-  p
+  if (details) {
+    ptm <- summary(proc.time()-ptm)
+    message(nsims,"sims. Time elapsed (sec): ", 
+            formatC(ptm["elapsed"], digits=2), "\n")
+    #print(ptm)
+    # return also the components
+    names(p) <- c("p(BE)", "p(BE-wABEL)", "p(BE-pe)", "p(BE-ABE)")
+    p
+  } else {
+    # return only the 'power'
+    as.numeric(p["BE"])
+  }
 }
 
-# working horse of pure RSABE
-.pwr.RSABE <- function(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
-                       CVswitch=0.3, r_const=0.892574, ln_lBEL=log(0.8), 
-                       ln_uBEL=log(1.25), biascorr=TRUE, alpha=0.05)
+# working horse of RSABE/EMA
+.pwr.scABEL.ISC <- function(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
+                            CVswitch=0.3, r_const=0.892574, CVcap=0.5, 
+                            ln_lBEL=log(0.8), ln_uBEL=log(1.25), alpha=0.05)
 {
   tval     <- qt(1-alpha,df)
-  chisqval <- qchisq(1-alpha, dfRR)
-  r2const  <- r_const^2
-  s2switch <- log(CVswitch^2+1) 
+  #tval     <- qt(1-alpha,dfCI)
+  s2switch <- log(CVswitch^2+1)
+  s2cap    <- log(CVcap^2+1)
   
   counts <- rep.int(0, times=4)
-  names(counts) <- c("BE", "BEul", "BEpe", "BEabe")
+  names(counts) <- c("BE", "BEwl", "BEpe", "BEabe")
   # to avoid memory problems for high number of sims
   chunks <- 1
   nsi    <- nsims
@@ -143,26 +161,37 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # simulate sample value s2wRs via chi-square distri
     s2wRs  <- s2wR*rchisq(nsi, dfRR)/dfRR
     
-    # sd for T-R, halfwidth of confidence interval
     SEs <- sqrt(sd2s)
+    # conventional (1-2*alpha) CI's for T-R
     hw  <- tval*SEs
+    lCL <- means - hw 
+    uCL <- means + hw
+    #browser()
+    # conventional ABE
+    BEABE <- (lCL>=ln_lBEL) & (uCL<=ln_uBEL)
     
-    # upper 95% CI linearized SABE criterion
-    # with -SEs^2 the 'unknown' x from the progesterone guidance
-    if (biascorr) Em <- means^2 - SEs^2 else Em <- means^2 
-    Es <- r2const*s2wRs
-    Cm <- (abs(means) + hw)^2
-    Cs <- Es*dfRR/chisqval    
-    SABEc95 <- Em - Es + sqrt((Cm-Em)^2 + (Cs-Es)^2)
+    #--- widened limits in log-domain
+    uABEL <- +sqrt(s2wRs)*r_const
+    # cap on 'widened' limits
+    uABEL[s2wRs>s2cap] <- sqrt(s2cap)*r_const
+    # BE using widened acceptance limits
+    BE <- (lCL>=-uABEL) & (uCL<=uABEL)
+    
+    # pe constraint
+    BEpe  <- ( means>=ln_lBEL & means<=ln_uBEL )
+    
     # save memory
-    rm(SEs, hw, Em, Es, Cm, Cs)
+    rm(SEs, hw, uABEL)
     
-    # 95% upper CI of criterion <=0 ?
-    BE <- SABEc95<=0
+    # if CV < CV switch use ABE, else scABEL
+    BE    <- ifelse(s2wRs>s2switch, BE, BEABE)
 
-    counts["BE"] <- counts["BE"] + sum(BE)
+    counts["BEabe"] <- counts["BEabe"] + sum(BEABE)
+    counts["BEpe"]  <- counts["BEpe"]  + sum(BEpe)
+    counts["BEwl"]  <- counts["BEwl"]  + sum(BE)
+    counts["BE"]    <- counts["BE"]    + sum(BE & BEpe) # with pe constraint
     
   } # end over chunks
   # return the pBEs
-  as.numeric(counts["BE"]/nsims)
+  counts/nsims
 }

@@ -103,6 +103,8 @@ at present not thorougly tested.
 }
 \seealso{
 \code{\link{sampleN.HVNTID}}
+and \code{\link{power.NTIDFDA}}, \code{\link{sampleN.NTIDFDA}} for NTIDs with
+low variability
 }
 \examples{
 # using the defaults:

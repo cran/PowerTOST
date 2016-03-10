@@ -39,6 +39,7 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (missing(theta0)) theta0 <- 0.95
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
+  if (missing(theta1)) theta1 <- 1/theta2
   
   ptm <- proc.time()
   
@@ -73,7 +74,7 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     Emse  <- (s2wT + 2.0*s2wR)/3
     cvec <- c(1,2)
     # warning in case of CVwR != CVwT
-    if (abs(s2wT-s2wR)>1e-5){
+    if (abs(s2wT-s2wR)>1e-4){
       warning(paste("Heteroscedasticity in the 2x3x3 design may led", 
               "to poor accuracy of power!"), call.=FALSE)
     }
@@ -108,23 +109,26 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   } else {
     # check length
     if (length(n)!=seqs) stop("n must be a vector of length=",seqs,"!")
-    
     C2 <- sum(1/n)*bkni
     nv <- n
     n <- sum(n)
   }
+  
   if (design=="2x2x3"){
     dfTT <- nv[1]-1
     dfRR <- nv[2]-1
     Emse <- (nv[1]*(2*s2wT+s2wR)/3+nv[2]*(s2wT+2*s2wR)/3)/n
   }
 
-  # sd of the sample mean T-R (point estimator)
-  sdm  <- sqrt(Emse*C2)
+  # point est. in log domain
   mlog <- log(theta0)
+  # sd of the sample mean T-R (point estimate)
+  sdm  <- sqrt(Emse*C2)
+  
   df   <- eval(dfe)
   if (design!="2x2x3"){
     dfRR <- eval(dfRRe)
+    # next is purely empirical for 2x3x3
     dfTT <- dfRR
   } 
   
@@ -135,7 +139,7 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     
   if (details) {
     ptm <- summary(proc.time()-ptm)
-    message(nsims,"sims. Time elapsed (sec): ", 
+    message(nsims," sims. Time elapsed (sec): ", 
             formatC(ptm["elapsed"], digits=2), "\n")
     #print(ptm)
     # return the vector of all counts
@@ -173,12 +177,16 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   for (iter in 1:chunks){
     # simulate sample mean via its normal distribution
     means  <- rnorm(nsi, mean=mlog, sd=sdm)
-    # simulate sample value s2wR via chi-square distri
+    # simulate sample value s2wT/s2wR via chi-square distri
     # shifting this after the sample mse sims will give
     # changes in the order of max. 4E-4 compared to V1.1-02!
-    s2wRs  <- s2wR*rchisq(nsi, dfRR)/dfRR
-    s2wTs <- s2wT*rchisq(nsi, dfTT)/(dfTT)
+    s2wRs <- s2wR*rchisq(nsi, dfRR)/dfRR
+    s2wTs <- s2wT*rchisq(nsi, dfTT)/dfTT
+    # now simulate sample mse
     if (design=="2x3x3"){
+      # simulate sample mse not for this design
+      # s2wT is empirical because dfTT is not defined and artificially 
+      # set to equal dfRR
       mses  <- (cvec[1]*s2wTs + cvec[2]*s2wRs)/denom
     } 
     if (design=="2x2x4"){
@@ -190,13 +198,10 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     if (design=="2x2x3"){
       # simulate sample mse 
       mses  <- Emse*rchisq(nsi, df)/df
-      # --- 'mean' of mses and mses calculated from components
+      # --- 'mean' of mses and mses calculated as sum from components
       mses  <- 0.5*mses + 
                0.5*((dfTT+1)*(2*s2wTs + s2wRs)/3
                    +(dfRR+1)*(s2wTs + 2*s2wRs)/3)/(dfTT+dfRR+2)
-      # from components
-#      mses  <- ((dfTT+1)*(2*s2wTs + s2wRs)/3 +
-#               (dfRR+1)*(s2wTs + 2*s2wRs)/3)/(dfTT+dfRR+2)
     }
     #--- EMA widened limits in log-domain
     uABEL   <- +sqrt(s2wRs)*r_const

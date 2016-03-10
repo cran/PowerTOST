@@ -5,13 +5,12 @@
 #
 # Author: Helmut Schuetz
 #-----------------------------------------------------------------------
-sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8,
-                              theta0, theta1, theta2, CV = 0.3,
+sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0, 
+                              theta1, theta2, CV = 0.3,
                               design = c("2x3x3", "2x2x4", "2x2x3"),
                               regulator = c("EMA", "ANVISA"),
-                              nstart = NA, nsims = 1e6, print = TRUE,
-                              details = FALSE, alpha.pre = 0.05,
-                              setseed = TRUE)
+                              nstart = NA, nsims = 1e6, imax=100, print = TRUE,
+                              details = FALSE, alpha.pre = 0.05, setseed = TRUE)
 {
   ## Arguments:
   ##   alpha       Nominal alpha (in BE generally fixed to 0.05).
@@ -33,6 +32,7 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8,
   ##               require extreme adjustment close to CVwR 40%.
   ##   nstart      If given, the starting sample size.
   ##   nsims       Simulations for the TIE. Should not be <1e6.
+  ##   imax        max. number of steps in sample size search
   ##   print       Boolean. If FALSE, returns a data.frame of results.
   ##   details     Boolean (intermediates, runtime, number of sim's).
   ##   alpha.pre   Pre-specified level.
@@ -172,8 +172,8 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8,
   if (is.na(nstart)) { # If sample size is not given, estimate one.
     unadj.n  <- sampleN.scABEL(alpha = al, targetpower = targetpower,
                                theta0 = theta0, CV = CV, design = design,
-                               regulator = regulator, print = FALSE,
-                               details = FALSE, nsims = 1e5,
+                               regulator = regulator, imax=imax,
+                               print = FALSE, details = FALSE, nsims = 1e5,
                                setseed = setseed)[["Sample size"]]
     no <- 1e5
   } else {             # Start with the specified sample size.
@@ -182,7 +182,7 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8,
   # Get results for the sample size.
   x <- scABEL.ad(alpha = alpha, theta0 = theta0, CV = CV,
                  design = design, regulator = regulator, n = unadj.n,
-                 nsims = nsims, print = FALSE, details = FALSE,
+                 nsims = nsims, imax=imax, print = FALSE, details = FALSE,
                  alpha.pre = alpha.pre, setseed = setseed)
   alpha.adj <- x[["alpha.adj"]]
   if (is.na(alpha.adj)) { # No adjustment was necessary:
@@ -257,7 +257,7 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8,
                      # Faster than scABEL.ad() because only 1e5 sim's.
       n.new <- sampleN.scABEL(alpha = alpha.adj, CV = CV, theta0 = theta0,
                               targetpower = targetpower, design = design,
-                              regulator = regulator, print = FALSE,
+                              regulator = regulator, imax=imax, print = FALSE,
                               details = FALSE,
                               setseed = setseed)[["Sample size"]]
       no <- no + 1e5
@@ -272,12 +272,13 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8,
     }
     if (alpha.adj != alpha.pre) { # Adjust alpha (general case).
       x  <- scABEL.ad(alpha = alpha, regulator = regulator, design = design,
-                      CV = CV, n = n.new, theta0 = theta0, print = FALSE,
+                      CV = CV, n = n.new, theta0 = theta0, imax=imax, print = FALSE,
                       details = FALSE, nsims = nsims, setseed = setseed)
     } else {                      # Do /not/ adjust pre-specified alpha!
       x  <- scABEL.ad(regulator = regulator, design = design, CV = CV,
-                      n = n.new, theta0 = theta0, print = FALSE, details = FALSE,
-                      nsims = nsims, setseed = setseed, alpha.pre = alpha.adj)
+                      n = n.new, theta0 = theta0, imax=imax, print = FALSE, 
+                      details = FALSE, nsims = nsims, setseed = setseed, 
+                      alpha.pre = alpha.adj)
     }
     no <- no + x$sims
     if (is.na(x[["alpha.adj"]])) { # No adjustment was necessary!

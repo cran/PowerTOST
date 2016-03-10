@@ -119,7 +119,9 @@ The results for the design "2x2x3" are to be considered as experimental since
 at present not thorougly tested.
 }
 \seealso{
-\code{\link{sampleN.NTIDFDA}}
+\code{\link{sampleN.NTIDFDA}}\cr
+and \code{\link{power.HVNTID}}, \code{\link{sampleN.HVNTID}} for NTIDs with
+high variability
 }
 \examples{
 # using the all defaults:

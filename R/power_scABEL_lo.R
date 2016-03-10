@@ -2,6 +2,8 @@
 # Simulate partial and full replicate design and scaled ABEL power
 # 
 # Author: dlabes
+# this is  a variant which uses the so-called "levelling off" BE acceptance
+# ranges, upto now function not exported
 #---------------------------------------------------------------------------
 
 # degrees of freedom for the RR  analysis: 
@@ -28,16 +30,18 @@
 # This is used in the xxx.RSABE() functions
 
 
-power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                          design=c("2x3x3", "2x2x4", "2x2x3"), 
-                          nsims=1E5, details=FALSE, setseed=TRUE)
+power.scABELlo <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
+                           design=c("2x3x3", "2x2x4", "2x2x3"), 
+                           nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
 
   if (missing(theta0)) theta0 <- 0.95
+  
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
+  if (missing(theta1)) theta1 <- 1/theta2
   
   ptm <- proc.time()
   
@@ -163,8 +167,8 @@ power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # simulate sample value s2wR via chi-square distri
     # shifting this after the sample mse sims will give
     # changes in the order of max. 4E-4 compared to V1.1-02!
-    s2wRs  <- s2wR*rchisq(nsi, dfRR)/dfRR
-    s2wTs <- s2wT*rchisq(nsi, dfTT)/(dfTT)
+    s2wRs <- s2wR*rchisq(nsi, dfRR)/dfRR
+    s2wTs <- s2wT*rchisq(nsi, dfTT)/dfTT
     if (design=="2x3x3"){
       mses  <- (cvec[1]*s2wTs + cvec[2]*s2wRs)/denom
     } 

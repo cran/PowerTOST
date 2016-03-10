@@ -14,7 +14,7 @@ to maintain the consumer risk at the nominal level.
 sampleN.scABEL.ad(alpha = 0.05, targetpower = 0.8, theta0, theta1,
                   theta2, CV = 0.3, design = c("2x3x3", "2x2x4", "2x2x3"),
                   regulator = c("EMA", "ANVISA"), nstart = NA, nsims = 1e6,
-                  print = TRUE, details = FALSE, alpha.pre = 0.05,
+                  imax=100, print = TRUE, details = FALSE, alpha.pre = 0.05,
                   setseed = TRUE)
 }
 \arguments{
@@ -79,6 +79,9 @@ According to regulatory requirements must be >=12 for the \acronym{EMA} and
 Number of simulations to be performed to estimate the (empirical)
 \acronym{TIE} and in each iteration of adjusting alpha.\cr
 The default value 1,000,000 = 1e+6 should not be lowered.
+}
+  \item{imax}{
+Maximum number of steps in sample size search. Defaults to 100.
 }
   \item{print}{
 If \code{TRUE} (default), the function prints its results.

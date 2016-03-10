@@ -8,7 +8,7 @@
 scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
                      design = c("2x3x3", "2x2x4", "2x2x3"),
                      regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05,
-                     print = TRUE, details = FALSE, setseed = TRUE,
+                     imax=100, print = TRUE, details = FALSE, setseed = TRUE,
                      nsims = 1e6)
 {
   ## Arguments:
@@ -32,6 +32,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   ##              Cave: ANVISA's requirements are unofficial.
   ##   n          Total sample size or a vector of subjects/sequences.
   ##   nsims      Simulations for the TIE. Should not be <1e6.
+  ##   imax       max. steps in sample size search
   ##   print      Boolean (FALSE returns a list of results).
   ##   details    Boolean (runtime, number of simulations).
   ##   alpha.pre  Pre-specified level.
@@ -85,7 +86,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
     }
     n <- sampleN.scABEL(alpha = al, CV = CV, theta0 = theta0,
                         design = design, regulator = regulator,
-                        print = FALSE, details = FALSE,
+                        imax=imax, print = FALSE, details = FALSE,
                         setseed = setseed)[["Sample size"]]
     if (is.na(n))
       stop(paste0("Sample size search in sampleN.scABEL() failed.",

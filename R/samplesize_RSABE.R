@@ -7,7 +7,7 @@
 
 sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
                           theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"),
-                          regulator = c("FDA", "EMA"), nsims=1E5, nstart, 
+                          regulator = c("FDA", "EMA"), nsims=1E5, nstart, imax=100,
                           print=TRUE, details=TRUE, setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
@@ -136,7 +136,8 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     # cat(n01,n02,"\n")
     n <- max(c(n01,n02))+seqs
   } else n <- seqs*round(nstart/seqs)
-  # iterate until pwr>=targetpower
+  nmin <- 6 # fits 2x3x3 and 2x2x4
+  if(n<nmin) n <- nmin
   # we are simulating for balanced designs
   C3 <- 1/n
   # sd of the sample mean T-R (point estimator)
@@ -157,8 +158,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     # this is for cases with only one step-down and than step up
     if (pwr<=targetpower) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
   }
-  iter <- 0; imax <- 100
-  nmin <- 6 # fits 2x3x3 and 2x2x4
+  iter <- 0
   # iter>100 is emergency brake
   # --- loop until power <= target power, step-down
   down <- FALSE; up <- FALSE
@@ -212,7 +212,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     n <- NA
     if (details) cat("Sample size search failed!\n")
   }
-  if (down & pwr>targetpower) {
+  if (down & pwr>targetpower & n != nmin) {
     n <- NA
     if (details) cat("Sample size search failed!\n")
   }

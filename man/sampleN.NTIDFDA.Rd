@@ -10,8 +10,8 @@ replicate design 2x2x4 or the 3-period replicate design with sequeences TRT|RTR.
 }
 \usage{
 sampleN.NTIDFDA(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
-                design=c("2x2x4", "2x2x3"), nsims = 1e+05, nstart, print = TRUE, 
-                details = TRUE, setseed = TRUE)
+                design=c("2x2x4", "2x2x3"), nsims = 1e+05, nstart, imax=100,
+                print = TRUE, details = TRUE, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -54,6 +54,9 @@ Defaults to 100 000 = 1e+5.
   \item{nstart}{
 Set this to a start value for the sample size if a previous run failed.\cr
 May be missing.
+}
+  \item{imax}{
+Maximum number of steps in sample size search. Defaults to 100.
 }
   \item{print}{
 If \code{TRUE} (default) the function prints its results.\cr 
@@ -111,7 +114,9 @@ is not unique. Moreover the formulas used are only valid for balanced designs.\c
 The FDA method is described for the ABE limits 0.8 ... 1.25 only. Setting theta1, 
 theta2 to other values may not be reasonable and is not tested.\cr\cr
 The results for the design "2x2x3" are to be considered as experimental since
-at present not thorougly tested.
+at present not thorougly tested.\cr
+The minimum sample size is n=6, even if the power is higher than the intended 
+targetpower.
 }
 \section{Warning }{
 For some input constellations the sample size search may be very time 
@@ -128,6 +133,8 @@ no sample size estimation is possible and the function throws an error
 
 \seealso{ 
 \code{\link{power.NTIDFDA}}
+and \code{\link{power.HVNTID}}, \code{\link{sampleN.HVNTID}} for NTIDs with
+high variability
 }
 \examples{
 sampleN.NTIDFDA(CV=0.04,theta0=0.975)

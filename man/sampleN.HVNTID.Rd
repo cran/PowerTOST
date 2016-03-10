@@ -1,7 +1,7 @@
 \name{sampleN.HVNTID}
 \alias{sampleN.HVNTID}
 \title{
-Sample size estimation for BE decision via FDA method for highly variable 
+Sample size estimation for BE decision via FDA method for highly variable (HV) 
 narrow therapeutic index drugs (NTID's)
 }
 \description{
@@ -13,8 +13,8 @@ the 3-period replicate design 2x2x3 with sequences RTR|TRT.
 }
 \usage{
 sampleN.HVNTID(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
-               design=c("2x2x4", "2x2x3"), nsims = 1e+05, nstart, print = TRUE, 
-               details = TRUE, setseed = TRUE)
+               design=c("2x2x4", "2x2x3"), nsims = 1e+05, nstart, imax=100, 
+               print = TRUE, details = TRUE, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -55,6 +55,9 @@ Defaults to 100 000 = 1e+5.
   \item{nstart}{
 Set this to a start value for the sample size if a previous run failed.\cr
 May be missing.
+}
+  \item{imax}{
+Maximum number of steps in sample size search. Defaults to 100.
 }
   \item{print}{
 If \code{TRUE} (default) the function prints its results.\cr 
@@ -101,7 +104,9 @@ The sample size estimation is done only for balanced studies since the
 break down of the total subject number in case of unbalanced sequence groups
 is not unique. Moreover the formulas used are only valid for balanced designs.\cr
 The FDA method is described for the ABE limits 0.8 ... 1.25 only. Setting theta1, theta2
-to other values may not be reasonable and is not tested.
+to other values may not be reasonable and is not tested.\cr
+The minimum sample size is n=6, even if the power is higher than the intended 
+targetpower.
 }
 \section{Warning }{
 For some input constellations the sample size search may be very time 
@@ -112,7 +117,9 @@ In case of a failed sample size search you may restart with setting the argument
 }
 
 \seealso{ 
-\code{\link{power.HVNTID}}
+\code{\link{power.HVNTID}} \cr 
+and \code{\link{power.NTIDFDA}}, \code{\link{sampleN.NTIDFDA}} for NTIDs with
+low variability
 }
 \examples{
 # using all defaults but CV

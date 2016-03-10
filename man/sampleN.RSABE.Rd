@@ -11,7 +11,8 @@ linearized scaled ABE criterion based on simulations.
 \usage{
 sampleN.RSABE(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV,
               design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("FDA", "EMA"),
-              nsims = 1e+05, nstart, print = TRUE, details = TRUE, setseed=TRUE)
+              nsims = 1e+05, nstart, imax=100,
+              print = TRUE, details = TRUE, setseed=TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -63,6 +64,9 @@ Number of simulations to be performed to obtain the (empirical) power.
 Set this to a start for the sample size search if a previous run failed.\cr
 After reworking the start n in version 1.1-05 seldom needed.
 }
+  \item{imax}{
+Maximum number of steps in sample size search. Defaults to 100.
+}
   \item{print}{
 If \code{TRUE} (default) the function prints its results.\cr 
 If \code{FALSE} only the result data.frame will be returned. 
@@ -111,7 +115,9 @@ D. Labes
 \note{
 The sample size estimation is done only for balanced designs since the 
 break down of the total subject number in case of unbalanced sequence groups
-is not unique. Moreover the formulas used are only for balanced designs.
+is not unique. Moreover the formulas used are only for balanced designs.\cr
+The minimum sample size is n=6, even if the power is higher than the intended 
+targetpower.
 }
 \section{Warning }{
 The sample size estimation for theta0 >1.2 and <0.85 may be very time consuming 

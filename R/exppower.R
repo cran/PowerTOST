@@ -17,9 +17,10 @@
   d2[is.nan(d2)] <- 0
   
   pow  <- pt(d1,dfse,tval) + pt(d2,dfse,tval) - 1
+  # to avoid neg. values due to approximate nature
+  pow[pow<0] <- 0
   
   return(pow)
-  
 }  
 #------------------------------------------------------------------------------
 # Julious "expected" power

@@ -8,7 +8,7 @@
 
 sampleN.HVNTID <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2, 
                            CV, design=c("2x2x4", "2x2x3"), nsims=1E5, nstart, 
-                           print=TRUE, details=TRUE, setseed=TRUE)
+                           imax=100, print=TRUE, details=TRUE, setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta0)) theta0 <- 0.95
@@ -85,7 +85,8 @@ sampleN.HVNTID <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
                    se=sqrt(Emse), steps=seqs, bk=bkk, diffmthreshold=0.01)
     #cat("n0=",n,"\n")
   } else n <- seqs*round(nstart/seqs)
-  # iterate until pwr>=targetpower
+  nmin <- 6 
+  if(n<nmin) n <- nmin
   # we are simulating for balanced designs
   C3 <- 1/n
   # sd of the sample mean T-R (point estimator)
@@ -106,8 +107,7 @@ sampleN.HVNTID <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
     # this is for cases with only one step-down and than step up
     if (pwr<=targetpower) cat( n," ", formatC(pwr, digits=6, format="f"),"\n")
   }
-  iter <- 0; imax <- 100
-  nmin <- 6 
+  iter <- 0
   # iter>100 is emergency brake
   # --- loop until power <= target power, step-down
   down <- FALSE; up <- FALSE
@@ -160,7 +160,7 @@ sampleN.HVNTID <- function(alpha=0.05, targetpower=0.8, theta0, theta1, theta2,
     n <- NA
     if (details) cat("Sample size search failed!\n")
   }
-  if (down & pwr>targetpower) {
+  if (down & pwr>targetpower & n != nmin) {
     n <- NA
     if (details) cat("Sample size search failed!\n")
   }

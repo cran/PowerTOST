@@ -1,5 +1,8 @@
 # ---------------------------------------------------------------------------
-# power of the TOST procedure via simulations
+# power of the TOST procedure for 2x2 crossover via simulations
+#
+# Author D. Labes
+# ---------------------------------------------------------------------------
 power.TOST.sim <- function(alpha = 0.05, logscale = TRUE, theta1, theta2, 
                            theta0, CV, n, design = "2x2", robust = FALSE, 
                            setseed = TRUE, nsims=1E5) 

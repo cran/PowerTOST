@@ -12,7 +12,7 @@ on simulations in order to maintain the consumer risk at the nominal level.
 \usage{
 scABEL.ad(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
           design = c("2x3x3", "2x2x4", "2x2x3"),
-          regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05,
+          regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05, imax=100,
           print = TRUE, details = FALSE, setseed = TRUE, nsims = 1e6)
 }
 \arguments{
@@ -66,12 +66,17 @@ in the full replicate designs or not a multiple of three in the
 partial replicate), the code tries to keep subjects / sequence as
 balanced as possible.\cr
 In evaluating a particular \emph{unbalanced} study \strong{always} give \code{n} 
-as a vector.
+as a vector.\cr
+If n is missing a sample size is estimated with tragetpower = 0.5 and pre-specified
+alpha if defined. Else alpha is used.
 }
   \item{nsims}{
 Number of simulations to be performed to estimate the (empirical)
 \acronym{TIE} error and in each iteration of adjusting alpha.\cr
 The default value 1,000,000 = 1e+6 should not be lowered.
+}
+  \item{imax}{
+Maximum number of steps in sample size search. Defaults to 100.
 }
   \item{print}{
 If \code{TRUE} (default), the function prints its results.

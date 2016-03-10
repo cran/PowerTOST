@@ -29,7 +29,7 @@
 
 pwr.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
                        design=c("2x3x3", "2x2x4", "2x2x3"), 
-                       regulator=c("EMA", "ANVISA", "FDA"),
+                       regulator=c("EMA", "ANVISA", "FDA"), robust=FALSE,
                        nsims=1E5, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
@@ -38,6 +38,7 @@ pwr.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (missing(theta0)) theta0 <- 0.95
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
+  if (missing(theta1)) theta1 <- 1/theta2
   
   ptm <- proc.time()
   
@@ -62,6 +63,7 @@ pwr.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     bkni <- 1/6
     bk   <- 1.5
     dfe   <- parse(text="2*n-3", srcfile=NULL)
+    if(robust) dfe <- parse(text="n-3", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     # sd^2 (variance) of the differences T-R from their components
     # According to McNally (sD=0):
@@ -82,6 +84,7 @@ pwr.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     bkni  <- 1/4
     bk    <- 1
     dfe   <- parse(text="3*n-4", srcfile=NULL)
+    if(robust) dfe <- parse(text="n-2", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     Emse  <- (s2wT + s2wR)/2
     cvec  <- c(1,1)
@@ -91,6 +94,7 @@ pwr.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     bkni  <- 3/8
     bk    <- 1.5
     dfe   <- parse(text="2*n-3", srcfile=NULL)
+    if(robust) dfe <- parse(text="n-2", srcfile=NULL)
     dfRRe <- parse(text="n/2-1", srcfile=NULL) # balanced design
     Emse  <- (s2wT + s2wR)/2
     cvec  <- c(2,1) # dummy

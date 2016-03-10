@@ -12,7 +12,8 @@ scaled (widened) BE acceptance limits based on simulations.
 sampleN.scABEL(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
                design = c("2x3x3", "2x2x4", "2x2x3"), 
                regulator = c("EMA", "ANVISA", "FDA"), 
-               nsims = 1e+05, nstart, print = TRUE, details = TRUE, setseed = TRUE)
+               nsims = 1e+05, nstart, imax=100,
+               print = TRUE, details = TRUE, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -64,6 +65,9 @@ this value if theta0<=0.85 or >=1.25. But see the warning section.
 Set this to a start for the sample size search if a previous run failed.\cr
 After reworking the start n in version 1.1-05 seldom needed.
 }
+  \item{imax}{
+Maximum number of steps in sample size search. Defaults to 100.
+}
   \item{print}{
 If TRUE (default) the function prints its results.
 }
@@ -104,7 +108,9 @@ the BE decision method is not exactly what is expected by the FDA. But the two
 Laszlo's state that the scABEL method should be 'operational' equivalent to the
 FDA method. Thus the sample size should be comparable.\cr
 Consider in case of \code{regulator="FDA"} to use the function 
-\code{sampleN.RSABE()}. 
+\code{sampleN.RSABE()}.\cr
+The minimum sample size is n=6, even if the power is higher than the intended 
+targetpower.
 }
 
 \section{Warning }{
@@ -133,7 +139,7 @@ the power value agreement to those obtained from simulations via subject data.
 sampleN.scABEL(CV=0.3)
 # results in a sample size n=54, power=0.8159
 #
-# same with ANVISA settings, CVswitch=40%
+# now with inofficial ANVISA settings, CVswitch=40\%
 sampleN.scABEL(CV=0.3, regulator="anvisa")
 # results in n=60, power=0.8101
 
@@ -141,5 +147,4 @@ sampleN.scABEL(CV=0.3, regulator="anvisa")
 # true assumed ratio = 0.9, FDA regulatory settings
 sampleN.scABEL(CV=0.4, targetpower=0.9, theta0=0.9, design="2x2x4", regulator="FDA")
 # should result in a sample size n=30, power=0.9074
-
 }
