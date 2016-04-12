@@ -5,8 +5,8 @@
 #)
 # import selectively only the used functions (good practice)
 importFrom(mvtnorm, pmvt, pmvnorm, GenzBretz)
-importFrom(graphics, plot, close.screen, legend, text, points, 
-           abline, screen, split.screen, par, segments)
+importFrom(graphics, abline, box, close.screen, legend, par, plot, points, 
+           screen, split.screen,  segments, text)
 importFrom(grDevices, colorRampPalette)
 importFrom(stats, dnorm, pnorm, qnorm, rnorm, pt, qt, dchisq, qchisq, rchisq, 
            qf, uniroot, integrate, optim, binom.test)

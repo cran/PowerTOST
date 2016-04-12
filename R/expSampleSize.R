@@ -32,8 +32,8 @@
 # leave upper BE margin (theta2) empty and the function will use 1/lower
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE, 
-                            theta0, theta1, theta2, CV, dfCV,  
-                            design="2x2", robust=FALSE,
+                            theta0, theta1, theta2, CV, dfCV, design="2x2", 
+                            robust=FALSE, method=c("exact", "approx"), 
                             print=TRUE, details=FALSE, imax=100)
 {
   #number of the design and check if design is implemented
@@ -82,6 +82,10 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     dfse <- dfCV
     CVp  <- CV
   }
+  
+  # check method input
+  method=tolower(method)
+  method=match.arg(method)
   
   # print the configuration:
   if (print) {
@@ -135,8 +139,8 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   if (print) {
     cat("alpha = ",alpha,", target power = ", targetpower,"\n", sep="")
     cat("BE margins         =",theta1,"...", theta2,"\n")
-    if (logscale) cat("Null (true) ratio  = ",theta0, sep="")
-      else  cat("Null (true) diff.  = ",theta0, sep="")
+    if (logscale) cat("Null (true) ratio  = ",theta0, "\n", sep="")
+      else  cat("Null (true) diff.  = ",theta0, "\n", sep="")
     if (length(CV)>1){
       cat("Variability data\n")
       print(data.frame(CV=CV,df=dfCV), row.names = FALSE)
@@ -151,8 +155,10 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
                       se, dfse, steps, bk)
   if (n<nmin) n <- nmin
   df  <- eval(dfe)
+  se.fac <- sqrt(bk/n)
   pow <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
-                        diffm=diffm, sem=se*sqrt(bk/n), dfse=dfse, df=df) 
+                        ldiff=diffm, se.fac=sqrt(bk/n), se=se, dfCV=dfse, df=df,
+                        method=method) 
   if (details) {
     cat("\nSample size search (ntotal)\n")
     cat(" n   exp. power\n")
@@ -174,8 +180,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down 
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
-                           diffm=diffm, sem=se*sqrt(bk/n), dfse=dfse, df=df) 
+    pow <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
+                          ldiff=diffm, se.fac=sqrt(bk/n), se=se, dfCV=dfse, 
+                          df=df, method=method) 
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -184,8 +191,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
-                           diffm=diffm, sem=se*sqrt(bk/n), dfse=dfse, df=df) 
+    pow <- .exppower.TOST(alpha=alpha, ltheta1=ltheta1, ltheta2=ltheta2, 
+                          ldiff=diffm, se.fac=sqrt(bk/n), se=se, dfCV=dfse, df=df,
+                          method=method) 
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
@@ -203,15 +211,24 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (is.na(n)) cat("Sample size search failed!\n")
   }
+  if (details && print) {
+    if (method=="exact") 
+      cat("\nExact expected power calculation.\n")
+  }
+  # always print if approx.
+  if (print & (method!="exact")){
+    approx <- "Approximate expected power calculation \nacc. to Julious/Owen."
+    cat("\n",approx,"\n",sep="")
+  } 
   
   if (print) cat("\n")
   
   #return results as data.frame
   res <- data.frame(design=design, alpha=alpha, CV=CV, dfCV=dfse, theta0=theta0, 
                     theta1=theta1, theta2=theta2, n=n, power=pow, 
-                    targetpower=targetpower)
-  names(res) <-c("Design","alpha","CV","df of CV","theta0","theta1","theta2",
-                 "Sample size", "Achieved power", "Target power")
+                    targetpower=targetpower, method=method)
+  names(res) <-c("Design", "alpha", "CV", "df of CV", "theta0", "theta1", "theta2",
+                 "Sample size", "Achieved power", "Target power", "Power method")
   
   if (print) return(invisible(res)) 
   else return(res)

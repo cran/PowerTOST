@@ -49,3 +49,13 @@ CVp2CV <- function(CV, ratio=1.5)
   if (nrow(r)<2) r <- as.vector(r)
   r
 }
+
+#----------------------------------------------------------------------
+# Densitiy of inverse gamma distriubtion
+# Adapted dinvgamma() from R package MCMCpack (1.3-3)
+#----------------------------------------------------------------------
+my_dinvgamma <- function(x, shape, scale = 1) {
+  if(shape <= 0 | scale <= 0)
+    stop("Shape or scale parameter negative in my_dinvgamma().\n")
+  exp(shape * log(scale) - lgamma(shape) - (shape + 1) * log(x) - (scale/x))
+}

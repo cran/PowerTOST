@@ -32,12 +32,12 @@ print.pwrA <- function(x, digits=4, plotit=TRUE, ...)
   # without "nlast"
   print(x$plan[,-ncol(x$plan)], row.names = FALSE)
   cat("\nPower analysis\n")
-  cat("CV, theta0 and number of subjects which lead to min. acceptable ", 
+  cat("CV, theta0 and number of subjects which lead to min. acceptable ",
       "power of at least ", round(min.pwr, digits), ":\n", sep="")
   #react to RSABE NTID where there may be a CV.min, CV.max which
   if (method!="RSABE NTID"){
     # let to power=minpower
-    cat(" CV= ", round(CV.max, digits), ", theta0= ", 
+    cat(" CV= ", round(CV.max, digits), ", theta0= ",
         round(min.theta0, digits),"\n", sep="")
   } else {
       # let to power=minpower
@@ -48,15 +48,18 @@ print.pwrA <- function(x, digits=4, plotit=TRUE, ...)
   cat("\n")
 }
 
-# --------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # S3 method for plotting the results of pa.ABE(), pa.scABE(), pa.NTIDFDA()
-# --------------------------------------------------------------------------
+#
+# Author D.Labes, from original code by H. Schuetz
+# reworked by H. Schuetz to avoid overlay of target power line with legend
+# ----------------------------------------------------------------------------
 plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
 {
-  # colors between the both given
+  # make colors between the both given
   mkColors <- function(){
     # all varibles are seen if this function is inside plot
-    colno <- cut(pwr, breaks=unique(c(1*fact, targetpower, pwr[pwr<=targetpower])), 
+    colno <- cut(pwr, breaks=unique(c(1*fact, targetpower, pwr[pwr<=targetpower])),
                  labels=FALSE, include.lowest=TRUE, right=FALSE)
     clr1 <-colorRampPalette(rev(cols))(length(unique(colno)))
     clr  <- clr1[colno]
@@ -100,10 +103,12 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
   mklegend <- function(method){
     if (method=="scABE"){
       algo <- ifelse(reg == "FDA", "RSABE", "scABEL")
-      legend("topright", legend=c(algo, paste0("(",reg,")")), bty="n", cex=0.90)
+      legend("topright", legend=c(algo, paste0("(",reg,")")), cex=0.90,
+      bg="white", box.lty=0)
     }
     if (method=="RSABE NTID"){
-      legend("topright", legend=c("RSABE","(NTID FDA)"), bty="n", cex=0.90)
+      legend("topright", legend=c("RSABE", "(NTID FDA)"), cex=0.90,
+      bg="white", box.lty=0)
     }
   }
   
@@ -123,9 +128,10 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
   if (fact==100) xlabtxt <- "CV %"
 
   if (x$method=="ABE"){
-    plot(CVs, pwr, type="n", 
-         main=paste0("Higher variability\n", "theta0 = ", GMR, ", n = ", n.est), 
+    plot(CVs, pwr, type="n",
+         main=paste0("Higher variability\n", "theta0 = ", GMR, ", n = ", n.est),
          lwd=2, xlab=xlabtxt, ylab=ylabtxt, las=1)
+    box()
     abline(h=c(targetpower, fact*0.8, minpower), lty=3, col="grey50")
     segments(CVs[s], pwr[s], CVs[s+1], pwr[s+1], lwd=2, col=clr[s])
     points(CVs[1], pwr[1], col=clr[1], pch=16, cex=1.25)
@@ -135,12 +141,13 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
                        round(minpower, dec), pctsign,")"), cex=0.9, pos=4)
   } else {
     # any scABE (including RSABE NTID)
-    plot(CVs, pwr, type="n", 
-         main=paste0("Lower/higher variability\n", "theta0 = ", GMR, ", n = ", n.est), 
+    plot(CVs, pwr, type="n",
+         main=paste0("Lower/higher variability\n", "theta0 = ", GMR, ", n = ", n.est),
          lwd=2, xlab=xlabtxt, ylab=ylabtxt, las=1)
     abline(h=c(targetpower, 0.8*fact, minpower), lty=3, col="grey50")
+    mklegend(x$method)
+    box()
     segments(CVs[s], pwr[s], CVs[s+1], pwr[s+1], lwd=2, col=clr[s])
-
     # mark the plan CV and power
     points(CV, pwr.est, col=cols[1], pch=16, cex=1.25)
     # mark the max. CV if pwr for it is = minpower
@@ -153,13 +160,12 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
       if(abs(pwr[1]-minpower)/minpower<=1e-4) {
         #we have also CV.min with power=minpower
         points(CV.min, pwr[1], col=clr[seg], pch=16, cex=1.1)
-        txt <- paste0("CV = (", signif(CV.min, 4),", ", signif(CV.max, 4), 
+        txt <- paste0("CV = (", signif(CV.min, 4),", ", signif(CV.max, 4),
                       pctsign,") (",round(minpower, dec), pctsign,")")
       }
     }
-    text(min(CVs), (min(pwr)+(pwr.est-min(pwr))*0.1), labels=txt, 
+    text(min(CVs), (min(pwr)+(pwr.est-min(pwr))*0.1), labels=txt,
          cex=0.8, pos=4)
-    mklegend(x$method)
   }
   
   screen(2) ### 'Sensitivity' of GMR (CV and n constant) ###
@@ -170,21 +176,22 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
   seg <- length(pwr); s <- seq(seg-1)
   clr  <- mkColors()
   plot(GMRs, pwr, type="n", 
-       main=paste0("Larger deviation of theta0 from 1\n", "CV = ", 
+       main=paste0("Larger deviation of theta0 from 1\n", "CV = ",
                    CV, pctsign,", n = ", n.est), 
-       lwd=2, xlim=c(GMR, GMR.min), xlab="theta0", ylab=ylabtxt, las=1, 
+       lwd=2, xlim=c(GMR, GMR.min), xlab="theta0", ylab=ylabtxt, las=1,
        cex.main=0.95, cex.axis=0.95)
   abline(h=c(targetpower, fact*0.8, minpower), lty=3, col="grey50")
+  mklegend(x$method)
+  box()
   segments(GMRs[s], pwr[s], GMRs[s+1], pwr[s+1], lwd=2, col=clr[s])
   # the next assumes that the values start at GMR and end on GMR.min (maybe also max!)
   # TODO rework if plan.GMR not at border
   points(GMRs[1], pwr[1], col=clr[1], pch=16, cex=1.25)
   points(GMRs[seg], pwr[seg], col=clr[seg], pch=16, cex=1.25)
   text(GMR, (minpower+(pwr.est-minpower)*0.1), 
-       labels=paste0("GMR = ",signif(GMR.min, 4), " (", 
-                     round(minpower, dec), pctsign, ")"), 
+       labels=paste0("GMR = ",signif(GMR.min, 4), " (",
+                     round(minpower, dec), pctsign, ")"),
        cex=0.85, pos=4)
-  mklegend(x$method)
   
   screen(3) ### Sensitivity of n (GMR and CV constant) ###
   pwr <- as.numeric(fact*x$paN[,"pwr"])
@@ -195,19 +202,20 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
   nNs    <- length(Ns)
   if(nNs<5 & nNs>1) xticks <- c(max(Ns), min(Ns), nNs-1)
   plot(Ns, pwr, type="n", 
-       main=paste0("Drop-outs\n", "theta0 = ", GMR, ", CV = ", CV, pctsign), 
-       lwd=2, xlim=c(max(Ns), min(Ns)), ylim=c(minpower, pwr.est), 
+       main=paste0("Drop-outs\n", "theta0 = ", GMR, ", CV = ", CV, pctsign),
+       lwd=2, xlim=c(max(Ns), min(Ns)), ylim=c(minpower, pwr.est),
        xlab="n", xaxp=xticks,
        ylab=ylabtxt, las=1, cex.main=0.95)
   abline(h=c(targetpower, fact*0.8, minpower), lty=3, col="grey50")
+  mklegend(x$method)
+  box()
   points(Ns, pwr, pch=16, cex=0.8, col=clr)
   points(Ns[length(Ns)], pwr[length(Ns)], col=clr[length(Ns)],
          pch=16, cex=1.25)
   points(n.est, pwr.est, col=clr[1], pch=16, cex=1.25)
   text(max(Ns), (minpower+(pwr.est-minpower)*0.1), 
-       labels=paste0("n = ", min(Ns), " (", signif(min(pwr), 4), pctsign, ")"), 
+       labels=paste0("n = ", min(Ns), " (", signif(min(pwr), 4), pctsign, ")"),
        cex=0.85, pos=4)
-  mklegend(x$method)
   
   screen(4) ### Some basic information ###
   if (x$method!="RSABE NTID"){
@@ -260,27 +268,27 @@ plot.pwrA <- function(x, pct=TRUE, cols=c("blue", "red"), ...)
                     sprintf("  %s %2.0f%%", "target =", targetpower),
                     sprintf("  %s %5.2f%% %s %i%s", "estimated =", pwr.est,
                             "(n =", n.est, ")"),
-                    sprintf("  %s %2.0f%%", "minimum acceptable =", minpower), 
+                    sprintf("  %s %2.0f%%", "minimum acceptable =", minpower),
                     "acceptable rel. deviations:",
                     #TODO:react to RSABE NTID where there may be also a CVmin
                     CVtxt,
                     sprintf("  %s %+5.2f%%", "GMR =", 100*(GMR.min-GMR)/GMR),
-                    sprintf("  %s %+5.1f%%", "n =",   100*(min(Ns)-n.est)/n.est)), 
+                    sprintf("  %s %+5.1f%%", "n =",   100*(min(Ns)-n.est)/n.est)),
            bty="n", cex=0.80)
   } else {
     # ratios
     legend("topleft", 
            legend=c(paste0(design, " design", "; assumed:"),
-                    sprintf("  %s %5.4f%s %5.4f", "CV =", CV, ", theta0 =", GMR), 
+                    sprintf("  %s %5.4f%s %5.4f", "CV =", CV, ", theta0 =", GMR),
                     "power:",
                     sprintf("  %s %5.4f", "target =", targetpower),
                     sprintf("  %s %5.4f %s %i%s", "estimated =", pwr.est,
                             "(n =", n.est, ")"),
-                    sprintf("  %s %5.4f", "minimum acceptable =", minpower), 
+                    sprintf("  %s %5.4f", "minimum acceptable =", minpower),
                     "acceptable rel. deviations:",
                     CVtxt,
                     sprintf("  %s %+5.2f%%", "GMR =", 100*(GMR.min-GMR)/GMR),
-                    sprintf("  %s %+5.1f%%", "n =",   100*(min(Ns)-n.est)/n.est)), 
+                    sprintf("  %s %+5.1f%%", "n =",   100*(min(Ns)-n.est)/n.est)),
            bty="n", cex=0.85)
   }
   

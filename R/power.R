@@ -29,8 +29,7 @@
 .power.TOST <- function(alpha=0.05, ltheta1, ltheta2, diffm, sem, df)
 {
   tval   <- qt(1 - alpha, df, lower.tail = TRUE)
-  # 0/0 -> NaN in case diffm=ltheta1 or diffm=ltheta2
-  # and se=0!
+  # 0/0 -> NaN in case diffm=ltheta1 or diffm=ltheta2 and sem=0!
   delta1 <- (diffm-ltheta1)/sem
   delta2 <- (diffm-ltheta2)/sem
   # is this correct?
@@ -55,7 +54,6 @@
   # This gives the same values (within certain precision) as Ben's power.1TOST
   # aka power.TOST(..., method="mvt").
   # Can also be checked via function power.TOST.sim().
-
   R[R<=0] <- Inf
   # to check SAS Proc power values comment above out and write
   # R <- abs(R)

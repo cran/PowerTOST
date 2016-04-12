@@ -14,8 +14,8 @@ to maintain the consumer risk at the nominal level.
 sampleN.scABEL.ad(alpha = 0.05, targetpower = 0.8, theta0, theta1,
                   theta2, CV = 0.3, design = c("2x3x3", "2x2x4", "2x2x3"),
                   regulator = c("EMA", "ANVISA"), nstart = NA, nsims = 1e6,
-                  imax=100, print = TRUE, details = FALSE, alpha.pre = 0.05,
-                  setseed = TRUE)
+                  imax = 100, tol, print = TRUE, details = FALSE,
+                  alpha.pre = 0.05, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -83,6 +83,10 @@ The default value 1,000,000 = 1e+6 should not be lowered.
   \item{imax}{
 Maximum number of steps in sample size search. Defaults to 100.
 }
+  \item{tol}{
+Desired accuracy (convergence tolerance).\cr
+Defaults to 1e-6 for \code{regulator = "EMA"} and to 1e-7 for \code{regulator = "ANVISA"}.
+}
   \item{print}{
 If \code{TRUE} (default), the function prints its results.
 }
@@ -116,12 +120,10 @@ of the acceptance range. Examples of \emph{U} at \acronym{EMA}'s \code{CVswitch}
 \code{[1] 1.43191}\cr
 Due to the symmetry around 1 results are valid for the lower (expanded)
 limit \emph{L} as well.\cr
-If a significant inflation of the \acronym{TIE} is expected (i.e., exceeding
-0.05036 for one million simulations), alpha is iteratively adjusted
-until at least the target power is reached and the consumer risk
-is maintained (n.s. > \code{alpha0}).\cr
-The significance limit is based on the one sided binomial test, e.g.,\cr
-\code{binom.test(0.05*1e6, 1e6, alternative="less", conf.level=1-0.05)$conf.int[2]}
+
+If an inflation of the \acronym{TIE} is expected (i.e., > \code{alpha}), alpha is iteratively adjusted
+until at least the target power is reached and the consumer risk is maintained (<= \code{alpha})
+
 }
 \value{
 Returns a data.frame with the input and results for adjusted alpha,
@@ -138,11 +140,13 @@ J Pharm Pharmaceut Sci. 2011;15(1):73-84\cr
 \href{http://ejournals.library.ualberta.ca/index.php/JPPS/article/download/11612/9489}{free download}
 
 Wonnemann, M., \enc{Frömke}{Froemke}, C., Koch, A.\cr
-Inflation of the Type I Error: Investigations on Regulatory Recommendations for Bioequivalence of Highly Variable Drugs\cr
+Inflation of the Type I Error: Investigations on Regulatory Recommendations for 
+Bioequivalence of Highly Variable Drugs\cr
 Pharm Res. 2015;32(1):135-43
 
-Labes, D., \enc{Schütz}{Schuetz}, H., Fuglsang, A.\cr
-Perspectives on Scaled Average Bioequivalence Evaluation via Expanded Acceptance Limits (ABEL) and a Proposed Method to Control Type I Error\cr
+Labes, D., \enc{Schütz}{Schuetz}, H.\cr
+Inflation of Type I Error in the Evaluation of Scaled Average Bioequivalence, 
+and a Method for its Control\cr
 in preparation 2016
 }
 \author{
@@ -173,29 +177,31 @@ the power value agreement to those obtained from simulations via subject data.
 }
 
 \seealso{
-\code{\link{scABEL.ad}}, \code{\link{sampleN.scABEL}}, \code{\link{power.scABEL}}, 
+\code{\link{scABEL.ad}}, \code{\link{sampleN.scABEL}}, \code{\link{power.scABEL}},
 \code{\link{scABEL}}
 }
 \examples{
-# Not run: due to timing policy of CRAN for examples
-# may run ten seconds or more
+# --- Not run due to timing policy of CRAN for examples
+# each may run some ten seconds or more
 # using all the defaults:
 # partial replicate design, target power=80\%,
 # true assumed ratio = 0.90, 1E+6 simulated studies
 # EMA regulatory settings (ABE limits, PE constraint 0.8 - 1.25)
 \dontrun{
-sampleN.scABEL.ad(CV = 0.3)
-# should result in sample size n = 60, power = 0.8022
-# Note: Without adjustment by sampleN.scABEL(): n = 54, power = 0.8159}
+sampleN.scABEL.ad(CV = 0.3)}
+# should result in n 60, power 0.8022.
+# Note: Without adjustment by sampleN.scABEL(): n 54, power 0.8159
 # Easier to show the details:
 \dontrun{
 sampleN.scABEL.ad(CV = 0.3, details = TRUE)}
 #
 # same with ANVISA settings, CVswitch = 40\%
-  sampleN.scABEL.ad(CV = 0.3, regulator = "anvisa")
-# should result in n = 60, power = 0.8101; no adjustment necessary
+\dontrun{
+sampleN.scABEL.ad(CV = 0.3, regulator = "anvisa")}
+# should result in n 60, power 0.8094.
 #
 # full replicate design, target power = 90\%, pre-specified alpha 0.025
-sampleN.scABEL.ad(CV = 0.3, targetpower = 0.8, design = "2x2x4", alpha.pre = 0.025)
-# should result in n = 44, power = 0.8040; pre-specified alpha justified
+\dontrun{
+sampleN.scABEL.ad(CV = 0.3, targetpower = 0.8, design = "2x2x4", alpha.pre = 0.025)}
+# should result in n 44, power 0.8040; pre-specified alpha justified.
 }

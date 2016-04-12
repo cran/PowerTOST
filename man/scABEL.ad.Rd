@@ -12,8 +12,9 @@ on simulations in order to maintain the consumer risk at the nominal level.
 \usage{
 scABEL.ad(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
           design = c("2x3x3", "2x2x4", "2x2x3"),
-          regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05, imax=100,
-          print = TRUE, details = FALSE, setseed = TRUE, nsims = 1e6)
+          regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05,
+          imax = 100, tol, print = TRUE, details = FALSE,
+          setseed = TRUE, nsims = 1e6)
 }
 \arguments{
   \item{alpha}{
@@ -65,9 +66,9 @@ If \code{n} leads to an unbalanced design (i.e., is not a multiple of two
 in the full replicate designs or not a multiple of three in the
 partial replicate), the code tries to keep subjects / sequence as
 balanced as possible.\cr
-In evaluating a particular \emph{unbalanced} study \strong{always} give \code{n} 
+In evaluating a particular \emph{unbalanced} study \strong{always} give \code{n}
 as a vector.\cr
-If n is missing a sample size is estimated with tragetpower = 0.5 and pre-specified
+If n is missing a sample size is estimated with targetpower = 0.5 and pre-specified
 alpha if defined. Else alpha is used.
 }
   \item{nsims}{
@@ -77,6 +78,10 @@ The default value 1,000,000 = 1e+6 should not be lowered.
 }
   \item{imax}{
 Maximum number of steps in sample size search. Defaults to 100.
+}
+  \item{tol}{
+Desired accuracy (convergence tolerance).\cr
+Defaults to 1e-6 for \code{regulator = "EMA"} and to 1e-7 for \code{regulator = "ANVISA"}.
 }
   \item{print}{
 If \code{TRUE} (default), the function prints its results.
@@ -112,11 +117,8 @@ of the acceptance range.  Examples of \emph{U} at the \acronym{EMA}'s \code{CVsw
 \code{[1] 1.43191}\cr
 Due to the symmetry around 1 results are valid for the lower (expanded)
 limit \emph{L} as well.\cr
-If a significant inflation of the \acronym{TIE} is expected (i.e., exceeding
-0.05036 for one million simulations), alpha is iteratively adjusted
-until the consumer risk is maintained (n.s. > \code{alpha0}).\cr
-The significance limit is based on the one sided binomial test, e.g.,\cr
-\code{binom.test(0.05*1e6, 1e6, alternative="less", conf.level=1-0.05)$conf.int[2]}
+If an inflation of the \acronym{TIE} is expected (i.e., > \code{alpha}), alpha is iteratively adjusted
+until the consumer risk is maintained (<= \code{alpha}).\cr
 }
 \value{
 Returns a list with the input, adjusted alpha, and type I error
@@ -130,8 +132,8 @@ Wonnemann, M., \enc{Frömke}{Froemke}, C., Koch, A.\cr
 Inflation of the Type I Error: Investigations on Regulatory Recommendations for Bioequivalence of Highly Variable Drugs\cr
 Pharm Res. 2015;32(1):135-43
 
-Labes, D., \enc{Schütz}{Schuetz}, H., Fuglsang, A.\cr
-Perspectives on Scaled Average Bioequivalence Evaluation via Expanded Acceptance Limits (ABEL) and a Proposed Method to Control Type I Error\cr
+Labes, D., \enc{Schütz}{Schuetz}, H.\cr
+Inflation of Type I Error in the Evaluation of Scaled Average Bioequivalence, and a Method for its Control\cr
 in preparation 2016
 }
 \author{
@@ -141,7 +143,7 @@ H. \enc{Schütz}{Schuetz}
 The type I error in \acronym{ABEL} depends only on \code{CVwR} and - to
 a minor degree - on the sample size. The \acronym{TIE} is assessed twice:\cr
 In the first step based on \code{alpha} (or \code{alpha.pre}) and compared to \code{alpha}.
-If no significant inflation is found, the algo stops.\cr
+If no inflation of the TIE is found, the algo stops.\cr
 Otherwise, alpha is iteratively adjusted (alway towards lower values)
 until no more inflation is detected. In the final assessment \code{alpha.adj} is
 compared to the nominal level of the test \code{alpha}.\cr
@@ -173,16 +175,11 @@ the power value agreement to those obtained from simulations via subject data.
 # Not run: due to timing policy of CRAN for examples
 \dontrun{
 scABEL.ad(CV = 0.3)}
-# should result in adjusted alpha = 0.0339 (TIE 0.500, TIE for nominal alpha 0.0719)
-#
-# same with ANVISA settings, CVswitch=40\%
-scABEL.ad(CV = 0.3, regulator = "anvisa")
-# no adjustment necessary (TIE 0.0503, n.s. > 0.05)
+# should result in adjusted alpha 0.03389 (TIE 0.5000, TIE for nominal alpha 0.07189).
 #
 # EMA, full replicate design, CV 0.35, sample size 33 (unbalanced)
 # Not run: due to timing policy of CRAN for examples
 \dontrun{
-scABEL.ad(CV = 0.35, design = "2x2x4", n = c(16, 17))
-}
-# should result in adjusted alpha = 0.0363 (TIE 0.500, TIE for nominal alpha 0.0654)
+scABEL.ad(CV = 0.35, design = "2x2x4", n = c(16, 17))}
+# should result in adjusted alpha 0.03632 (TIE 0.5000, TIE for nominal alpha 0.06544).
 }

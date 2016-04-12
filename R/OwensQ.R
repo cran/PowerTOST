@@ -107,7 +107,8 @@ OwensQ <- function (nu, t, delta, a, b)
     # [1] 8.326673e-17
     # but seems to work for sufficient high b
     # the question is what is sufficient
-    if (b>50){
+    #browser()
+	  if (b>50){
       check <- pt(t, df=nu, ncp=delta)
       # debug print
       # cat("Check aginst nct approx.:", check, Qintegral,"\n")

@@ -6,10 +6,10 @@
 # Author: Helmut Schuetz
 #-----------------------------------------------------------------------
 scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
-                     design = c("2x3x3", "2x2x4", "2x2x3"),
+                     design = c("2x3x3", "2x2x4", "2x2x3"), 
                      regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05,
-                     imax=100, print = TRUE, details = FALSE, setseed = TRUE,
-                     nsims = 1e6)
+                     imax = 100, tol, print = TRUE, details = FALSE, 
+                     setseed = TRUE, nsims = 1e6)
 {
   ## Arguments:
   ##   alpha      Nominal alpha (in BE generally fixed to 0.05).
@@ -33,6 +33,8 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   ##   n          Total sample size or a vector of subjects/sequences.
   ##   nsims      Simulations for the TIE. Should not be <1e6.
   ##   imax       max. steps in sample size search
+  ##   tol        desired accuracy (convergence tolerance)
+  ##              defaults to 1e-6 for EMA and 1e-7 for ANVISA
   ##   print      Boolean (FALSE returns a list of results).
   ##   details    Boolean (runtime, number of simulations).
   ##   alpha.pre  Pre-specified level.
@@ -50,12 +52,12 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   ##   pwr.adj    Power for adjusted alpha.
   ##   rel.loss   Relative loss in power if the sample size was planned
   ##              for alpha and will be evaluated with alpha.adj,
-  ##              where rel.loss = 100(pwr.adj ? pwr.unadj)/pwr.unadj
+  ##              where rel.loss = 100(pwr.adj - pwr.unadj)/pwr.unadj
   ##   If alpha.pre is given:
-  ##   Assessment of TIE; alpha.pre is justified if n.s. > alpha.
+  ##   Assessment of TIE; alpha.pre is justified if not > alpha.
   ######################################################################
   ## Tested on Win 7 Pro SP1 64bit
-  ##   R 3.2.3 64bit (2015-12-10), PowerTOST 1.3-02 (2015-12-02)
+  ##   R 3.2.4 Revised 64bit (2016-03-16), PowerTOST 1.3-4 (2016-03-10)
   ######################################################################
   env <- as.character(Sys.info()[1]) # get info about the OS
   if ((env == "Windows") || (env == "Darwin")) flushable <- TRUE
@@ -71,13 +73,14 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   regulator <- toupper(regulator)
   regulator <- match.arg(regulator)
   # set iteration tolerance for uniroot(). Must be higher for ANVISA.
-  if (regulator == "EMA") tol <- 1e-5 else tol <- 1e-6
+  if (missing(tol)) {
+    if (regulator == "EMA") tol <- 1e-6 else tol <- 1e-7
+  }
   design <- match.arg(design)
   CVwT <- CV[1]
   if (length(CV) == 2) CVwR <- CV[2] else CVwR <- CVwT
   no <- 0 # simulation counter
   if (details) ptm <- proc.time()
-  # Was geht hier ab? Sollten wir unbedingt in der man page beschreiben.
   if (missing(n) || is.na(n)) {
     if (is.na(alpha.pre) || (alpha.pre != alpha)) {
       al <- alpha.pre    # If pre-specified, use alpha.pre
@@ -102,23 +105,23 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   seqs <- as.numeric(substr(design, 3, 3)) # subjects / sequence
   if (length(n) == 1) n <- nvec(n, seqs) # vectorize n
 
-  # los gehts
-  pwr       <- rep(NA, 2) # initialize vectors: pwr
-  TIE       <- rep(NA, 2) # TIE
-  alpha.adj <- NA   # adjusted alpha
+  # here we go!
+  TIE <- pwr <- rep(NA, 2) # initialize vectors: TIE and pwr
+  alpha.adj <- NA          # adjusted alpha
   opt <- function(x) power.scABEL(alpha = x, CV = CV, theta0 = U, n = n,
                                   regulator = regulator, design = design,
                                   nsims = nsims, setseed = setseed) - alpha
   # Finds adjusted alpha which gives TIE as close as possible to alpha.
   sig  <- binom.test(x = round(alpha*nsims, 0), n = nsims,
-                     alternative = "less", conf.level = 1 - alpha)$conf.int[2]
+                     alternative = "less",
+                     conf.level = 1 - alpha)$conf.int[2]
   method <- "ABE"
   if ((regulator == "EMA" && CVwR > 0.3) ||
       (regulator == "ANVISA" && CVwR > 0.4)) method <- "ABEL"
   U <- scABEL(CV = CVwR, regulator = regulator)[["upper"]]
-  # Simulate at the upper (expanded) limit. For CVwR 30% that's 1.25.
-  # Due to the symmetry simulations at the lower limit (0.8) would work
-  # as well.
+  # Simulate at the upper (expanded) limit. For CVwR 30% that is
+  # 1.25. Due to the symmetry simulations at the lower limit (0.8)
+  # would work as well.
   if (alpha.pre != alpha) {
     al <- alpha.pre # If pre-specified, use alpha.pre.
   } else {
@@ -153,7 +156,6 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
     cat("Null (true) ratio             :", sprintf("%.3f", theta0), "\n")
     cat(paste0("Regulatory settings           : ", regulator, " (",
                method, ")\n"))
-    cat(paste0("Significance limit of TIE     : ", signif(sig, 5), "\n"))
     if (flushable) flush.console() # advance console output.
   }
   TIE[1] <- power.scABEL(alpha = al, CV = CV, theta0 = U, n = n,
@@ -164,7 +166,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
                          n = n, design = design, regulator = regulator,
                          setseed = setseed)
   no <- no + 1e5
-  if (TIE[1] > sig) { # adjust only if needed (significant inflation)
+  if (TIE[1] > alpha) { # adjust only if needed (> nominal alpha)
     x         <- uniroot(opt, interval = c(0, alpha), tol = tol)
     alpha.adj <- x$root
     TIE[2] <- power.scABEL(alpha = alpha.adj, CV = CV, theta0 = U, n = n,
@@ -178,8 +180,8 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   if (details) run.time <- proc.time() - ptm
   if (print) { # fetch and print results
     txt <- paste0("Empiric TIE for alpha ", sprintf("%.4f", al), "  : ",
-                  sprintf("%.4f", TIE[1]))
-    if (TIE[1] > sig || alpha.pre != alpha) {
+                  sprintf("%.5f", TIE[1]))
+    if (TIE[1] > alpha || alpha.pre != alpha) {
       rel.change <- 100*(TIE[1] - alpha)/alpha
       if (details) {
         txt <- paste0(txt, " (rel. change of risk: ",
@@ -191,12 +193,12 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
       txt <- paste0(txt, "\nPower for theta0 ", sprintf("%.3f", theta0),
                          "        : ", sprintf("%.3f", pwr.unadj))
     }
-    if (TIE[1] > sig) {
+    if (TIE[1] > alpha) {
       if (alpha.adj >= 0.01) {
         txt <- paste0(txt, "\nIteratively adjusted alpha    : ",
-                      sprintf("%.4f", alpha.adj),
+                      sprintf("%.5f", alpha.adj),
                       "\nEmpiric TIE for adjusted alpha: ",
-                      sprintf("%.4f", TIE[2]))
+                      sprintf("%.5f", TIE[2]))
       } else {
         txt <- paste0(txt, "\nIteratively adjusted alpha    : ",
                       signif(alpha.adj, 3),
@@ -224,8 +226,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
                       " iterations)\n\n")
       }
     } else {
-      txt <- paste0(txt, "\nNo significant inflation of the TIE ",
-                    "expected; ")
+      txt <- paste0(txt, "\nTIE not > nominal alpha; ")
       ifelse(alpha.pre == alpha,
         txt <- paste0(txt, "no adjustment of alpha is required.\n\n"),
         txt <- paste0(txt, "the chosen pre-specified alpha is ",
@@ -262,10 +263,9 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
 #   Nominal alpha                 : 0.05
 #   Null (true) ratio             : 0.900
 #   Regulatory settings           : EMA (ABE)
-#   Significance limit of TIE     : 0.05036
-#   Empiric TIE for alpha 0.0500  : 0.0719
-#   Iteratively adjusted alpha    : 0.0339
-#   Empiric TIE for adjusted alpha: 0.0500
+#   Empiric TIE for alpha 0.0500  : 0.07189
+#   Iteratively adjusted alpha    : 0.03389
+#   Empiric TIE for adjusted alpha: 0.05000
 #   Power for theta0 0.900        : 0.764
 #
 # 2. Explore the impact on power.
@@ -282,14 +282,13 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
 #   Nominal alpha                 : 0.05
 #   Null (true) ratio             : 0.900
 #   Regulatory settings           : EMA (ABE)
-#   Significance limit of TIE     : 0.05036
-#   Empiric TIE for alpha 0.0500  : 0.0816 (rel. change of risk: +63.3%)
+#   Empiric TIE for alpha 0.0500  : 0.08163 (rel. change of risk: +63.3%)
 #   Power for theta0 0.900        : 0.803
-#   Iteratively adjusted alpha    : 0.0286
-#   Empiric TIE for adjusted alpha: 0.0500
+#   Iteratively adjusted alpha    : 0.02857
+#   Empiric TIE for adjusted alpha: 0.05000
 #   Power for theta0 0.900        : 0.725 (rel. impact: -9.68%)
 #
-#   Runtime    : 5.46 seconds
+#   Runtime    : 5.66 seconds
 #   Simulations: 5,100,000 (4 iterations)
 #
 # 3. Explore whether a pre-specified alpha maintains the consumer's risk;
@@ -303,13 +302,12 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
 #   log-transformed data (multiplicative model)
 #   1,000,000 studies in each iteration simulated.
 #
-#   CVwR 32.17%, CVwT 27.69%, n(i) 15|14 (N 29)
+#   CVwR 0.3217, CVwT 0.2769, n(i) 15|14 (N 29)
 #   Nominal alpha                 : 0.05, pre-specified alpha 0.025
-#   Null (true) ratio             : 0.900 (default)
-#   Regulatory settings           : EMA (ABE)
-#   Significance limit of TIE     : 0.05036
-#   Empiric TIE for alpha 0.0250  : 0.0394
-#   No significant inflation of the TIE expected; the chosen pre-specified alpha is justified.#
+#   Null (true) ratio             : 0.900
+#   Regulatory settings           : EMA (ABEL)
+#   Empiric TIE for alpha 0.0250  : 0.03941
+#   TIE not > nominal alpha; the chosen pre-specified alpha is justified.
 #
 # 4. Assign to a variable and subsequently call the results
 #   x <- scABEL.ad(regulator="EMA", design="2x2x4", CV=0.3, n=34, theta0=0.9, print=FALSE, alpha.pre=0.025)

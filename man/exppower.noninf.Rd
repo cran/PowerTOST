@@ -4,12 +4,12 @@
 'Expected' power of non-inferiority test
 }
 \description{
-Calculates the 'expected' power according to Julious for a variety of study
+Calculates the 'expected' power for a variety of study
 designs used in bioequivalence studies.
 }
 \usage{
-exppower.noninf(alpha = 0.025, logscale=TRUE, theta0, margin,  
-                CV, dfCV, n, design = "2x2", robust=FALSE)
+exppower.noninf(alpha = 0.025, logscale=TRUE, theta0, margin, CV, dfCV, n, 
+                design = "2x2", robust=FALSE, method=c("exact", "approx"))
 }
 \arguments{
   \item{alpha}{
@@ -33,7 +33,9 @@ Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
 Coefficient of variation as ratio. 
   }
   \item{dfCV}{
-Degrees of freedom for the CV (error/residual degree of freedom).
+Degrees of freedom for the CV (error/residual degree of freedom).\cr
+\code{dfCV=Inf} is allowed and will result give the same result as
+\code{power.noninf(...)}.
 }
   \item{n}{
 Number of subjects under study.\cr
@@ -51,36 +53,72 @@ Set to \code{TRUE} will use the degrees of freedom according to the 'robust' eva
 (aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
 See \code{known.designs()$df2} for designs covered in this package.
 }
+  \item{method}{
+Defaults to code{method="exact"}.\cr
+In that case the expected power will be calculated as expected value of the
+power with respect to the (prior) distribution of sigma^2 (inverse gamma
+distribution).\cr
+Set to \code{method="approx"} will calculate the expected power according to
+the formula given in the book from Julious or according to Julious/Owen paper.
+}
 }
 \details{
-This function calculates the so-called 'expected' power based on formulas 
-according to S.A. Julious. These take into account that usually the CV is not 
-known but estimated from a previous study / studies with an uncertainty. 
-See references.
+This function calculates the so-called 'expected' power taking into account that 
+usually the CV is not known but estimated from a previous study / studies with 
+an uncertainty. See references.
 }
 \value{
 Value of expected power according to the input.
 }
 \references{
+A.P. Grieve\cr 
+"Confidence Intervals and Sample Sizes"\cr
+Biometrics 47, 1597-1603 December 1991
+
+O'Hagan et al.\cr
+"Assurance in Clinical Trial Design"\cr
+Pharmaceut. Statist. 2005; 4: 187-201
+
+S.A. Julious, R.J. Owen\cr
+"Sample size calculations for clinical studies allowing for 
+uncertainty in variance"\cr
+Pharmaceutical Statistics (2006), 5, 29-37
+
 S.A. Julious\cr
 "Sample sizes for Clinical Trials"\cr
 CRC Press, Chapman & Hall 2010
+
+Bertsche et al.\cr
+"The predictive distribution of the residual variability in the 
+linear-fixed effects model for clinical cross-over trials"\cr
+Biometrical Journal 00 (2016) 0, 1-13\cr
+Article first published online: 22 MAR 2016
 }
 \author{
-D. Labes
+D. Labes\cr
+B. Lang
 }
-
 \seealso{
- \code{\link{expsampleN.noninf}, \link{power.noninf}, \link{power.TOST}} 
+ \code{\link{expsampleN.noninf}, \link{power.noninf}, \link{exppower.TOST}} 
 }
 \examples{
 # expected power for non-inferiority test of a 2x2 crossover
 # CV 30\% known from a pilot study with 12 subjects (-> dfCV=10)
 # using all the defaults for other parameters
-# should give: [1] 0.6751358
+# should give: [1] 0.6761068
 exppower.noninf(CV=0.3, dfCV=10, n=40)
+# Julious approximation
+exppower.noninf(CV=0.3, dfCV=10, n=40, method="approx")
+# should give: [1] 0.6751358
 
-# Compare this to the usual power (CV known, "carved in stone")
-# should give: [1] 0.7228685
+# Compare this to the usual power (CV assumed known, "carved in stone")
 power.noninf(CV=0.3, n=40)
+# should give: [1] 0.7228685
+# same as 'expected' power with dfCV=Inf
+exppower.noninf(CV=0.3, dfCV=Inf, n=40)
+
+# may also calculated via exppower.TOST() after setting upper acceptance limit 
+# to Inf and alpha=0.025: settings of first example above
+exppower.TOST(CV=0.3, dfCV=10, n=40, theta2=Inf, alpha=0.025)
+
 }

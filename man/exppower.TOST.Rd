@@ -4,12 +4,13 @@
 'Expected' power of TOST procedure
 }
 \description{
-Calculates the so-called 'expected' power according to Julious for a variety 
-of study designs used in bioequivalence studies.
+Calculates the so-called 'expected' power exact or approximate according to 
+Julious for a variety of study designs used in bioequivalence studies.
 }
 \usage{
 exppower.TOST(alpha = 0.05, logscale=TRUE, theta0, theta1, theta2,  
-              CV, dfCV, n, design = "2x2", robust=FALSE)
+              CV, dfCV, n, design = "2x2", robust=FALSE, 
+              method=c("exact", "approx"))
 }
 \arguments{
   \item{alpha}{
@@ -38,7 +39,10 @@ else as \code{-theta1}.
 Coefficient of variation as ratio. 
   }
   \item{dfCV}{
-Degrees of freedom for the CV (error/residual degree of freedom).
+Degrees of freedom for the CV (error/residual degree of freedom).\cr
+\code{dfCV=Inf} is allowed and will result give the same result as
+\code{power.TOST(...)}.
+
 }
   \item{n}{
 Number of subjects under study.\cr
@@ -56,9 +60,17 @@ Set to \code{TRUE} will use the degrees of freedom according to the 'robust' eva
 (aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
 See \code{known.designs()$df2} for designs covered in this package.
 }
+  \item{method}{
+Defaults to code{method="exact"}.\cr
+In that case the expected power will be calculated as expected value of the
+power with respect to the (prior) distribution of sigma^2 (inverse gamma
+distribution).\cr
+Set to \code{method="approx"} will calculate the expected power according to
+the formula given in the book from Julious or according to Julious/Owen paper.
+}
 }
 \details{
-This function calculates the so-called 'expected' power based on S.A. Julious
+This function calculates the so-called 'expected' power 
 taking into account that usually the CV is not known but estimated from a
 previous study / studies with an uncertainty. See references.
 }
@@ -66,6 +78,14 @@ previous study / studies with an uncertainty. See references.
 Value of expected power according to the input.
 }
 \references{
+A.P. Grieve\cr 
+"Confidence Intervals and Sample Sizes"\cr
+Biometrics 47, 1597-1603 December 1991
+
+O'Hagan et al.\cr
+"Assurance in Clinical Trial Design"\cr
+Pharmaceut. Statist. 2005; 4: 187-201
+
 S.A. Julious, R.J. Owen\cr
 "Sample size calculations for clinical studies allowing for 
 uncertainty in variance"\cr
@@ -74,9 +94,16 @@ Pharmaceutical Statistics (2006), 5, 29-37
 S.A. Julious\cr
 "Sample sizes for Clinical Trials"\cr
 CRC Press, Chapman & Hall 2010
+
+Bertsche et al.\cr
+"The predictive distribution of the residual variability in the 
+linear-fixed effects model for clinical cross-over trials"\cr
+Biometrical Journal 00 (2016) 0, 1-13\cr
+Article first published online: 22 MAR 2016
 }
 \author{
-D. Labes
+D. Labes\cr
+B. Lang
 }
 \seealso{
  \code{\link{expsampleN.TOST}, \link{power.TOST}} 
@@ -85,10 +112,16 @@ D. Labes
 # expected power for a 2x2 crossover
 # CV 30\% known from a pilot study with 12 subjects (-> dfCV=10)
 # using all the defaults for other parameters
-# should give: [1] 0.7359771
+# should give: [1] 0.7365519
 exppower.TOST(CV=0.3, dfCV=10, n=40)
 
+# pre-V1.3-5 Julious approximation
+exppower.TOST(CV=0.3, dfCV=10, n=40, method="approx")
+# should give: [1] 0.7359771
+
 # Compare this to the usual power (CV known, "carved in stone")
-# gives: [1] 0.8158453
 power.TOST(CV=0.3, n=40)
+# should give: [1] 0.8158453
+# same as if setting dfCV=Inf in function exppower.TOST()
+exppower.TOST(CV=0.3, dfCV=Inf, n=40)
 }

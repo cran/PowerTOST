@@ -25,8 +25,9 @@
 # Only for log-transformed data
 # CV and dfCV can be vectors, if then a pooled CV, df will be calculated
 expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
-                              theta0, margin, CV, dfCV, design="2x2", 
-                              robust=FALSE, print=TRUE, details=FALSE, imax=100)
+                              theta0, margin, CV, dfCV, design="2x2", robust=FALSE, 
+                              method=c("exact", "approx"), print=TRUE, 
+                              details=FALSE, imax=100)
 {
   #number of the design and check if design is implemented
   d.no <- .design.no(design)
@@ -71,6 +72,10 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     dfse <- dfCV
     CVp  <- CV
   }
+  
+  # check method
+  method <- tolower(method)
+  method <- match.arg(method)
   
   # print the configuration:
   if (print) {
@@ -136,7 +141,10 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
                              se, dfse, steps, bk)
   if(n<nmin) n <- nmin
   df  <- eval(dfe)
-  pow <- .exppower.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), dfse, df) 
+  #browser()
+  pow <- .exppower.noninf(alpha=alpha, lmargin=lmargin, ldiff=diffm, 
+                          se.fac=sqrt(bk/n), se=se, dfCV=dfse, df=df, 
+                          method=method) 
   if (details) {
     cat("\nSample size search (ntotal)\n")
     cat(" n    exp. power\n")
@@ -158,7 +166,9 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down 
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), dfse, df) 
+    pow <- .exppower.noninf(alpha=alpha, lmargin=lmargin, ldiff=diffm, 
+                            se.fac=sqrt(bk/n), se=se, dfCV=dfse, df=df, 
+                            method=method) 
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -167,7 +177,9 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     n    <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow  <- .exppower.noninf(alpha, lmargin, diffm, se*sqrt(bk/n), dfse, df) 
+    pow <- .exppower.noninf(alpha=alpha, lmargin=lmargin, ldiff=diffm, 
+                            se.fac=sqrt(bk/n), se=se, dfCV=dfse, df=df, 
+                            method=method) 
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }
@@ -184,6 +196,15 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
     cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (is.na(n)) cat("Sample size search failed!\n")
   }
+  if (details && print) {
+    if (method=="exact") 
+      cat("\nExact expected power calculation.\n")
+  }
+  # always print if approx.
+  if (print & (method!="exact")){
+    approx <- "Approximate expected power calculation \nacc. to Julious/Owen."
+    cat("\n",approx,"\n",sep="")
+  } 
   
   if (print) cat("\n")
   

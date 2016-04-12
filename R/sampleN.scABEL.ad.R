@@ -5,12 +5,13 @@
 #
 # Author: Helmut Schuetz
 #-----------------------------------------------------------------------
-sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0, 
+sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
                               theta1, theta2, CV = 0.3,
                               design = c("2x3x3", "2x2x4", "2x2x3"),
                               regulator = c("EMA", "ANVISA"),
-                              nstart = NA, nsims = 1e6, imax=100, print = TRUE,
-                              details = FALSE, alpha.pre = 0.05, setseed = TRUE)
+                              nstart = NA, nsims = 1e6, imax=100,
+                              tol, print = TRUE, details = FALSE,
+                              alpha.pre = 0.05, setseed = TRUE)
 {
   ## Arguments:
   ##   alpha       Nominal alpha (in BE generally fixed to 0.05).
@@ -33,6 +34,8 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
   ##   nstart      If given, the starting sample size.
   ##   nsims       Simulations for the TIE. Should not be <1e6.
   ##   imax        max. number of steps in sample size search
+  ##   tol         desired accuracy (convergence tolerance)
+  ##               defaults to 1e-6 for EMA and 1e-7 for ANVISA
   ##   print       Boolean. If FALSE, returns a data.frame of results.
   ##   details     Boolean (intermediates, runtime, number of sim's).
   ##   alpha.pre   Pre-specified level.
@@ -54,7 +57,7 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
   ##      target power is reached.
   ######################################################################
   ## Tested on Win 7 Pro SP1 64bit
-  ##   R 3.2.3 64bit (2015-12-10), PowerTOST 1.3-02 (2015-12-02)
+  ##   R 3.2.4 Revised 64bit (2016-03-16), PowerTOST 1.3-4 (2016-03-10)
   ######################################################################
   env <- as.character(Sys.info()[1]) # get info about the OS
   if ((env == "Windows") || (env == "Darwin")) flushable <- TRUE
@@ -135,7 +138,6 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
       txt <- paste(txt, "\n")
     }
     cat(txt)
-    cat(paste0("Significance limit : ", signif(sig, 5), "\n"))
     cat("Null (true) ratio  :", sprintf("%.3f", theta0), "\n")
     cat("Target power       :", sprintf("%.3g", targetpower), "\n")
     cat(paste0("Regulatory settings: ", regulator, " (", method, ")\n"))
@@ -207,9 +209,9 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
     }
   }
   step.1 <- FALSE # Check conditions for stopping below:
-  if (TIE.unadj <= sig && pwr.unadj > targetpower) step.1 <- TRUE
+  if (TIE.unadj <= alpha && pwr.unadj > targetpower) step.1 <- TRUE
   if (!is.na(TIE.adj)) {
-    if (TIE.adj <= sig && pwr.adj > targetpower) step.1 <- TRUE
+    if (TIE.adj <= alpha && pwr.adj > targetpower) step.1 <- TRUE
   }
   # browser()
   if (step.1 && is.na(TIE.adj)) { # Stop: Nothing to do.
@@ -219,7 +221,7 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
                   TIE.unadj, "\n"))
     }
     if (print) {
-      cat("No significant inflation of the TIE expected; ")
+      cat("No inflation of the TIE expected; ")
       if (alpha.pre != alpha) {
         cat("the chosen pre-specified alpha is justified.\n")
       } else {
@@ -235,11 +237,11 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
     cat("\nSample size search and iteratively adjusting alpha")
     cat(sprintf("%s %3d, %s ", "\nn", unadj.n, "  adj. alpha:"))
     if (alpha.adj >= 0.01) {    # General case (alphas <0.025 are rare).
-      cat(sprintf("%.4f %s %.4f%s %.2f%%%s", alpha.adj, "(power", pwr.adj,
+      cat(sprintf("%.5f %s %.4f%s %.2f%%%s", alpha.adj, "(power", pwr.adj,
                   "), rel. impact on power:",
                   100*(pwr.adj - pwr.unadj)/pwr.unadj, "\n"))
     } else {                # Sometimes necessary for ANVISA...
-      cat(paste0(signif(alpha.adj, 4),
+      cat(paste0(signif(alpha.adj, 5),
           sprintf(" %s %.4f%s %.2f%%%s", "(power", pwr.adj,
                   "), relative impact on power:",
                   100*(pwr.adj - pwr.unadj)/pwr.unadj, "\n")))
@@ -247,10 +249,9 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
     if (flushable) flush.console()
   }
   # Increase the sample size /and/ adjust alpha until achieved
-  # power is at least the target power and the TIE is not
-  # significantly > alpha.
-  pwr  <- 0
-  iter <- 0
+  # power is at least the target power and the TIE does not
+  # exceed (nominal) alpha.
+  pwr <- iter <- 0
   while (pwr < targetpower) {
     if (iter == 0) { # Get the sample size for the (first!) adjusted
                      # alpha obtained from scABEL.ad(...) above.
@@ -272,13 +273,14 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
     }
     if (alpha.adj != alpha.pre) { # Adjust alpha (general case).
       x  <- scABEL.ad(alpha = alpha, regulator = regulator, design = design,
-                      CV = CV, n = n.new, theta0 = theta0, imax=imax, print = FALSE,
-                      details = FALSE, nsims = nsims, setseed = setseed)
+                      CV = CV, n = n.new, theta0 = theta0, imax=imax,
+                      tol = tol, print = FALSE, details = FALSE,
+                      nsims = nsims, setseed = setseed)
     } else {                      # Do /not/ adjust pre-specified alpha!
       x  <- scABEL.ad(regulator = regulator, design = design, CV = CV,
-                      n = n.new, theta0 = theta0, imax=imax, print = FALSE, 
-                      details = FALSE, nsims = nsims, setseed = setseed, 
-                      alpha.pre = alpha.adj)
+                      n = n.new, theta0 = theta0, imax=imax, tol = tol,
+                      print = FALSE, details = FALSE, nsims = nsims,
+                      setseed = setseed, alpha.pre = alpha.adj)
     }
     no <- no + x$sims
     if (is.na(x[["alpha.adj"]])) { # No adjustment was necessary!
@@ -293,12 +295,12 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
     if (pwr < targetpower && iter >= 1) { # Show intermediate steps.
       if (print && details) {
         if (alpha.adj >= 0.01) { # Nice format (EMA)
-          cat(sprintf("%s %3d, %s %.4f %s %.4f%s", "n", n.new,
+          cat(sprintf("%s %3d, %s %.5f %s %.4f%s", "n", n.new,
                       "  adj. alpha:", alpha.adj, "(power", pwr, ")\n"))
         } else {                 # Sometimes needed for ANVISA.
           cat(sprintf("%s %3d, %s ", "n", n.new, "  adj. alpha:"))
-          cat(paste0(signif(alpha.adj, 4),
-              sprintf(" %s %.4f%s", "(power", pwr, ")\n")))
+          cat(paste0(signif(alpha.adj, 5),
+              sprintf(" %s %.5f%s", "(power", pwr, ")\n")))
         }
         if (flushable) flush.console() # advance console output.
       }
@@ -308,11 +310,11 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
   if (print) {
     cat(sprintf("%s %3d, %s ", "n", n.new, "  adj. alpha:"))
     if (alpha.adj >= 0.01) { # As above. EMA
-      cat(sprintf("%.4f %s %.4f%s %.4f%s", alpha.adj, "(power", pwr,
+      cat(sprintf("%.5f %s %.4f%s %.5f%s", alpha.adj, "(power", pwr,
                   "), TIE:", TIE, "\n"))
     } else {                 # As above. ANVISA
-      cat(signif(alpha.adj, 4),
-          sprintf("%s %.4f%s %.4f%s", "(power", pwr,
+      cat(signif(alpha.adj, 5),
+          sprintf("%s %.4f%s %.5f%s", "(power", pwr,
                   "), TIE:", TIE, "\n"))
     }
     if (details) {

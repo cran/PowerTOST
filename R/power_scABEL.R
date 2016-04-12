@@ -185,8 +185,8 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # now simulate sample mse
     if (design=="2x3x3"){
       # simulate sample mse not for this design
-      # s2wT is empirical because dfTT is not defined and artificially 
-      # set to equal dfRR
+      # s2wT is empirical because dfTT is not defined and  
+      # artificially set to equal dfRR
       mses  <- (cvec[1]*s2wTs + cvec[2]*s2wRs)/denom
     } 
     if (design=="2x2x4"){
