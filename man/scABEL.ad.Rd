@@ -68,7 +68,7 @@ partial replicate), the code tries to keep subjects / sequence as
 balanced as possible.\cr
 In evaluating a particular \emph{unbalanced} study \strong{always} give \code{n}
 as a vector.\cr
-If n is missing a sample size is estimated with targetpower = 0.5 and pre-specified
+If n is missing a sample size is estimated with targetpower = 0.8 and pre-specified
 alpha if defined. Else alpha is used.
 }
   \item{nsims}{

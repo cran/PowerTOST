@@ -24,7 +24,7 @@
 }
 
 # --- Exact implementation of expected power
-# Author B.Lang
+# Author(s) B.Lang & D. Labes
 .exact.exppower.TOST <- function(alpha=0.05, ltheta1, ltheta2, ldiff, se.fac,
                                  se, dfCV, df) 
 {
@@ -32,34 +32,50 @@
   if (!is.finite(dfCV)) {
     return(.power.TOST(alpha, ltheta1, ltheta2, ldiff, se.fac*se, df))
   }
-  # Define assurance function (expected power)
+  # Define assurance function (density of expected power)
   f <- function(v) {
     .power.TOST(alpha, ltheta1, ltheta2, ldiff, se.fac*sqrt(v), df) * 
       my_dinvgamma(x = v, shape = dfCV/2, scale = dfCV/2 * se^2)
   }
-  len <- if (dfCV < 1000) 0.2 else if (dfCV < 1e+04) 0.05 else 0.01
-  l <- se^2 - len
-  pow <- ifelse(l <= 0, 0, integrate(f, 0, l)$value) + 
-    integrate(f, max(l, 0), l + 2*len)$value + 
-    integrate(f, l + 2*len, Inf)$value
   
-  pow
+  # Detlew's attempt to stay with one integrate() call
+  # modified by Ben
+
+  # mean of inverse gamma with alpha=dfCV/2, beta=se^2*dfCV/2
+  # around this we expect the highest 'weights'
+  minvg <- (dfCV/2 * se^2)/(dfCV/2 - 1)
+  # or should we use the mode? Should not make a big difference for sufficient
+  # high dfCV
+  minvg <- (dfCV/2 * se^2)/(dfCV/2 + 1)
+  # variance of inverse gamma
+  vinvg <- (dfCV/2 * se^2)^2/(dfCV/2 - 1)^2/(dfCV/2 - 2)
+  # Chebyshev's inequality with k = 10
+  k <- 10
+  lwr  <- max(0, minvg - k*sqrt(vinvg))
+  # heavier tail to the right. may be an other value than 2 fits better TODO
+  upr  <- minvg + 2*k*sqrt(vinvg)       
+  pwr <- integrate(f, lwr, upr, rel.tol = 1e-5, stop.on.error = FALSE)
+  if(pwr$message!="OK") warning(pwr$message)
+  
+  # return expected power
+  pwr$value
+  
 }
 
 # --- working horse for exppower.TOST() and expsampleN.TOST()
 .exppower.TOST <- function(alpha=0.05, ltheta1, ltheta2, ldiff, se.fac,
                            se, dfCV, df, method="exact")
 {
+  pow <- NA
   if (method == "exact") {
-    return(.exact.exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se.fac, se,
-                                dfCV, df))
-  } else if (method == "approx") {
-    return(.approx.exppower.TOST(alpha, ltheta1, ltheta2, ldiff, sem=se.fac*se,
-                                 dfse=dfCV, df=df))
-  } else {
-    # this is paranoia since method should be checked by the high level function
-    stop("Method '", method, "' unknown!\n", call. = TRUE)
-  }
+    pow <- .exact.exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se.fac, se,
+                                dfCV, df)
+  } 
+  if (method == "approx") {
+    pow <- .approx.exppower.TOST(alpha, ltheta1, ltheta2, ldiff, sem=se.fac*se,
+                                 dfse=dfCV, df=df)
+  } 
+  pow
 }
 
 # ----------------------------------------------------------------------------
@@ -72,15 +88,25 @@ exppower.TOST <- function(alpha=0.05, logscale=TRUE, theta0, theta1, theta2,
   # Check if design is implemented
   d.no <- .design.no(design)
   if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
-  
   # Design characteristics
   ades <- .design.props(d.no)
   #df as expression
   dfe  <- .design.df(ades, robust=robust)
   #design const.
   #bk   <- ades$bk # we use always bkni
-  if (missing(CV) | missing(dfCV)) 
-    stop("CV and df must be given!", call.=FALSE)
+  
+  if (missing(CV) | missing(dfCV)) stop("CV and dfCV must be given.", call.=FALSE)
+  if (any(CV<=0)) stop("CV has to be >0", call.=FALSE)
+  if (length(CV)>1) {
+    CV <- CV[1]
+    warning("CV has to be a scalar here. Only CV[1] used.", call.=FALSE)
+  }
+  if (length(dfCV)>1) {
+    dfCV <- dfCV[1]
+    warning("dfCV has to be a scalar here. Only dfCV[1] used.", call.=FALSE)
+  }
+  if (dfCV<=4) stop("dfCV has to be >4", call.=FALSE)
+  
   if (missing(n)) 
     stop("Number of subjects must be given!", call.=FALSE)
   if (logscale) {
@@ -127,5 +153,5 @@ exppower.TOST <- function(alpha=0.05, logscale=TRUE, theta0, theta1, theta2,
   
   pwr <- .exppower.TOST(alpha, ltheta1, ltheta2, ldiff, se.fac, se, dfCV, 
                         df, method)
-  pwr # return power
+  pwr # return expected power
 }

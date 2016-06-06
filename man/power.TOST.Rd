@@ -97,7 +97,7 @@ If n is given as scalar (total sample size) and this number is not
 divisible by the number of (sequence) groups of the design an unbalanced design 
 with small imbalance is assumed. A corresponding message is thrown showing the 
 assumed numbers of subjects in (sequence) groups.\cr
-The function does not vectorize propperly if design is a vector.\cr
+The function does not vectorize properly if design is a vector.\cr
 The function vectorizes properly if CV or theta0 are vectors.\cr
 Other vector input is not tested yet.\cr\cr
 Former function \code{power2.TOST()} designd to handle unbalanced studies is 

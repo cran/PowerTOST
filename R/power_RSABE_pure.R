@@ -12,14 +12,14 @@
 # 2x2x3  dfRR = n/2 - 2
 
 pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                        design=c("2x3x3", "2x2x4", "2x2x3"), 
-                        regulator = c("FDA", "EMA"), biascorr=TRUE,
-                        nsims=1E5, setseed=TRUE)
+                      design=c("2x3x3", "2x2x4", "2x2x3"), 
+                      regulator = c("FDA", "EMA"), biascorr=TRUE,
+                      nsims=1E5, setseed=TRUE)
 {
-  if (missing(CV)) stop("CV must be given!")
+  if (missing(CV)) stop("CV(s) must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
 
-  if (missing(theta0)) theta0 <- 0.95
+  if (missing(theta0)) theta0 <- 0.90
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
   if (missing(theta1)) theta1 <- 1/theta2
@@ -77,17 +77,15 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     if (nv[1]!=nv[length(nv)]){
       message("Unbalanced design. n(i)=", paste(nv, collapse="/"), " assumed.")
     } 
-    C3 <- sum(1/nv)/seqs^2
-    n  <- sum(nv)
   } else {
     # then we assume n = vector of n's in sequences
     # check length
     if (length(n)!=seqs) stop("n must be a vector of length=",seqs,"!")
     
-    C3 <- sum(1/n)/seqs^2
     nv <- n
-    n  <- sum(n)
   }
+  C3 <- sum(1/nv)/seqs^2
+  n  <- sum(nv)
   
   df   <- eval(dfe)
   if (design=="2x2x3"){
@@ -148,7 +146,7 @@ pwr.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     hw  <- tval*SEs
     
     # upper 95% CI linearized SABE criterion
-    # with -SEs^2 the 'unknown' x from the progesterone guidance
+    # with/without -SEs^2 the 'unknown' x from the progesterone guidance
     if (biascorr) Em <- means^2 - SEs^2 else Em <- means^2 
     Es <- r2const*s2wRs
     Cm <- (abs(means) + hw)^2

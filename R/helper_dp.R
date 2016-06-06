@@ -1,20 +1,5 @@
-# -------------------------------------------------------------------------
-# helper functions for power.dp / sampleN.dp and others
-# -------------------------------------------------------------------------
-# distribute n into grps with 'best' balance between grps
-# this function is also used in other power functions
-nvec <- function(n, grps)
-{
-  ni <- trunc(n/grps)
-  nv <- rep.int(ni, times=grps)
-  rest <- n-grps*ni
-  if(rest!=0){
-    nv <- nv + c(rep.int(1,rest), rep.int(0,grps-rest))
-  }
-  nv
-}
 # --------------------------------------------------------------------------
-# css without ni, assuming all ni equal
+# css (corrected sum of squares) without ni, assuming all ni equal
 # --------------------------------------------------------------------------
 .css <- function(doses, design, dm=NULL)
 {

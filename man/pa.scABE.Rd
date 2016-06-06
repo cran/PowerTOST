@@ -12,7 +12,7 @@ in planning the sample size of the study.
 \usage{
 pa.scABE(CV, theta0=0.9, targetpower=0.8, minpower=0.7, 
          design=c("2x3x3", "2x2x4", "2x2x3"), 
-         regulator=c("EMA", "ANVISA", "FDA"), ...) 
+         regulator=c("EMA", "HC", "ANVISA", "FDA"), ...) 
 }
 \arguments{
   \item{CV}{
@@ -42,7 +42,7 @@ Defaults to \code{2x3x3}, the partial replicate design (TRR/RTR/RRT).
 }
   \item{regulator}{
 Character string describing the scaled ABE method recommended by the regulatory 
-bodies EMA, ANVISA or FDA.\cr
+bodies EMA, HC, ANVISA or FDA.\cr
 Defaults to \code{EMA}, method of scaled (widened) bioequivalence limits.
 }
   \item{\dots}{
@@ -60,7 +60,7 @@ kept constant. The tool shows the relative impact of single parameters on power.
 The tool takes a minimum of 12 subjects as demanded in most BE guidances into account.\cr\cr
 It should be kept in mind that this is \bold{not} a substitute for the "Sensitivity Analysis"
 recommended in ICH-E9. In a real study a combination of all effects occurs simultaneously.
-It's upto \bold{you} to decide on reasonable combinations and analyze the power of them.
+It is up to \bold{you} to decide on reasonable combinations and analyze their respective power.
 }
 \value{
 Returns a list with class \code{'pwrA'} with the components

@@ -1,3 +1,29 @@
+Version 1.3-6
+Released 2016-06-06 via CRAN
+Released 2016-05-04 to beta-testers
+      - Functions for power and sample size of BE decision of highly variable
+        drugs or drug products via ABEL (average BE with expanding limits)
+        updated to incorporate the reagulatory settings of Health Canada
+        (new functions power.scABEL2() and sampleN.scABEL2(), based on simulations
+        of intra-subject contrasts evaluation).
+      - The same functions now accept as regulator argument an object of class
+        'regSet' and allow via this way User definitions of regulatory settings.
+      - New function reg_const made visible to define objects of 'regSet'.
+        Class 'regSet' has an S3 print method.
+      - Default value of argument theta0 in functions power.scABEL(), 
+        power.scABEL2() and power.RSABE() changed to 0.90 to be in agreement
+        with the setting in the corresponding sample size functions.
+      - Function scABEL (calculation of widened acceptance limits) no longer
+        accepts regulator="USER". This case may be handled via an object
+        with class 'regSet', defined by help of function reg_const().
+      - Functions CVfromCI()/CI2CV now use pe instead of point as argument due 
+        to more consistency with their dual CI.BE(). For backward compatibility 
+        point may be used also but then a warning is thrown. Argument point will 
+        be removed in future versions.
+      - Functions for expected power for TOST and non-inferiority updated
+        to avoid numerical dificulties with integrate() if method="exact".
+      - Documentation (typos in man pages) rigorously enhanced.
+        Thanks to Helmut and Ben. 
 Version 1.3-5
 Released 2016-04-12
       - Functions for expected power for TOST and non-inferiority updated 

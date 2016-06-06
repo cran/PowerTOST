@@ -1,26 +1,16 @@
 #-----------------------------------------------------------------------------
-# Sample size for partial and full replicate design and scaled ABE 
+# Sample size for partial and full replicate designs and scaled ABE 
 # via simulated (empirical) power
-# estimation method ANOVA and BE decision via ABEL (Average bioequivalence with 
-# expanding eimits)
+# estimation method intra-subject contrasts and BE decision via ABEL 
+# (Average bioequivalence with expanding limits)
 # 
 # Author: dlabes
 #-----------------------------------------------------------------------------
 
-# helper function: sample size for pe in a range?
-# definition is more or less empirical (i.e. not understood by me)
-.sampleN0.2 <- function(targetpower, ltheta2, diffm, se, bk, steps)
-{
-  n <- qnorm(targetpower)^2*se^2*bk/(abs(diffm)-ltheta2)^2
-  #make an even multiple of step (=2 in case of 2x2 cross-over)
-  n <- steps*trunc(n/steps)
-  n
-}  
-
-sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
-                           theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"), 
-                           regulator, nsims=1E5, nstart, imax=100, print=TRUE, 
-                           details=TRUE, setseed=TRUE)
+sampleN.scABEL2 <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
+                            theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"), 
+                            regulator, nsims=1E5, nstart, imax=100, print=TRUE, 
+                            details=TRUE, setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2=1/theta1
@@ -34,10 +24,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   
   #if (!print) details <- FALSE # do not print anything
   
-  # subject-by-formulation interaction can't play a role here I think
-  # since the model doesn't allow such term
   CVwT <- CV[1]
-  # should we allow different variabilities in the EMA method?
   if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
@@ -46,9 +33,9 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # check regulator and get 
   # constants acc. to regulatory bodies (function in scABEL.R)
   rc <- reg_check(regulator)
-  CVcap     <- rc$CVcap
-  CVswitch  <- rc$CVswitch
-  r_const   <- rc$r_const
+  CVcap    <- rc$CVcap
+  CVswitch <- rc$CVswitch
+  r_const  <- rc$r_const
   pe_constr <- rc$pe_constr
   
   # check design
@@ -58,33 +45,36 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # expressions for the df's
   if (design=="2x3x3") {
     desi <- "2x3x3 (partial replicate)"
-    bk <- 1.5; seqs <- 3
-    dfe   <- parse(text="2*n-3", srcfile=NULL)
-    dfRRe <- parse(text="n-2", srcfile=NULL)
-    #sd2  <- (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02, wrong
-    # simulations with s2D=0 show:
-    Emse  <- (s2wT + 2.0*s2wR)/3
-    cvec  <- c(1, 2) # for sim of mses from s2wT and s2wR
+    seqs <- 3
+    bk   <- 1.5    # needed for n0
+    # in case of the ISC we are using the 'robust' df's
+    # T-R and R-R with df=n-seqs
+    dfe   <- parse(text="n-3", srcfile=NULL)
+    # next is only for testing purposes
+    dfCIe <- parse(text="2*n-3", srcfile=NULL)
+    dfRRe <- parse(text="n-3", srcfile=NULL)
+    # according to McNally et al., verified via simulations:
+    Emse  <- s2wT + s2wR/2
   }
   if (design=="2x2x4") {
-    desi <- "2x2x4 (full replicate)"
-    bk <- 1.0; seqs <- 2
-    # only EMA settings
-    dfe   <- parse(text="3*n-4", srcfile=NULL)
+    desi  <- "2x2x4 (full replicate)"
+    seqs  <- 2
+    bk    <- 1.0    # needed for n0
+    dfCIe <- parse(text="3*n-4", srcfile=NULL)
+    dfe   <- parse(text="n-2", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
-    # sd^2 (variance) of the differences T-R from their components
-    Emse  <- (s2wT + s2wR)/2
-    cvec  <- c(1, 1)
+    # expectation of mse of the ANOVA of intra-subject contrasts
+    Emse  <- (s2wT + s2wR)/2 
   }
   if (design=="2x2x3") {
     desi <- "2x2x3 (TRT|RTR)"
-    bk <- 1.5; seqs <- 2
-    # only EMA settings
-    dfe   <- parse(text="2*n-3", srcfile=NULL)
-    dfRRe <- parse(text="n/2-1", srcfile=NULL)
-    # sd^2 (variance) of the differences T-R from their components
-    Emse  <- (s2wT + s2wR)/2 # for balanced designs we use here
-    cvec  <- c(1, 1) # dummy
+    seqs <- 2
+    bk   <- 1.5    # needed for n0?
+    dfe   <- parse(text="n-2", srcfile=NULL)
+    dfCIe <- parse(text="2*n-3", srcfile=NULL)
+    dfRRe <- parse(text="n/2-1", srcfile=NULL) # for balanced designs
+    # expectation of mse of the ANOVA of intra-subject contrasts
+    Emse  <- 1.5*(s2wT + s2wR)/2               # for balanced designs
   }
   
   mlog <- log(theta0)
@@ -92,7 +82,8 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if (print){
     cat("\n+++++++++++ scaled (widened) ABEL +++++++++++\n")
     cat("            Sample size estimation\n")
-    cat("---------------------------------------------\n")
+    cat("(simulations based on intra-subject contrasts)\n")
+    cat("----------------------------------------------\n")
     cat("Study design: ",desi,"\n")
     cat("log-transformed data (multiplicative model)\n")
     cat(nsims,"studies for each step simulated.\n\n")
@@ -122,41 +113,49 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     ltheta2 <- -ltheta1
   }
   if (missing(nstart)){
-    # start from ABE start with widened limits
-    n01 <- .sampleN0_2(alpha=alpha, targetpower, ltheta1, ltheta2, diffm=mlog, 
-                     se=sqrt(Emse), steps=seqs, bk=bk)
-    # empirical correction in the vicinity of CV=0.3 for ratios 
-    # outside 0.86 ... 1/0.86
-    # does this fit also for CVswitch in case of ANVISA = 0.4?
-    #if(Emse < CV2mse(0.305) & Emse > CV2mse(0.295) & abs(mlog)>log(1/0.865)) {
-    if(Emse < CV2mse(CVswitch+0.005) & Emse > CV2mse(CVswitch-0.005) 
-        & abs(mlog)>log(1/0.865)) {
-      if (rc$name=="EMA")     n01 <- 0.9*n01
-      if (rc$name=="FDA")     n01 <- 0.65*n01
-      if (rc$name=="ANVISA")  n01 <- 0.6*n01
-      n01 <- seqs*trunc(n01/seqs)
+    # try to use the empirical alpha for start sample size, some sort of
+    al <- alpha
+    if (rc$name=="FDA") {
+      if(Emse/bk <= CV2mse(0.30001) & Emse/bk >= CV2mse(0.2975)) al=0.12
+      if(Emse/bk > CV2mse(0.30001)) al <- 0.035   
     }
-    
+    if (rc$name=="EMA") {
+      #does not fit!
+      #if(Emse/bk <= CV2mse(0.321) & Emse/bk >= CV2mse(0.28)) al=0.065
+    }
+    # debug print
+    # cat(al,"\n")
+    # we use bk=1 here since our formula is sem=sqrt(Emse/n)
+    n01 <- .sampleN0(alpha=al, targetpower, ltheta1, ltheta2, diffm=mlog, 
+                     se=sqrt(Emse), steps=seqs, bk=1, diffmthreshold=0.01)
+    # empirical correction in the vicinity of CV=0.3, for ratios 
+    # outside 0.86 ... 1/0.86
+    #     if(Emse/bk <= CV2mse(0.305) & Emse/bk >= CV2mse(0.295) & abs(mlog)>log(1/0.865)) {
+    #       if (rc$name=="EMA") n01 <- 0.9*n01 else  n01 <- 0.8*n01
+    #       n01 <- seqs*trunc(n01/seqs)
+    #     }  
     # start from PE constraint sample size
     n02 <- .sampleN0.2(targetpower, ltheta2=log(theta2), diffm=mlog, 
-                       se=sqrt(Emse), steps=seqs, bk=bk)
+                       se=sqrt(Emse), steps=seqs, bk=1)
     # debug print
     # cat(n01,n02,"\n")
-    n <- max(c(n01,n02))
-  } else n <- seqs*round(nstart/seqs)           
-  nmin <- 6
-  if (n<nmin) n <- nmin
+    n <- max(c(n01,n02))+seqs
+  } else n <- seqs*round(nstart/seqs)
+  nmin <- 6 # fits 2x3x3 and 2x2x4
+  if(n<nmin) n <- nmin
   # we are simulating for balanced designs
-  C2 <- bk/n
+  C3 <- 1/n
   # sd of the sample mean T-R (point estimator)
-  sdm  <- sqrt(Emse*C2)
+  sdm  <- sqrt(Emse*C3)
   df   <- eval(dfe)
+  dfCI <- eval(dfCIe) # not really used
   dfRR <- eval(dfRRe)
-  dfTT <- dfRR
-
+  
   if(setseed) set.seed(123456)
-  p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
-                     design, nsims, CVswitch, r_const, CVcap, pe_constr,
+  
+  p <- .pwr.ABEL.ISC(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
+                     CVswitch=CVswitch, r_const=r_const, CVcap=CVcap, 
+                     pe_constr=pe_constr,
                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
   pwr <- as.numeric(p["BE"]);
   pd <- max(4,round(log10(nsims),0)-1)  # digits for power
@@ -180,15 +179,16 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     }
     n  <- n-seqs     # step down if start power is to high
     iter <- iter + 1
-    C2 <- bk/n
+    C3 <- 1/n
     # sd of the sample mean T-R (point estimator)
-    sdm  <- sqrt(Emse*C2)
+    sdm  <- sqrt(Emse*C3)
     df   <- eval(dfe)
+    dfCI <- eval(dfCIe)
     dfRR <- eval(dfRRe)
-    dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
-                       design, nsims, CVswitch, r_const, CVcap, pe_constr,
+    p <- .pwr.ABEL.ISC(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
+                       CVswitch=CVswitch, r_const=r_const, CVcap=CVcap, 
+                       pe_constr=pe_constr,
                        ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
@@ -201,14 +201,16 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     up   <- TRUE; down <- FALSE
     n    <- n+seqs   # step-up
     iter <- iter+1
-    C2   <- bk/n
-    sdm  <- sqrt(Emse*C2)
+    C3 <- 1/n
+    # sd of the sample mean T-R (point estimator)
+    sdm  <- sqrt(Emse*C3)
     df   <- eval(dfe)
+    dfCI <- eval(dfCIe)
     dfRR <- eval(dfRRe)
-    dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
-                       design, nsims, CVswitch, r_const, CVcap, pe_constr, 
+    p <- .pwr.ABEL.ISC(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
+                       CVswitch=CVswitch, r_const=r_const, CVcap=CVcap, 
+                       pe_constr=pe_constr,
                        ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     

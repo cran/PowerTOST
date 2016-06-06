@@ -17,7 +17,7 @@ Defaults here to 0.025 because this function is intended for studies
 with clinical endpoints. 
 }
   \item{pe}{
-point estimator (ratio T/R).
+point estimate of ratio T/R.
 }
   \item{CV}{
 Coefficient of variation as ratio. In case of \code{design="parallel"} this is
@@ -47,13 +47,13 @@ Returns the 1-2*alpha confidence interval.
 }
 \note{
 The function assumes an evaluation using un-transformed data.\cr
-The function assumes equal varainces in case of \code{design="parallel"}.\cr
+The function assumes equal variances in case of \code{design="parallel"}.\cr
 The formula implemented covers balanced and unbalanced designs.\cr\cr
 Note that when the mean of the denominator of the ratio is close to zero, 
 confidence intervals might be degenerated and are returned as NA.
 In that case a warning is issued.\cr\cr
-If the function vectorizes propperly is not thoroughly tested.\cr\cr
-This function is intended for studies with clinical endpoints.  
+Whether the function vectorizes properly is not thoroughly tested.\cr\cr
+This function is intended for studies with clinical endpoints. 
 In such studies the 95\% confidence intervals are usually used for equivalence 
 testing. Therefore alpha defaults here to 0.025.\cr
 See CPMP/EWP/482/99 "Points to consider on switching between superiority and 

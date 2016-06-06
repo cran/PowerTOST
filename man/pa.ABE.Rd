@@ -78,7 +78,7 @@ kept constant. The tool shows the relative impact of single parameters on power.
 The tool takes a minimum of 12 subjects as demanded in most BE guidances into account.\cr\cr
 It should be kept in mind that this is \bold{not} a substitute for the "Sensitivity Analysis"
 recommended in ICH-E9. In a real study a combination of all effects occurs simultaneously.
-It's upto \bold{you} to decide on reasonable combinations and analyze the power of them.
+It is up to \bold{you} to decide on reasonable combinations and analyze their respective power.
 }
 \value{
 Returns a list with class \code{"pwrA"} with the components

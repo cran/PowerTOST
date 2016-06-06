@@ -16,7 +16,7 @@ pvalues.TOST(pe, CV, n, logscale = TRUE, theta1, theta2, design = "2x2",
 }
 \arguments{
   \item{pe}{
-Observed point estimator of the ratio Test vs. Reference (if \code{logscale=TRUE}) 
+Observed point estimate of the ratio Test vs. Reference (if \code{logscale=TRUE}) 
 or of the difference (if \code{logscale=FALSE}).
 }
   \item{CV}{

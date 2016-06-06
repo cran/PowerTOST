@@ -2,6 +2,7 @@
 # Simulate partial and full replicate design and scaled ABE power
 # using 'widened' limits (EMA)
 # But the estimation method via intra-subject contrasts (FDA)
+#
 # Author: dlabes
 #---------------------------------------------------------------------------
 
@@ -13,44 +14,49 @@
 # 2x2x3  dfRR = n/2 - 2
 
 power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                          design=c("2x3x3", "2x2x4", "2x2x3"), 
-                          regulator = c("EMA", "FDA"),
+                          design=c("2x3x3", "2x2x4", "2x2x3"), regulator,
                           nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
 
-  if (missing(theta0)) theta0 <- 0.95
+  if (missing(theta0)) theta0 <- 0.90
+  if (length(theta0)>1) {
+    theta0 <- theta0[2]
+    warning(paste0("theta0 has to be scalar. theta0 = ",
+                   theta0, " used."), call. = FALSE)
+  }
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
   
   ptm <- proc.time()
   
-  # for later enhancement taking into account the 
-  # subject-by-formulation interaction
-  s2D  <- 0 
   CVwT <- CV[1]
   if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
 
-  regulator <- match.arg(regulator)
-  CVswitch  <- 0.3
-  r_const   <- 0.76 # or better log(theta2)/CV2se(0.3)? EMA & ANVISA
-  if (regulator=="FDA") r_const <- log(1.25)/0.25 # or better log(theta2)/0.25?
-  CVcap <- 0.5
-  if (regulator=="FDA") CVcap=Inf
+  if(missing(regulator)) regulator <- "EMA"
+  # check regulator and get 
+  # constants acc. to regulatory bodies (function in scABEL.R)
+  rc <- reg_check(regulator)
+  CVcap    <- rc$CVcap
+  CVswitch <- rc$CVswitch
+  r_const  <- rc$r_const
+  pe_constr <- rc$pe_constr
+  if(is.null(pe_constr)) pe_constr <- TRUE
   
   design <- match.arg(design)
   if (design=="2x3x3") {
     seqs  <- 3
     dfe   <- parse(text="n-3", srcfile=NULL)
+    # this is only for testing purposes
     dfCIe <- parse(text="2*n-3", srcfile=NULL)
     dfRRe <- parse(text="n-3", srcfile=NULL)
     #sd2  <- s2D + (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02
     # according to McNally et al.
     # verified via simulations:
-    Emse  <- s2D + s2wT + s2wR/2
+    Emse  <- s2wT + s2wR/2
   }
   if (design=="2x2x4") {
     seqs  <- 2
@@ -58,18 +64,13 @@ power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     dfCIe <- parse(text="3*n-4", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     # sd^2 of the differences T-R from their components
-    Emse  <- (s2D + (s2wT + s2wR)/2) 
+    Emse  <- (s2wT + s2wR)/2 
   }
   if (design=="2x2x3") {
     seqs  <- 2
     dfe   <- parse(text="n-2", srcfile=NULL)
     dfCIe <- parse(text="2*n-3", srcfile=NULL)
-    # next was pre-V1.2-08
-#     dfRRe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
-#     dfTTe <- parse(text="n/2-2", srcfile=NULL) # for balanced designs
-    # correct should be (only 1 sequence for each, f.i. RR from RTR):
     dfRRe <- parse(text="n/2-1", srcfile=NULL) # for balanced designs
-    dfTTe <- parse(text="n/2-1", srcfile=NULL) # for balanced designs
     # sd^2 of the differences T-R from their components
     Emse  <- 1.5*(s2wT + s2wR)/2               # for balanced design 
   }
@@ -82,20 +83,20 @@ power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     if (nv[1]!=nv[length(nv)]){
       message("Unbalanced design. n(i)=", paste(nv, collapse="/"), " assumed.")
     } 
-    C3 <- sum(1/nv)/seqs^2
-    n  <- sum(nv)
   } else {
     # then we assume n = vector of n's in sequences
     # check length
     if (length(n)!=seqs) stop("n must be a vector of length=",seqs,"!")
     
-    C3 <- sum(1/n)/seqs^2
     nv <- n
-    n  <- sum(n)
   }
+  C3 <- sum(1/nv)/seqs^2
+  n  <- sum(nv)
   
   df   <- eval(dfe)
-  dfCI <- eval(dfCIe)
+  # next not really used. was for testing sims with robust df, but BE decision
+  # with ABEL with usual df
+  dfCI <- eval(dfCIe) 
 
   if (design=="2x2x3"){
     dfTT <- nv[1]-1
@@ -103,30 +104,34 @@ power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # where does this next came from?
     Emse <- (dfRR*(s2wT + s2wR/2)+dfTT*(s2wT/2 + s2wR))/(dfRR+dfTT)
     # warning in case of unbalanced design and heteroscdasticity
-    if (abs(s2wT - s2wR)>1e-5 & abs(dfRR-dfTT)>2){
-      warning(paste("Heteroscedasticity in unbalanced 2x2x3 design may led", 
-              "to poor accuracy of power!"), call.=FALSE)
-    }
+    # here not? TODO: check this against subject sims
+    # if (abs(s2wT - s2wR)>1e-5 & abs(dfRR-dfTT)>2){
+    #   warning(paste("Heteroscedasticity in unbalanced 2x2x3 design may led",
+    #           "to poor accuracy of power!"), call.=FALSE)
+    # }
   } else {
     dfRR <- eval(dfRRe)
   }
   #cat("dfRR=", dfRR," dfTT=",dfTT," E(s2I)=", Emse, "\n")
-  # sd of the mean T-R (point estimator)
+  # sd of the mean T-R (point estimate)
   sdm  <- sqrt(Emse*C3)
+  # pe in the log domain
   mlog <- log(theta0)
   
   if(setseed) set.seed(123456)
-  p <- .pwr.scABEL.ISC(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
-                       CVswitch=CVswitch, r_const=r_const, CVcap=CVcap, 
-                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
+  p <- .pwr.ABEL.ISC(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
+                     CVswitch=CVswitch, r_const=r_const, CVcap=CVcap, 
+                     pe_constr=pe_constr, ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
+                     alpha=alpha)
     
   if (details) {
     ptm <- summary(proc.time()-ptm)
-    message(nsims,"sims. Time elapsed (sec): ", 
+    message(nsims," sims. Time elapsed (sec): ", 
             formatC(ptm["elapsed"], digits=2), "\n")
     #print(ptm)
     # return also the components
     names(p) <- c("p(BE)", "p(BE-wABEL)", "p(BE-pe)", "p(BE-ABE)")
+    if (!pe_constr) p <- p[-3] # without pe constraint
     p
   } else {
     # return only the 'power'
@@ -134,19 +139,19 @@ power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   }
 }
 
-# working horse of RSABE/EMA
-.pwr.scABEL.ISC <- function(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
-                            CVswitch=0.3, r_const=0.892574, CVcap=0.5, 
-                            ln_lBEL=log(0.8), ln_uBEL=log(1.25), alpha=0.05)
+# working horse
+.pwr.ABEL.ISC <- function(mlog, sdm, C3, Emse, df, dfCI, s2wR, dfRR, nsims, 
+                          CVswitch, r_const, CVcap, pe_constr, ln_lBEL, ln_uBEL, 
+                          alpha=0.05)
 {
-  tval     <- qt(1-alpha,df)
+  tval     <- qt(1-alpha, df)
   #tval     <- qt(1-alpha,dfCI)
   s2switch <- log(CVswitch^2+1)
   s2cap    <- log(CVcap^2+1)
   
   counts <- rep.int(0, times=4)
   names(counts) <- c("BE", "BEwl", "BEpe", "BEabe")
-  # to avoid memory problems for high number of sims
+  # to avoid memory problems for high number of sims we are working in chunks
   chunks <- 1
   nsi    <- nsims
   if (nsims>1E7) {
@@ -189,7 +194,11 @@ power.scABEL2 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     counts["BEabe"] <- counts["BEabe"] + sum(BEABE)
     counts["BEpe"]  <- counts["BEpe"]  + sum(BEpe)
     counts["BEwl"]  <- counts["BEwl"]  + sum(BE)
-    counts["BE"]    <- counts["BE"]    + sum(BE & BEpe) # with pe constraint
+    if (pe_constr) {
+      counts["BE"] <- counts["BE"] + sum(BE & BEpe) # with pe constraint
+    } else {
+      counts["BE"] <- counts["BE"] + sum(BE) # without pe constraint
+    }
     
   } # end over chunks
   # return the pBEs

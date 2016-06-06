@@ -48,9 +48,11 @@ export(
   , power.HVNTID
   , power.RSABE
   , power.scABEL
+  , power.scABEL2
   , power.dp
   , pvalue.TOST
   , pvalues.TOST
+  , reg_const
   , sampleN.noninf
   , sampleN.RatioF
   , sampleN.2TOST
@@ -59,6 +61,7 @@ export(
   , sampleN.HVNTID
   , sampleN.RSABE
   , sampleN.scABEL
+  , sampleN.scABEL2
   , sampleN.scABEL.ad
   , sampleN.dp
   , scABEL
@@ -67,9 +70,10 @@ export(
   , mse2CV
 )         
 
-
 # Define S3 methods for the pooled CV
 S3method(print, CVp)
 # S3 methods for printing/plotting power analysis
 S3method(print, pwrA)
 S3method(plot, pwrA)
+# S3 method print for the regulatory settings in ABEL
+S3method(print, regSet)

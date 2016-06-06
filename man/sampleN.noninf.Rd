@@ -72,12 +72,12 @@ Start value for the sample size search is taken from a large sample approximatio
 The sample size is bound to 4 as minimum.
 }
 \value{
-A data.frame with the input and results will be returned.\cr
+A data.frame with the input settings and results will be returned.\cr
 Explore it with \code{str(sampleN.noninf(...)}
 }
 \section{Warning }{
 The function does not vectorize properly.\cr
-If you need sample sizes with varying CV's f.i. use for-loops or the apply-family.
+If you need sample sizes with varying CVs f.i. use for-loops or the apply-family.
 }
 \references{
 S.A. Julious\cr

@@ -32,7 +32,6 @@ CVCL <- function(CV, df, side=c("upper", "lower","2-sided"), alpha=0.05)
 # assuming a ratio of the intra-subject variances
 # Author: dlabes
 #----------------------------------------------------------------------
-
 CVp2CV <- function(CV, ratio=1.5)
 {
   if(any(ratio<=0)) stop("ratio(s) must be >0!")
@@ -50,12 +49,36 @@ CVp2CV <- function(CV, ratio=1.5)
   r
 }
 
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------
 # Densitiy of inverse gamma distriubtion
 # Adapted dinvgamma() from R package MCMCpack (1.3-3)
-#----------------------------------------------------------------------
+# Author B. Lang, slightly modified by D. Labes
+#
+# MCMCpack:dinvgamma() authored by Andrew D. Martin, Kevin M. Quinn, 
+# and Jong Hee Park
+#------------------------------------------------------------------------
 my_dinvgamma <- function(x, shape, scale = 1) {
   if(shape <= 0 | scale <= 0)
-    stop("Shape or scale parameter negative in my_dinvgamma().\n")
-  exp(shape * log(scale) - lgamma(shape) - (shape + 1) * log(x) - (scale/x))
+    stop("Shape or scale parameter zero or negative in my_dinvgamma().")
+  # we return the asymptotic d=0 if x==0
+  # x negative is not allowed and gives NaN
+  d <- exp(shape * log(scale) - lgamma(shape) - (shape + 1) * log(x) - (scale/x))
+  d[x == 0] <- 0
+  d
+}
+
+# -------------------------------------------------------------------------
+# helper functions for partitioning Ntotal
+# Author dlabes
+# -------------------------------------------------------------------------
+# partition n into grps with 'best' balance between grps
+nvec <- function(n, grps)
+{
+  ni <- trunc(n/grps)
+  nv <- rep.int(ni, times=grps)
+  rest <- n-grps*ni
+  if(rest!=0){
+    nv <- nv + c(rep.int(1,rest), rep.int(0,grps-rest))
+  }
+  nv
 }

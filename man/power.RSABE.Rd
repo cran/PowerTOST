@@ -9,7 +9,7 @@ linearized scaled ABE criterion by simulations.
 }
 \usage{
 power.RSABE(alpha = 0.05, theta1, theta2, theta0, CV, n, 
-            design = c("2x3x3", "2x2x4", "2x2x3"), regulator = c("FDA", "EMA"),
+            design = c("2x3x3", "2x2x4", "2x2x3"), regulator,
             nsims = 1e+05, details = FALSE, setseed=TRUE)
 }
 \arguments{
@@ -18,17 +18,17 @@ Type I error probability, significance level. Conventionally mostly set to 0.05.
 }
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 
-CVsWR <= CVswitch. Also lower limit for the point estimator constraint.\cr
+CVsWR <= CVswitch. Also lower limit for the point estimate constraint.\cr
 Defaults to 0.8 if not given explicitly.
 }
   \item{theta2}{
 Conventional upper ABE limit to be applied in the mixed procedure if 
-CVsWR <= CVswitch. Also upper limit for the point estimator constraint.\cr
+CVsWR <= CVswitch. Also upper limit for the point estimate constraint.\cr
 Defaults to 1.25 if not given explicitly.
 }
   \item{theta0}{
 'True' or assumed bioequivalence ratio. \cr
-Defaults to 0.95 if not given explicitly.
+Defaults to 0.90 according to the two Laszlo's if not given explicitly.
 }
   \item{CV}{
 Coefficient(s) of variation as ratio.\cr
@@ -56,8 +56,11 @@ Design of the study to be planned.\cr
 Defaults to \code{design="2x3x3"}.
 }
   \item{regulator}{
-Regulatory body settings for the scaled ABE criterion.\cr
-Defaults to \code{regulator="FDA"}.\cr
+Regulatory settings for RSABE.\cr
+May be given as character from the choices "EMA" or "FDA" or as an object of
+class 'regSet' (see \code{\link{reg_const}}).\cr
+Defaults to \code{regulator="FDA"} if missing.\cr
+This argument may be given also in lower case if given as character.\cr\cr
 Also the linearized scaled ABE criterion is usually calculated with the FDA 
 constant r_const=log(1.25)/0.25 you can override this behavior to use the 
 EMA setting r_const=0.76 to avoid the discontinuity at CV=30\% and be 
@@ -129,14 +132,23 @@ D. Labes
 # using all the defaults:
 # design="2x3x3" -> partial replicate
 # ABE limits, PE constraint 0.8-1.25
-# true ratio =0.95, 1E+5 simulations
-power.RSABE(CV=0.4, n=24)
+# true ratio =0.90, 1E+5 simulations
+power.RSABE(CV=0.4, n=36)
 # should give
-# [1] 0.80864
+# [1] 0.83634
 #
 # to explore the simulation error due to the state of the
 # random number generator
-power.RSABE(CV=0.4, n=24, setseed=FALSE)
+power.RSABE(CV=0.4, n=36, setseed=FALSE)
 # will give something like
-# [1] 0.8081
+# [1] 0.83725
+#
+# explore pure RSABE (without mixed method, without pe constraint)
+rs <- reg_const("FDA")
+rs$CVswitch <- 0
+rs$pe_constr <- FALSE
+power.RSABE(CV=0.4, n=36, regulator=rs)
+# should give
+# [1] 0.84644
+
 }

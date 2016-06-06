@@ -1,19 +1,22 @@
 \encoding{utf-8}
 \name{sampleN.scABEL}
 \alias{sampleN.scABEL}
+\alias{sampleN.scABEL2}
 \title{
 Sample size estimation for BE decision via scaled (widened) BE acceptance limits
 }
 \description{
-This function performs the Sample size estimation for the BE decision via 
-scaled (widened) BE acceptance limits based on simulations.
+These functions performs the Sample size estimation via power calculations of the 
+BE decision via scaled (widened) BE acceptance limits, based on simulations.
 }
 \usage{
 sampleN.scABEL(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
-               design = c("2x3x3", "2x2x4", "2x2x3"), 
-               regulator = c("EMA", "ANVISA", "FDA"), 
-               nsims = 1e+05, nstart, imax=100,
-               print = TRUE, details = TRUE, setseed = TRUE)
+               design = c("2x3x3", "2x2x4", "2x2x3"), regulator, nsims = 1e+05, 
+               nstart, imax=100, print = TRUE, details = TRUE, setseed = TRUE)
+               
+sampleN.scABEL2(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
+                design = c("2x3x3", "2x2x4", "2x2x3"), regulator, nsims = 1e+05, 
+                nstart, imax=100, print = TRUE, details = TRUE, setseed = TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -30,12 +33,12 @@ Defaults to 0.90 according to the two Laszlo's if not given explicitly.
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 
 CVsWR <= CVswitch.\cr
-Also Lower limit for the point estimator constraint.\cr
+Also Lower limit for the point estimate constraint.\cr
 Defaults to 0.8 if not given explicitly.
 }
   \item{theta2}{
 Conventional upper ABE limit to be applied in the mixed procedure if 
-CVsWR <= CVswitch. Also upper limit for the point estimator constraint.\cr
+CVsWR <= CVswitch. Also upper limit for the point estimate constraint.\cr
 Defaults to 1.25 if not given explicitly.
 }
   \item{CV}{
@@ -52,9 +55,15 @@ Design of the study to be planned.\cr
 Defaults to \code{design="2x3x3"}
 }
   \item{regulator}{
-Regulatory body settings for the widening of the BE acceptance limits.\cr
-Defaults to \code{design="EMA"}.\cr
-This argument may be given also in lower case.
+Regulatory settings for the widening of the BE acceptance limits.\cr
+May be given as character from the choices "EMA", "HC" "FDA" or as an object of
+class 'regSet' (see \code{\link{reg_const}}).\cr
+Defaults to \code{regulator="EMA"} if missing.\cr
+This argument may be given also in lower case if given as character.\cr\cr
+The former \code{regulator="ANVISA"} is also allowed but is internally changed 
+to "EMA" since ANVISA now recommends the use of EMA regulatory settings. 
+Don't use "ANVISA" any longer since it will be removed in next versions.
+A corresponding message informs about this.
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the (empirical) power.
@@ -83,10 +92,18 @@ is issued if \code{setseed=TRUE}, the default.
 \details{
 The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL. For more details see
-a document in the doc subdirectory of the package.
+a description in the doc subdirectory of the package.\cr\cr
+Function \code{sampleN.scABEL()} is based on power calculations via simulation 
+using the distributional characteristics of the 'key' statistics obtained from 
+the EMA recommended evaluation via ANOVA. This function is preferable if 
+\code{regulator = "EMA"} is used.\cr
+Function \code{sampleN.scABEL2()} is based on power calculations via simulation 
+using the distributional characteristics of the 'key' statistics obtained from 
+evaluation via intra-subject contrasts (ISC), as recommended by the FDA.
+\code{sampleN.scABEL2()} is preferable if \code{regulator = "HC"} is used.
 }
 \value{
-Returns now a data.frame with the input and sample size results.\cr
+Returns a data.frame with the input settings and sample size results.\cr
 The "Sample size" column contains the total sample size.\cr
 The "nlast" column contains the last n value. May be useful for restarting.
 }
@@ -102,13 +119,17 @@ D. Labes
 \note{
 We are doing the sample size estimation only for balanced designs since the 
 break down of the total subject number in case of unbalanced sequence groups
-is not unique. Moreover the formulas used are only for balanced designs.\cr
+is not unique. Moreover the formulas used are only for balanced designs.\cr\cr
 In case of \code{regulator="FDA"} the sample size is only approximate since
-the BE decision method is not exactly what is expected by the FDA. But the two
-Laszlo's state that the scABEL method should be 'operational' equivalent to the
+the BE decision method is not exactly what is expected by the FDA. But the "Two
+Laszlo's"" state that the scABEL method should be 'operational' equivalent to the
 FDA method. Thus the sample size should be comparable.\cr
 Consider in case of \code{regulator="FDA"} to use the function 
-\code{sampleN.RSABE()}.\cr
+\code{sampleN.RSABE()}.\cr\cr
+In case of \code{regulator="HC"} the underlying power is only approximative 
+since the Health Canada recommends as evaluation method a mixed model approach. 
+But this could only implemented via subject data simulations which were very 
+time consuming.\cr\cr
 The minimum sample size is n=6, even if the power is higher than the intended 
 targetpower.
 }
@@ -128,7 +149,8 @@ the power value agreement to those obtained from simulations via subject data.
 }
 
 \seealso{
-\code{\link{power.scABEL}}, \code{\link{power.RSABE}}, \code{\link{sampleN.RSABE}}
+\code{\link{power.scABEL}}, \code{\link{power.RSABE}}, \code{\link{sampleN.RSABE}},
+\code{\link{reg_const}}
 }
 \examples{
 # using all the defaults:
@@ -137,11 +159,13 @@ the power value agreement to those obtained from simulations via subject data.
 # ABE limits, PE constraint 0.8 - 1.25
 # EMA regulatory settings
 sampleN.scABEL(CV=0.3)
-# results in a sample size n=54, power=0.8159
+# should result in a sample size n=54, power=0.8159
 #
-# now with inofficial ANVISA settings, CVswitch=40\%
-sampleN.scABEL(CV=0.3, regulator="anvisa")
-# results in n=60, power=0.8101
+# now with former (inofficial) ANVISA settings, CVswitch=40\%
+# (now ANVISA uses the same settings as EMA)
+rc <- reg_const("USER", r_const=0.76, CVswitch=0.4, CVcap=0.5)
+sampleN.scABEL(CV=0.3, regulator=rc)
+# should result in n=60, power=0.8101
 
 # for the full replicate design, target power = 90\%
 # true assumed ratio = 0.9, FDA regulatory settings

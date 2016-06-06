@@ -42,13 +42,14 @@ If not given \code{theta2} will be calculated as \code{1/theta1} if \code{logsca
 else as \code{-theta1}.
   }
   \item{CV}{
-Coefficient of variation as ratio. \cr
-May be given as vector. Then the CV's were pooled as weighted mean with
+Coefficient of variation as ratio. Only values > 0 ate allowed.\cr
+May be given as vector. Then the CVs were pooled as weighted mean with
 their df=degrees of freedom as weights.
   }
   \item{dfCV}{
-Degrees of freedom for the CV's. Must be a vector of same length as CV.\cr
-\code{dfCV=Inf} is allowed but makes only sense if \code{CV/dfCV} are scalars.
+Degrees of freedom for the CVs. Must be a vector of same length as CV.\cr
+\code{dfCV=Inf} is allowed but makes only sense if \code{CV/dfCV} are scalars.\cr
+The (pooled) \code{dfCV} has to be >4. 
   }
   \item{design}{
 Character string describing the study design.\cr
@@ -61,7 +62,7 @@ Set to \code{TRUE} will use the degrees of freedom according to the 'robust' eva
 See \code{known.designs()$df2} for designs covered in this package.
   }
   \item{method}{
-Defaults to code{method="exact"}.\cr
+Defaults to \code{method="exact"}.\cr
 In that case the expected power will be calculated as expected value of the
 power with respect to the (prior) distribution of sigma^2 (inverse gamma
 distribution).\cr

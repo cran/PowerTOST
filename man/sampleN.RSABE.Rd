@@ -29,12 +29,12 @@ Defaults to 0.90 according to the two Laszlo's if not given explicitly.
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 
 CVsWR <= CVswitch.\cr
-Also Lower limit for the point estimator constraint.\cr
+Also Lower limit for the point estimate constraint.\cr
 Defaults to 0.8 if not given explicitly.
 }
   \item{theta2}{
 Conventional upper ABE limit to be applied in the mixed procedure if 
-CVsWR <= CVswitch. Also upper limit for the point estimator constraint.\cr
+CVsWR <= CVswitch. Also upper limit for the point estimate constraint.\cr
 Defaults to 1.25 if not given explicitly.
 }
   \item{CV}{
@@ -89,7 +89,7 @@ a document "Implementation_scaledABE_simsVx.yy.pdf" in the doc subdirectory of
 the package.
 }
 \value{
-Returns now a data.frame with the input and sample size results.\cr
+Returns a data.frame with the input and sample size results.\cr
 The "Sample size" column contains the total sample size.\cr
 The "nlast" column contains the last n value. May be useful for restarting.
 }
@@ -139,5 +139,5 @@ error trap.
 # ABE limits, PE constraint 0.8 - 1.25
 # targetpower=80\%, alpha=0.05, 1E5 sims
 sampleN.RSABE(CV=0.3)
-# results in a sample size n=45, power=0.80344
+# should result in a sample size n=45, power=0.80344
 }

@@ -95,7 +95,7 @@ If n is given as scalar (total sample size) and this number is not
 divisible by the number of (sequence) groups of the design an unbalanced design 
 with small imbalance is assumed. A corresponding message is thrown showing the 
 assumed numbers of subjects in (sequence) groups.\cr
-The function does not vectorize propperly if design is a vector. Moreover,
+The function does not vectorize properly if design is a vector. Moreover,
 theta0 and CV must be of length two, thus further vectorizing is not possible.\cr
 Other vector input is not tested yet.\cr\cr
 }
@@ -104,9 +104,9 @@ Hua S. Y., Xu S., and D'Agostino Sr. R. B.\cr
 "Multiplicity adjustments in testing for bioequivalence"\cr
 Statistics in Medicine, Vol. 34, Issue 2, 215-231 (2015)
 
-Lang B., Fleischer F. (in press).\cr
-"Letter to the Editor 'Comments on Multiplicity adjustments in testing for bioequivalence'".\cr
-Statistics in Medicine.
+Lang B., Fleischer F.\cr
+"Letter to the Editor: Comments on 'Multiplicity adjustments in testing for bioequivalence'".\cr
+Statistics in Medicine, Vol. 35, Issue 14, 2479-2480 (2016)
 
 Phillips, K. F. (2009) \cr 
 "Power for Testing Multiple Instances of the Two One-Sided Tests Procedure"\cr

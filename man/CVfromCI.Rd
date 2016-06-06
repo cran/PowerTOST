@@ -8,14 +8,18 @@ of a BE study.\cr
 Useful if no CV but the 90\% CI was given in literature.
 }
 \usage{
-CVfromCI(point, lower, upper, n, design = "2x2", alpha = 0.05, robust=FALSE)
-CI2CV(point, lower, upper, n, design = "2x2", alpha = 0.05, robust=FALSE)
+CVfromCI(pe, point, lower, upper, n, design = "2x2", alpha = 0.05, robust=FALSE)
+CI2CV(pe, point, lower, upper, n, design = "2x2", alpha = 0.05, robust=FALSE)
 }
 \arguments{
+  \item{pe}{
+Point estimate of the BE ratio.\cr
+The \code{pe} may be missing. In that case it will be calculated as geometric 
+mean of \code{lower} and \code{upper}.
+  }
   \item{point}{
-Point estimator of the BE ratio.\cr
-The point estimator can be missing.\cr
-In that case it will be calculated as geometric mean of lower and upper.
+Alias of the argument \code{pe} for backward compatibility.\cr Will be removed in
+next versions.
   }
   \item{lower}{
 Lower confidence limit of the BE ratio.
@@ -65,7 +69,7 @@ greater unbalancedness.\cr\cr
 }
 
 \examples{
-# Given a 90\% confidence interval (without point estimator) 
+# Given a 90\% confidence interval (without point estimate) 
 # from a classical 2x2 crossover with 22 subjects
 CVfromCI(lower=0.91, upper=1.15, n=22, design="2x2")
 # will give [1] 0.2279405, i.e a CV ~ 23\%

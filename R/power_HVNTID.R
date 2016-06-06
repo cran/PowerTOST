@@ -13,12 +13,14 @@ power.HVNTID <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
   if (missing(n))  stop("Number of subjects n must be given!", call.=FALSE)
    
-  if (missing(theta0)) theta0 <- 0.95  
+  if (missing(theta0)) theta0 <- 0.95
+  
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
+  if (missing(theta1)) theta1 <- 1/theta2
+  
   # check design arg
   design <- match.arg(design)
-  
   if(design=="2x2x4"){
     seqs  <- 2
     dfe   <- parse(text="n-2", srcfile=NULL)

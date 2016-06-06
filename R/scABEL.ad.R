@@ -87,6 +87,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
     } else {
       al <- alpha        # If not, use alpha (commonly 0.05)
     }
+    # sample size for targetpower 0.8
     n <- sampleN.scABEL(alpha = al, CV = CV, theta0 = theta0,
                         design = design, regulator = regulator,
                         imax=imax, print = FALSE, details = FALSE,
@@ -103,7 +104,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
     alpha.pre <- alpha
   }
   seqs <- as.numeric(substr(design, 3, 3)) # subjects / sequence
-  if (length(n) == 1) n <- nvec(n, seqs) # vectorize n
+  if (length(n) == 1) n <- nvec(n, seqs)   # vectorize n
 
   # here we go!
   TIE <- pwr <- rep(NA, 2) # initialize vectors: TIE and pwr
@@ -153,7 +154,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
       txt <- paste(txt, "\n")
     }
     cat(txt)
-    cat("Null (true) ratio             :", sprintf("%.3f", theta0), "\n")
+    cat("Null (true) ratio             :", sprintf("%.4f", theta0), "\n")
     cat(paste0("Regulatory settings           : ", regulator, " (",
                method, ")\n"))
     if (flushable) flush.console() # advance console output.
@@ -190,8 +191,8 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
     }
     if (!is.na(pwr[1])) {
       pwr.unadj <- pwr[1]
-      txt <- paste0(txt, "\nPower for theta0 ", sprintf("%.3f", theta0),
-                         "        : ", sprintf("%.3f", pwr.unadj))
+      txt <- paste0(txt, "\nPower for theta0 ", sprintf("%.4f", theta0),
+                         "       : ", sprintf("%.3f", pwr.unadj))
     }
     if (TIE[1] > alpha) {
       if (alpha.adj >= 0.01) {
@@ -207,8 +208,8 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
       }
     if (!is.na(pwr[2])) {
       pwr.adj <- pwr[2]
-      txt <- paste0(txt, "\nPower for theta0 ",sprintf("%.3f", theta0),
-                         "        : ", sprintf("%.3f", pwr.adj))
+      txt <- paste0(txt, "\nPower for theta0 ",sprintf("%.4f", theta0),
+                         "       : ", sprintf("%.3f", pwr.adj))
       if (details) {
         txt <- paste0(txt, " (rel. impact: ", sprintf("%+1.3g%%",
                       100*(pwr[2] - pwr[1])/pwr[1]), ")")

@@ -1,8 +1,10 @@
 # -----------------------------------------------------------------------------
-# function to obtain exact critical values of bivariate nct
+# function to obtain exact critical values of the bivariate nct
 # Author B. Lang
 # modified by D. Labes
 # -----------------------------------------------------------------------------
+#
+# Why this function and not using qmvt() from package mvtnorm?
 cval_fixed <- function(se, df, ltheta1, ltheta2, alpha = 0.05) 
 {
   tval <- qt(1 - alpha, df)
@@ -12,17 +14,18 @@ cval_fixed <- function(se, df, ltheta1, ltheta2, alpha = 0.05)
     .power.TOST2(cval = c, alpha = alpha, ltheta1 = ltheta1, ltheta2 = ltheta2,
                  diffm = ltheta1, sem = se, df = df) - alpha
   }
-  #browser()
+  # now obtain the critical value via root finding
   uniroot(f, interval = crange, extendInt = "yes")$root
 }
 
 # -----------------------------------------------------------------------------
 # modified exact power function to use tval as critical values or 
 # bivariate nct critical values
+# -----------------------------------------------------------------------------
 .power.TOST2 <- function(alpha=0.05, cval, ltheta1, ltheta2, diffm, sem, df)
 {
-  #browser()
-  if(missing(cval)) tval <- qt(1 - alpha, df, lower.tail = TRUE) else tval <- cval
+  if(missing(cval)) tval <- qt(1 - alpha, df, lower.tail = TRUE) 
+    else tval <- cval
   # 0/0 -> NaN in case diffm=ltheta1 or diffm=ltheta2 and sem=0!
   delta1 <- (diffm-ltheta1)/sem
   delta2 <- (diffm-ltheta2)/sem

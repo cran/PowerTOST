@@ -138,7 +138,7 @@ sampleN.scABEL.ad <- function(alpha = 0.05, targetpower = 0.8, theta0,
       txt <- paste(txt, "\n")
     }
     cat(txt)
-    cat("Null (true) ratio  :", sprintf("%.3f", theta0), "\n")
+    cat("Null (true) ratio  :", sprintf("%.4f", theta0), "\n")
     cat("Target power       :", sprintf("%.3g", targetpower), "\n")
     cat(paste0("Regulatory settings: ", regulator, " (", method, ")\n"))
     if (regulator == "EMA") {

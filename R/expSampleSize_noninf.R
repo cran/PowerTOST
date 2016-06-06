@@ -50,14 +50,13 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   nmin <- as.integer(steps*trunc(n/steps)) 
   nmin <- nmin + steps*(nmin<n)
   
-  if (missing(CV) | missing(dfCV)) {
-    stop("CV and its df must be given!", call.=FALSE)
-  }
+  if (missing(CV) | missing(dfCV)) stop("CV and its df must be given!", call.=FALSE)
   # calculate pooled data if CV and dfCV are vectors
   if (length(CV)>1){
     if (length(dfCV)!=length(CV)) {
       stop("CV and df must have equal number of entries!", call.=FALSE)
     }
+    if (any(CV<=0)) stop("CVs have to be >0.")
     dfse <- sum(dfCV)
     if (logscale) {
       CVp  <- CV2se(CV)^2 #need s-squared
@@ -71,7 +70,9 @@ expsampleN.noninf <- function(alpha=0.025, targetpower=0.8, logscale=TRUE,
   } else {
     dfse <- dfCV
     CVp  <- CV
+    if (any(CV<=0)) stop("CV has to be >0.")
   }
+  if (dfse<=4) stop("(pooled) dfCV has to be > 4.", call.=FALSE)
   
   # check method
   method <- tolower(method)

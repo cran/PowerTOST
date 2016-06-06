@@ -1,6 +1,8 @@
 #---------------------------------------------------------------------------
 # Sample size for partial and full replicate design and scaled ABE 
 # via simulated (empirical) power
+# estimation method via intra-subject contrasts & BE decision via 
+# linearized reference scale BE criterion, no cap
 # 
 # Author: dlabes
 #---------------------------------------------------------------------------
@@ -20,13 +22,15 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   }
   if (missing(CV)) stop("CV(s) must be given!", call.=FALSE)
   
-  #if (!print) details <- FALSE # do not print anything?
-
-  CVswitch  <- 0.3
-  regulator <- match.arg(regulator)
-  if (regulator=="FDA") r_const <- log(1.25)/0.25 # or better log(theta2)/0.25?
-  if (regulator=="EMA") r_const <- 0.76 # or better log(theta2)/CV2se(0.3)
-
+  # regulator here only FDA, EMA
+  # other regulatory bodies ("HC", "ANVISA") use all the EMA regulatory constant
+  if (missing(regulator)) regulator <- "FDA"
+  rc <- reg_check(regulator, choices=c("FDA", "EMA"))
+  CVswitch  <- rc$CVswitch
+  r_const   <- rc$r_const
+  pe_constr <- rc$pe_constr
+  # CVcap doesn't apply to the FDA recommended method
+  
   # for later enhancement taking into account the 
   # subject-by-formulation interaction
   s2D  <- 0 
@@ -43,7 +47,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if (design=="2x3x3") {
     desi <- "2x3x3 (partial replicate)"
     seqs <- 3
-    bk   <- 1.5    # needed for n0
+    bk   <- 1.5    # needed for n0?
     # in case of the FDA we are using the 'robust' df's
     # due to the fact that the described analysis in the
     # progesterone guidance is based in the intrasubject contrasts
@@ -87,11 +91,13 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     cat("CVw(T) = ",CVwT,"; CVw(R) = ",CVwR,"\n", sep="")
     cat("Null (true) ratio = ",theta0,"\n", sep="")
     cat("ABE limits / PE constraints =",theta1,"...", theta2,"\n")
-    cat("Regulatory settings:",regulator,"\n")
-    if (details) { 
-      cat("- CVswitch = ", CVswitch, "\n")
-      cat("- Regulatory constant =",r_const,"\n")
-    }     
+    if (details | rc$name=="USER") { 
+      rc$CVcap <- NULL # CVcap doesn't apply here
+      print(rc)
+      cat("\n")
+    } else {
+      cat("Regulatory settings:", rc$name,"\n")
+    }
   }
   
   # -----------------------------------------------------------------
@@ -110,11 +116,11 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     
     # try to use the empirical alpha for start sample size, some sort of
     al <- alpha
-    if (regulator=="FDA") {
+    if (rc$name=="FDA") {
       if(Emse/bk <= CV2mse(0.30001) & Emse/bk >= CV2mse(0.2975)) al=0.12
       if(Emse/bk > CV2mse(0.30001)) al <- 0.035   
     }
-    if (regulator=="EMA") {
+    if (rc$name=="EMA") {
       #does not fit!
       #if(Emse/bk <= CV2mse(0.321) & Emse/bk >= CV2mse(0.28)) al=0.065
     }
@@ -146,9 +152,8 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   dfRR <- eval(dfRRe)
   
   if(setseed) set.seed(123456)
-  p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
-                    ln_lBEL=log(theta1), ln_uBEL=log(theta2), 
-                    CVswitch, r_const, alpha=alpha)
+  p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, r_const, 
+                    pe_constr, ln_lBEL=log(theta1), ln_uBEL=log(theta2), alpha=alpha)
   pwr <- as.numeric(p["BE"]);
   pd <- max(4,round(log10(nsims),0))  # digits for power
   if (details) {
@@ -177,9 +182,9 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     
     if(setseed) set.seed(123456)
-    p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
-                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                      CVswitch, r_const, alpha=alpha)
+    p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, 
+                      r_const, pe_constr, ln_lBEL=log(theta1), 
+                      ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
     # do not print first step down
@@ -198,9 +203,9 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     
     if(setseed) set.seed(123456)
-    p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
-                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), 
-                      CVswitch, r_const, alpha=alpha)
+    p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, 
+                      r_const, pe_constr, ln_lBEL=log(theta1), 
+                      ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
     if (details) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")

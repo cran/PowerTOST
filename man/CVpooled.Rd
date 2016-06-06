@@ -3,7 +3,7 @@
 \alias{print.CVp}
 \title{Pooled CV from several studies}
 \description{
-This function calculates a pooled CV from CV's from several studies.
+This function pools CVs of several studies.
 }
 \usage{
 CVpooled(CVdata, alpha = 0.2, logscale=TRUE, robust = FALSE)
@@ -46,7 +46,7 @@ See \code{known.designs()$df2} for the designs covered in this package.
 }
 \details{
 The pooled CV is obtained from the weighted average of the error variances obtained from 
-the CV's of the single studies, weights are the df (degrees of freedom).\cr
+the CVs of the single studies, weights are the df (degrees of freedom).\cr
 If only \code{n} is given in the input \code{CVdata}, the df's are calculated via
 the formulas given in \code{known.designs()}. If both \code{n} and \code{df} are given
 the \code{df} column precedes.\cr\cr
@@ -79,7 +79,7 @@ The calculations are based on a common variance of Test and Reference formulatio
 in replicate crossover studies or parallel group study, respectively.
 }
 \section{Warning}{
-Pooling of CV's from parallel-group and cross-over designs does not make any sense.\cr
+Pooling of CVs from parallel-group and cross-over designs does not make any sense.\cr
 Also the function does not throw an error if you do so.
 }
 \seealso{
@@ -97,13 +97,13 @@ CVs <- ("
     AUC   | 0.25 | 12 | 2x2x4| study 3 (replicate)
 ")
 txtcon <- textConnection(CVs)
-CVdata <- read.table(txtcon, header=TRUE, sep="|", strip.white=TRUE, as.is=TRUE)           
+CVdata <- read.table(txtcon, header=TRUE, sep="|", strip.white=TRUE, as.is=TRUE)
 close(txtcon)
 
-# evaluation of the AUC CV's
-CVsAUC <- subset(CVdata,PKmetric=="AUC")
+# evaluation of the AUC CVs
+CVsAUC <- subset(CVdata, PKmetric=="AUC")
 CVpooled(CVsAUC, alpha=0.2, logscale=TRUE)
-# df of the 'robust' evaluation   
+# df of the 'robust' evaluation
 CVpooled(CVsAUC, alpha=0.2, logscale=TRUE, robust=TRUE)
 #print also the upper CL, data example 3
 CVsAUC3 <- subset(CVsAUC,design != "2x2x4")

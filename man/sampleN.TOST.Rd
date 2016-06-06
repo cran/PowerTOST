@@ -98,7 +98,7 @@ approximation if the exact method is available at no extra costs.
 }
 \section{Warning }{
 The function does not vectorize properly.\cr
-If you need sample sizes with varying CV's f.i. use for-loops or the apply-family.
+If you need sample sizes with varying CVs f.i. use for-loops or the apply-family.
 }
 \references{
 Phillips, K. F. (1990)\cr 
@@ -135,7 +135,7 @@ sampleN.TOST(CV=0.3)
 
 # Exact calculation for a parallel group design
 # evaluation on the original (untransformed) scale
-# BE limits 80 ... 120\% = -20\% ... +20\% of reference, 
+# BE limits 80 ... 120\% = -20\% ... +20\% of reference,
 # assumed true BE ratio 0.95\% = -5\% to reference mean,
 # total CV=20\%
 # should give n=48 (total) power=0.815435

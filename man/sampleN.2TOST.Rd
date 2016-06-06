@@ -101,7 +101,7 @@ to be increased to obtain the required sample size.\cr\cr
 }
 \section{Warning}{
 The function does not vectorize properly.\cr
-If you need sample sizes with varying CV's f.i. use for-loops or the apply-family.
+If you need sample sizes with varying CVs f.i. use for-loops or the apply-family.
 }
 \references{
 Hua S. Y., Xu S., and D'Agostino Sr. R. B.\cr
@@ -131,7 +131,7 @@ sampleN.2TOST(theta0 = rep(0.95, 2), CV = rep(0.3, 2), rho = 0.9)
 
 # Sample size for a parallel group design,
 # evaluation on the original (untransformed) scale
-# BE limits 80 ... 120\% = -20\% ... +20\% of reference, 
+# BE limits 80 ... 120\% = -20\% ... +20\% of reference,
 # assumed true BE ratio 0.95\% = -5\% to reference mean for both parameters,
 # total CV=20\% for both parameters, and correlation 0.9 between parameters
 # should give n=52 with power=0.801250

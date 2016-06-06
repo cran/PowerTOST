@@ -26,17 +26,22 @@
 # 2x2x2  dfRR = n/2 - 1 (only sequence TRR or RTR)
 # 2x2x4  dfRR = n-2
 # This is used in the xxx.RSABE() functions
+# This is also used in power.scABEL2()
 
 
 power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                         design=c("2x3x3", "2x2x4", "2x2x3"), 
-                         regulator=c("EMA", "ANVISA", "FDA"),
+                         design=c("2x3x3", "2x2x4", "2x2x3"), regulator,
                          nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
 
-  if (missing(theta0)) theta0 <- 0.95
+  if (missing(theta0)) theta0 <- 0.90
+  if (length(theta0)>1) {
+    theta0 <- theta0[2]
+    warning(paste0("theta0 has to be scalar. theta0 = ",
+                   theta0, " used."), call. = FALSE)
+  }
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
   if (missing(theta1)) theta1 <- 1/theta2
@@ -50,13 +55,16 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
   
-  regulator <- toupper(regulator)
-  regulator <- match.arg(regulator)
+  if(missing(regulator)) regulator <- "EMA"
+  # check regulator and get 
   # constants acc. to regulatory bodies (function in scABEL.R)
-  rc <- reg_const(regulator)
+  rc <- reg_check(regulator)
   CVcap    <- rc$CVcap
   CVswitch <- rc$CVswitch
   r_const  <- rc$r_const
+  pe_constr <- rc$pe_constr
+  if(is.null(pe_constr)) pe_constr <- TRUE
+  
   # check design argument
   design <- match.arg(design)
   if (design=="2x3x3") {
@@ -99,7 +107,7 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   }
   if (length(n)==1){
     # for unbalanced designs we divide the ns by ourself
-    # to have smallest imbalance
+    # to have 'smallest' imbalance
     nv <- nvec(n=n, grps=seqs)
     if (nv[1]!=nv[length(nv)]){
       message("Unbalanced design. n(i)=", paste(nv, collapse="/"), " assumed.")
@@ -134,7 +142,7 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   
   if(setseed) set.seed(123456)
   p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT, 
-                     design, nsims, CVswitch, r_const, CVcap, 
+                     design, nsims, CVswitch, r_const, CVcap, pe_constr,
                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
   if (details) {
@@ -144,6 +152,7 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     #print(ptm)
     # return the vector of all counts
     names(p) <- c("p(BE)", "p(BE-wABEL)", "p(BE-pe)", "p(BE-ABE)")
+    if (!pe_constr) p <- p[-3] # without pe constraint
     p
   } else {
     # return only the 'power'
@@ -152,10 +161,9 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
 }
 
 # --- working horse for power calculation
-.power.scABEL <- function(mlog, sdm, C2, Emse, cvec, df, 
-                          s2wR, dfRR, s2wT, dfTT, design,
-                          nsims, CVswitch=0.3, r_const=0.760, CVcap=0.5,
-                          ln_lBEL=log(0.8), ln_uBEL=log(1.25), alpha=0.05)
+.power.scABEL <- function(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT, 
+                          design, nsims, CVswitch, r_const, CVcap, pe_constr, 
+                          ln_lBEL, ln_uBEL, alpha=0.05)
 {
   tcrit    <- qt(1-alpha,df)
   s2switch <- log(1.0 + CVswitch^2)
@@ -229,7 +237,11 @@ power.scABEL <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     counts["BEabe"] <- counts["BEabe"] + sum(BEABE)
     counts["BEpe"]  <- counts["BEpe"]  + sum(BEpe)
     counts["BEwl"]  <- counts["BEwl"]  + sum(BE)
-    counts["BE"]    <- counts["BE"]    + sum(BE & BEpe)
+    if (pe_constr) {
+      counts["BE"] <- counts["BE"] + sum(BE & BEpe)
+    } else {
+      counts["BE"] <- counts["BE"] + sum(BE)
+    }
   } # end over chunks
   
   # return the counts

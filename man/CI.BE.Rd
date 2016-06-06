@@ -1,11 +1,11 @@
 \name{CI.BE}
 \alias{CI.BE}
 \title{
-1-2*alpha confidence interval given point estimator, CV and n
+1-2*alpha confidence interval given point estimate, CV and n
 }
 \description{
-Utility function to calculate the 1-2*alpha CI's given point est., CV and n for
-the various designs covered in this package.
+Utility function to calculate the 1-2*alpha CI's given point estimate, CV and 
+n for the various designs covered in this package.
 }
 \usage{
 CI.BE(alpha = 0.05, pe, CV, n, design = "2x2", robust = FALSE)
@@ -15,7 +15,7 @@ CI.BE(alpha = 0.05, pe, CV, n, design = "2x2", robust = FALSE)
 Type I error probability, significance level. Defaults to 0.05.
 }
   \item{pe}{
-Point estimator (GMR).
+Point estimate (GMR).
 }
   \item{CV}{
 Coefficient of variation of error variability as ratio. 
@@ -45,10 +45,10 @@ D. Labes
 }
 \note{
 The function assumes an evaluation using log-transformation.\cr
-The function assumes equal varainces in case of \code{design="parallel"} and 
+The function assumes equal variances in case of \code{design="parallel"} and 
 the higher order crossover designs.\cr
 The formula implemented covers balanced and unbalanced designs.\cr\cr
-If the function vectorizes propperly is not thoroughly tested.
+Whether the function vectorizes properly is not thoroughly tested.
 }
 
 \examples{

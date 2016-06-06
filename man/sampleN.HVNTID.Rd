@@ -82,7 +82,7 @@ Details can be found in a document "Implementation_scaledABE_sims" located in
 the doc subdirectory of the package.
 }
 \value{
-Returns now a data.frame with the input and sample size results.\cr
+Returns a data.frame with the input and sample size results.\cr
 The "Sample size" column contains the total sample size.\cr
 The "nlast" column contains the last n value. May be useful for re-starting.
 }

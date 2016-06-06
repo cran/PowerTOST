@@ -1,9 +1,9 @@
 #---------------------------------------------------------------------------
 # Simulate partial and full replicate design and scaled ABE power
-# using 'widened' limits (EMA)
+# using 'widened' acceptance limits (EMA)
 # 
 # simulate via distributions of intra-subject contrasts (FDA) and afterwards
-# estimation of mse 
+# estimation of mse for the ANOVA evaluation
 # Author: dlabes
 #---------------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ power.scABEL3 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
 
-  if (missing(theta0)) theta0 <- 0.95
+  if (missing(theta0)) theta0 <- 0.90
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
   
@@ -136,7 +136,7 @@ power.scABEL3 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     
   if (details) {
     ptm <- summary(proc.time()-ptm)
-    message(nsims,"sims. Time elapsed (sec): ", 
+    message(nsims," sims. Time elapsed (sec): ", 
             formatC(ptm["elapsed"], digits=2), "\n")
     #print(ptm)
     # return also the components

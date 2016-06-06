@@ -9,18 +9,18 @@
 # Raw function: see the call in exppower.noninf()
 .approx.exppower.noninf <- function(alpha=0.025, lmargin, diffm, sem, dfse, df)
 {
-  tval <- qt(1 - alpha, df, lower.tail = TRUE)
+  tval <- qt(1-alpha, df, lower.tail = TRUE)
   tau  <- sqrt((diffm-lmargin)^2/sem^2)
   # in case of diffm=lmargin and se=0
   # tau has the value NaN
   tau[is.nan(tau)] <- 0
-  pow  <- pt(tau,dfse,tval)
+  pow  <- pt(tau, dfse, tval)
   # values <0 not possible?
   pow
 }
 
 # --- Exact implementation of expected power
-# Author B. Lang
+# Author(s) B. Lang & D. Labes
 .exact.exppower.noninf <- function(alpha=0.025, lmargin, ldiff, se.fac, se, 
                                    dfCV, df) 
 {
@@ -31,14 +31,28 @@
   # Define assurance function (expected power)
   f <- function(v) {
     .power.noninf(alpha, lmargin, ldiff, se.fac*sqrt(v), df) * 
-      my_dinvgamma(x = v, shape = dfCV/2, scale = dfCV/2 * se^2)
+       my_dinvgamma(x = v, shape = dfCV/2, scale = dfCV/2 * se^2)
   }
-  len <- if (dfCV < 1000) 0.2 else if (dfCV < 1e+04) 0.05 else 0.01
-  l <- se^2 - len
-  pow <- ifelse(l <= 0, 0, integrate(f, 0, l)$value) + 
-    integrate(f, max(l, 0), l + 2*len)$value + 
-    integrate(f, l + 2*len, Inf)$value
-  pow
+  
+  # Detlew's attempt to stay with one integrate() call
+  # modified by Ben
+  
+  # mean of inverse gamma with alpha=dfCV/2, beta=se^2*dfCV/2
+  minvg <- (dfCV/2 * se^2)/(dfCV/2 - 1)
+  # or should we use the mode?
+  minvg <- (dfCV/2 * se^2)/(dfCV/2 + 1)
+  # variance of inverse gamma
+  vinvg <- (dfCV/2 * se^2)^2/(dfCV/2 - 1)^2/(dfCV/2 - 2)
+  # Chebyshev's inequality with k = 10
+  k <- 10
+  lwr  <- max(0, minvg - k*sqrt(vinvg))
+  # heavier tail to the right. may be an other value than 2 fits better TODO
+  upr  <- minvg + 2*k*sqrt(vinvg)       
+  pwr <- integrate(f, lwr, upr, rel.tol = 1e-5, stop.on.error = FALSE)
+  if(pwr$message!="OK") warning(pwr$message)
+  # return expected power
+  pwr$value
+  
 }
 
 # --- working horse for exppower.noninf() and expsampleN.noninf()
@@ -50,6 +64,7 @@
   } else if (method == "approx") {
     return(.approx.exppower.noninf(alpha, lmargin, ldiff, se.fac*se, dfCV, df))
   } else {
+    # Paranoia. Is tested outside.
     stop("Method '", method, "' unknown!\n", call. = TRUE)
   }
 }
@@ -70,6 +85,17 @@ exppower.noninf <- function(alpha=0.025, logscale=TRUE, theta0, margin,
   #bk   <- ades$bk
   
   if (missing(CV) | missing(dfCV)) stop("CV and df must be given!", call.=FALSE)
+  if (any(CV<=0)) stop("CV has to be >0", call.=FALSE)
+  if (length(CV)>1) {
+    CV <- CV[1]
+    warning("CV has to be a scalar. Only CV[1] used.", call.=FALSE)
+  }
+  if (length(dfCV)>1) {
+    dfCV <- dfCV[1]
+    warning("dfCV has to be a scalar here. Only dfCV[1] used.", call.=FALSE)
+  }
+  if (dfCV<=4) stop("dfCV has to be >4", call.=FALSE)
+  
   if (missing(n)) stop("Number of subjects must be given!", call.=FALSE)
   
   if (logscale){

@@ -67,7 +67,7 @@ Set this argument to \code{FALSE} to view the variation in power between
 different runs.
 }
   \item{nsims}{
-Number of studies to simulate. Defaulsts to 1E5 = 100 000.
+Number of studies to simulate. Defaults to 1E5 = 100 000.
 }
 }
 \value{

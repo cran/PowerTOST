@@ -30,11 +30,13 @@ In case of \code{logscale=TRUE} it must be given as ratio, otherwise as diff.\cr
 Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
   }
   \item{CV}{
-Coefficient of variation as ratio. 
+Coefficient of variation as ratio.\cr
+Only values > 0 ate allowed.
   }
   \item{dfCV}{
-Degrees of freedom for the CV (error/residual degree of freedom).\cr
-\code{dfCV=Inf} is allowed and will result give the same result as
+Degrees of freedom for the CV (error/residual degree of freedom). 
+\code{dfCV} has to be >4.\cr
+\code{dfCV=Inf} is allowed and will give the same result as
 \code{power.noninf(...)}.
 }
   \item{n}{
@@ -54,12 +56,13 @@ Set to \code{TRUE} will use the degrees of freedom according to the 'robust' eva
 See \code{known.designs()$df2} for designs covered in this package.
 }
   \item{method}{
-Defaults to code{method="exact"}.\cr
+Defaults to \code{method="exact"}.\cr
 In that case the expected power will be calculated as expected value of the
 power with respect to the (prior) distribution of sigma^2 (inverse gamma
 distribution).\cr
-Set to \code{method="approx"} will calculate the expected power according to
-the formula given in the book from Julious or according to Julious/Owen paper.
+Set to \code{method="approx"} the expected power according to the 
+approximate formulas (usin non-central t) given in the book from Julious or in 
+the Julious/Owen paper will be calculated.
 }
 }
 \details{
@@ -69,6 +72,16 @@ an uncertainty. See references.
 }
 \value{
 Value of expected power according to the input.
+}
+\section{Warning}{
+Extreme settings of \code{CV} and/or \code{dfCV} may give incorrect results if
+\code{method="exact"} due to the use of \code{integrate()} for calculating the 
+expected value of the power with respect to the (prior) distribution of sigma^2. 
+The integrand may in such cases become approximately zero over nearly all 
+its range. Then \code{integrate()} may fail seriously. See \code{?integrate}.
+}
+\author{
+D. Labes & B. Lang
 }
 \references{
 A.P. Grieve\cr 
@@ -93,10 +106,6 @@ Bertsche et al.\cr
 linear-fixed effects model for clinical cross-over trials"\cr
 Biometrical Journal 00 (2016) 0, 1-13\cr
 Article first published online: 22 MAR 2016
-}
-\author{
-D. Labes\cr
-B. Lang
 }
 \seealso{
  \code{\link{expsampleN.noninf}, \link{power.noninf}, \link{exppower.TOST}} 

@@ -1,6 +1,8 @@
 #---------------------------------------------------------------------------
-# Simulate partial and full replicate design and scaled ABE power
-# using the linearized reference scaled ABE criterion
+# Simulate partial or full replicate designs and scaled ABE power
+# estimation method via intra-subject contrasts of T-R and R-R
+# BE decision via linearized reference scaled ABE criterion, no cap
+# 
 # Author: dlabes
 #---------------------------------------------------------------------------
 
@@ -12,14 +14,13 @@
 # 2x2x3  dfRR = n/2 - 2
 
 power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
-                        design=c("2x3x3", "2x2x4", "2x2x3"), 
-                        regulator = c("FDA", "EMA"),
+                        design=c("2x3x3", "2x2x4", "2x2x3"), regulator, 
                         nsims=1E5, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
 
-  if (missing(theta0)) theta0 <- 0.95
+  if (missing(theta0)) theta0 <- 0.90
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
   if (missing(theta1)) theta1 <- 1/theta2
@@ -34,11 +35,15 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
 
-  CVswitch  <- 0.3
-  regulator <- match.arg(regulator)
-  if (regulator=="FDA") r_const <- log(1.25)/0.25 # or better log(theta2)/0.25?
-  if (regulator=="EMA") r_const <- 0.76 # or better log(theta2)/CV2se(0.3)?
-  
+  # regulator here only FDA, EMA
+  # other regulatory bodies ("HC", "ANVISA") use all the EMA regulatory constant
+  if (missing(regulator)) regulator <- "FDA"
+  rc <- reg_check(regulator, choices=c("FDA", "EMA"))
+  CVswitch  <- rc$CVswitch
+  r_const   <- rc$r_const
+  pe_constr <- rc$pe_constr
+  # CVcap doesn't apply to the FDA recommended method
+
   design <- match.arg(design)
   if (design=="2x3x3") {
     seqs  <- 3
@@ -97,7 +102,7 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     Emse <- (dfRR*(s2wT + s2wR/2)+dfTT*(s2wT/2 + s2wR))/(dfRR+dfTT)
     # warning in case of unbalanced design and heteroscdasticity
     if (abs(s2wT - s2wR)>1e-5 & abs(dfRR-dfTT)>2){
-      warning(paste("Heteroscedasticity in unbalanced 2x2x3 design may led", 
+      warning(paste("Heteroscedasticity in unbalanced 2x2x3 design may lead", 
               "to poor accuracy of power!"), call.=FALSE)
     }
   } else {
@@ -110,15 +115,16 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   
   if(setseed) set.seed(123456)
   p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, r_const, 
-                    ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
+                    pe_constr, ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
   if (details) {
     ptm <- summary(proc.time()-ptm)
-    message(nsims,"sims. Time elapsed (sec): ", 
+    message(nsims," sims. Time elapsed (sec): ", 
             formatC(ptm["elapsed"], digits=2), "\n")
     #print(ptm)
     # return also the components
     names(p) <- c("p(BE)", "p(BE-sABEc)", "p(BE-pe)", "p(BE-ABE)")
+    if (!pe_constr) p <- p[-3] # without pe constraint
     p
   } else {
     # return only the 'power'
@@ -128,8 +134,8 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
 
 # working horse of RSABE
 .power.RSABE <- function(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
-                         CVswitch=0.3, r_const=0.892574, 
-                         ln_lBEL=log(0.8), ln_uBEL=log(1.25), alpha=0.05)
+                         CVswitch, r_const, pe_constr, ln_lBEL, ln_uBEL, 
+                         alpha=0.05)
 {
   tval     <- qt(1-alpha,df)
   chisqval <- qchisq(1-alpha, dfRR)
@@ -176,15 +182,15 @@ power.RSABE <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     BE    <- ifelse(s2wRs>s2switch, SABEc95<=0, BEABE)
     # point est. constraint true?
     BEpe  <- ( means>=ln_lBEL & means<=ln_uBEL )
-    #debug print
-#    print(data.frame(pe=exp(means),lCL=exp(lCL), uCL=exp(uCL), 
-#                     crit=SABEc95, CV=CVwr, CVgt0.3=CVwr>CVswitch, 
-#                     BEABE=BEABE, BE=BE, BE_PE=BEpe))
-    
+
     counts["BEabe"] <- counts["BEabe"] + sum(BEABE)
     counts["BEpe"]  <- counts["BEpe"]  + sum(BEpe)
     counts["BEul"]  <- counts["BEul"]  + sum(BE)
-    counts["BE"]    <- counts["BE"]    + sum(BE & BEpe)
+    if(pe_constr) {
+      counts["BE"]    <- counts["BE"]    + sum(BE & BEpe)
+    } else {
+      counts["BE"]    <- counts["BE"]    + sum(BE) # no pe constraint
+    }
     
   } # end over chunks
   # return the pBEs

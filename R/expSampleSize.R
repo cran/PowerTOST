@@ -4,21 +4,21 @@
 # 
 # Author: dlabes
 #------------------------------------------------------------------------------
-# sample size start for Julious 'expected' power
+# sample size start for 'expected' power from Julious approx.
 .expsampleN0 <- function(alpha=0.05, targetpower, ltheta1, ltheta2, diffm, 
                          se, dfse, steps=2, bk=2)
 {
-  Z1 <- qnorm(1-alpha)
-  if (abs(diffm)>0.02) tinv <- qt(targetpower, dfse, Z1)  else {
-    tinv <- qt(1-(1-targetpower)/2, dfse, Z1) 
+  z1 <- qnorm(1-alpha)
+  if (abs(diffm)>0.02) tinv <- qt(targetpower, dfse, z1)  else {
+    tinv <- qt(1-(1-targetpower)/2, dfse, z1) 
     diffm <- 0
   }
   
   # factor 2 in Julious = bk
-  n01  <- bk*(se*tinv/(ltheta1-diffm))^2
-  n02  <- bk*(se*tinv/(ltheta2-diffm))^2
+  n01 <- bk*(se*tinv/(ltheta1-diffm))^2
+  n02 <- bk*(se*tinv/(ltheta2-diffm))^2
   # print(n01);print(n02)
-  n0 <- ceiling(max(n01,n02))
+  n0  <- ceiling(max(n01,n02))
   #make an even multiple of step (=2 in case of 2x2 cross-over)
   n0 <- steps*trunc(n0/steps)
   #if (n0<4) n0 <- 4   # minimum sample size will be tested outside
@@ -26,7 +26,7 @@
   return(n0)
 }
 #------------------------------------------------------------------------------
-# Sample size for a desired "expected" power according to Julious: 
+# Sample size for a desired "expected" power 
 # see known.designs() for covered experimental designs
 # Only for log-transformed data
 # leave upper BE margin (theta2) empty and the function will use 1/lower
@@ -57,15 +57,15 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   nmin <- as.integer(steps*trunc(n/steps)) 
   nmin <- nmin + steps*(nmin<n)
   
-  if (missing(CV) | missing(dfCV)) {
-    stop("CV and its df must be given!", call.=FALSE)
-  }
-  
+  if (missing(CV) | missing(dfCV)) stop("CV and its df must be given!", call.=FALSE)
+
   # calculate pooled data if CV and dfCV are vectors
   if (length(CV)>1){
     if (length(dfCV)!=length(CV)) {
       stop("CV and df must have equal number of entries!", call.=FALSE)
     }
+    if (any(CV<=0)) stop("CVs have to be >0.", call.=FALSE)
+    
     # how should we formulate this in case of logscale=FALSE ?
     # CV = weighted mean of the CV or CV*CV 
     dfse <- sum(dfCV)
@@ -81,7 +81,9 @@ expsampleN.TOST <- function(alpha=0.05, targetpower=0.8, logscale=TRUE,
   } else {
     dfse <- dfCV
     CVp  <- CV
+    if (any(CV<=0)) stop("CV has to be >0.", call.=FALSE)
   }
+  if (dfse<=4) stop("(pooled) dfCV has to be > 4.", call.=FALSE)
   
   # check method input
   method=tolower(method)
