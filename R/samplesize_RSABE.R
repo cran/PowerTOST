@@ -17,7 +17,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if (missing(theta0)) theta0 <- 0.90
   if (missing(theta2)) theta2=1/theta1
   if ( (theta0<=theta1) | (theta0>=theta2) ) {
-    stop("Null ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
+    stop("True ratio ",theta0," not between margins ",theta1," / ",theta2,"!", 
          call.=FALSE)
   }
   if (missing(CV)) stop("CV(s) must be given!", call.=FALSE)
@@ -30,6 +30,8 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   r_const   <- rc$r_const
   pe_constr <- rc$pe_constr
   # CVcap doesn't apply to the FDA recommended method
+  # but in Munoz et al. method= Howe-EMA
+  CVcap     <- rc$CVcap
   
   # for later enhancement taking into account the 
   # subject-by-formulation interaction
@@ -89,7 +91,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     cat(nsims,"studies for each step simulated.\n\n")
     cat("alpha  = ",alpha,", target power = ", targetpower,"\n", sep="")
     cat("CVw(T) = ",CVwT,"; CVw(R) = ",CVwR,"\n", sep="")
-    cat("Null (true) ratio = ",theta0,"\n", sep="")
+    cat("True ratio = ",theta0,"\n", sep="")
     cat("ABE limits / PE constraints =",theta1,"...", theta2,"\n")
     if (details | rc$name=="USER") { 
       rc$CVcap <- NULL # CVcap doesn't apply here
@@ -152,8 +154,9 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   dfRR <- eval(dfRRe)
   
   if(setseed) set.seed(123456)
-  p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, r_const, 
-                    pe_constr, ln_lBEL=log(theta1), ln_uBEL=log(theta2), alpha=alpha)
+  p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, 
+                    r_const, pe_constr, CVcap, 
+                    ln_lBEL=log(theta1), ln_uBEL=log(theta2), alpha=alpha)
   pwr <- as.numeric(p["BE"]);
   pd <- max(4,round(log10(nsims),0))  # digits for power
   if (details) {
@@ -183,7 +186,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     
     if(setseed) set.seed(123456)
     p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, 
-                      r_const, pe_constr, ln_lBEL=log(theta1), 
+                      r_const, pe_constr, CVcap, ln_lBEL=log(theta1), 
                       ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
@@ -204,7 +207,7 @@ sampleN.RSABE <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     
     if(setseed) set.seed(123456)
     p <- .power.RSABE(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, CVswitch, 
-                      r_const, pe_constr, ln_lBEL=log(theta1), 
+                      r_const, pe_constr, CVcap, ln_lBEL=log(theta1), 
                       ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     

@@ -1,3 +1,4 @@
+\encoding{utf-8}
 \name{power.scABEL}
 \alias{power.scABEL}
 \alias{power.scABEL2}
@@ -110,14 +111,17 @@ The simulations are done via the distributional properties of the statistical
 quantities necessary for deciding BE based on widened ABEL.\cr
 For more details see a document "Implementation_scaledABE_simsVx.yy.pdf" in the 
 /doc subdirectory of the package.\cr\cr
-Function \code{power.scABEL()} implements the simulation via distributional
-characteristics of the 'key' statistics obtained from the EMA recommended
-evaluation via ANOVA. This function is preferable if \code{regulator="EMA"} 
-is used.\cr
-Function \code{power.scABEL2()} implements the simulation via distributional
-characteristics of the 'key' statistics obtained via intra-subject
-contrasts (ISC) evaluation, as recommended in the FDA evaluation method.
-This function is preferable if \code{regulator="HC"} is used.\cr}
+Function \code{power.scABEL()} implements the simulation via distributional 
+characteristics of the 'key' statistics obtained from the EMA recommended 
+evaluation via ANOVA if \code{regulator="EMA"} or if the regulator component 
+\code{est_method} is set to "ANOVA" if regulator is an object of class 'regSet'.\cr
+Otherwise the simulations are based on the distributional characteristis of the 
+'key' statistics obtained from evaluation via intra-subject contrasts (ISC), 
+as recommended by the FDA.\cr\cr
+Function \code{power.scABEL2()} is soleyly based on simulation using the 
+distributional characteristics of the 'key' statistics obtained from evaluation 
+via ISC. This function is deprecated.
+}
 \value{
 Returns the value of the (empirical) power if argument \code{details=FALSE}.\cr\cr
 Returns a named vector if argument \code{details=TRUE}.\cr
@@ -127,9 +131,10 @@ range' alone. p(BE-ABE) is the power of the conventional ABE test given for
 comparative purposes.
 }
 \references{
-Laszlo Tothfalusi and Laszlo Endrenyi\cr
-"Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs"\cr
-J. Pharm. Pharmaceut. Sci. (www.cspsCanada.org) 15(1) 73 - 84, 2011
+\enc{Tóthfalusi}{Tothfalusi}, L, \enc{Endrényi}{Endrenyi}, L.\cr
+Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs\cr
+J Pharm Pharmaceut Sci. 2011;15(1):73-84. \cr
+\href{http://ejournals.library.ualberta.ca/index.php/JPPS/article/download/11612/9489}{free download}
 }
 \author{
 D. Labes
@@ -137,15 +142,14 @@ D. Labes
 \note{
 In case of \code{regulator="FDA"} the (empirical) power is only approximate since
 the BE decision method is not exactly what is expected by the FDA. But the "Two
-Laszlos"" state that the scABEL method should be 'operational equivalent' to the
+Laszlos" state that the scABEL method should be 'operational equivalent' to the
 FDA method.\cr
 To get the power for the FDA favored method via linearized scaled ABE criterion
-use function \code{power.RSABE()}.\cr\cr
-In case of \code{regulator="HC"} in function \code{power.scABEL2()}, based on
-ISC, or in function \code{power.scABEL()}, based on EMA's ANOVA evaluation the 
-power is also only approximative since the Health Canada recommends an 
+use function \code{\link{power.RSABE}}.\cr\cr
+In case of \code{regulator="HC"} in function \code{power.scABEL()}, based on
+ISC, power is also only approximative since the Health Canada recommends an 
 evaluation via mixed model approach. This could only implemented via 
-subject data simulations which are very time consuming. But ISC may a good 
+subject data simulations which are very time consuming. But ISC may be a good 
 substitute.
 }
 \section{Warning }{
@@ -153,8 +157,10 @@ Cross-validation of the simulations as implemented here and via the 'classical'
 subject data simulation have shown somewhat unsatisfactory results for the 
 2x3x3 design if the variabilities for Test and Reference are different.\cr
 The function \code{power.scABEL()} therefore gives a warning if calculations 
-with different CVwT and CVwR are requested for the 2x3x3 partial replicate design.\cr
-For more details see the above mentioned document "Implementation_scaledABE_simsVy.xx.pdf" 
+with different CVwT and CVwR are requested for the 2x3x3 partial replicate design.
+For more details see the above mentioned document "Implementation_scaledABE_simsVy.xx.pdf"\cr\cr 
+\code{power.scABEL2()} is deprecated and will be removed in future. A corresponding
+warning is thrown if this function is used.
 }
 \seealso{
 \code{\link{sampleN.scABEL}, \link{power.RSABE}, \link{reg_const}}

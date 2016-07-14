@@ -11,8 +11,7 @@ on simulations in order to maintain the consumer risk at the nominal level.
 }
 \usage{
 scABEL.ad(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
-          design = c("2x3x3", "2x2x4", "2x2x3"),
-          regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05,
+          design = c("2x3x3", "2x2x4", "2x2x3"), regulator, n, alpha.pre = 0.05,
           imax = 100, tol, print = TRUE, details = FALSE,
           setseed = TRUE, nsims = 1e6)
 }
@@ -56,9 +55,13 @@ Design of the study to be planned.\cr
 Defaults to \code{design = "2x3x3"}.
 }
   \item{regulator}{
-Regulatory body settings for the widening of the \acronym{BE} acceptance limits.\cr
-Defaults to \code{regulator = "EMA"}.\cr
-This argument may be given also in lower case.
+Regulatory settings for the widening of the \acronym{BE} acceptance limits.\cr
+Choose from \code{c("EMA", "HC")}. Defaults to \code{regulator = "EMA"}.\cr
+This argument may be given also in lower case.\cr
+The former \code{regulator="ANVISA"} is also allowed but is internally changed
+to "EMA" since ANVISA now recommends the use of EMA regulatory settings.
+Don't use "ANVISA" any longer since it will be removed in next versions.
+A corresponding message informs about this.
 }
   \item{n}{
 Total sample size of the study or a vector of sample size / sequences.
@@ -81,7 +84,7 @@ Maximum number of steps in sample size search. Defaults to 100.
 }
   \item{tol}{
 Desired accuracy (convergence tolerance).\cr
-Defaults to 1e-6 for \code{regulator = "EMA"} and to 1e-7 for \code{regulator = "ANVISA"}.
+Defaults to 1e-6.
 }
   \item{print}{
 If \code{TRUE} (default), the function prints its results.
@@ -110,31 +113,39 @@ runs a \code{set.seed(123456)} is issued if \code{setseed=TRUE} (default).
 The simulations are done via the distributional properties of the
 statistical quantities necessary for assessing \acronym{BE} based on \acronym{ABEL}.\cr
 Simulations for the \acronym{TIE} are performed at the upper (expanded) limit \emph{U}
-of the acceptance range.  Examples of \emph{U} at the \acronym{EMA}'s \code{CVswitch} and \code{CVcap}:\cr
+of the acceptance range.  Examples of \emph{U} at the \acronym{EMA}'s
+\code{CVswitch} and \code{CVcap}:\cr
 \code{scABEL(CV=0.3, regulator="EMA")[["upper"]]}\cr
 \code{[1] 1.25}\cr
 \code{scABEL(CV=0.5, regulator="EMA")[["upper"]]}\cr
 \code{[1] 1.43191}\cr
 Due to the symmetry around 1 results are valid for the lower (expanded)
 limit \emph{L} as well.\cr
-If an inflation of the \acronym{TIE} is expected (i.e., > \code{alpha}), alpha is iteratively adjusted
-until the consumer risk is maintained (<= \code{alpha}).\cr
+If an inflation of the \acronym{TIE} is expected (i.e., > \code{alpha}), alpha
+is iteratively adjusted until the consumer risk is maintained (<= \code{alpha}).\cr
 }
 \value{
 Returns a list with the input, adjusted alpha, and type I error
 (for nominal and adjusted alpha).\cr
 If no adjustment is necessary, \code{NA} will be returned for
-\code{adj. alpha} and the \acronym{TIE} for \code{alpha0} (or \code{alpha1}, if applicable)
-in \code{TIE.unadj}.
+\code{adj. alpha} and the \acronym{TIE} for \code{alpha0} (or \code{alpha1},
+if applicable) in \code{TIE.unadj}.
 }
 \references{
 Wonnemann, M., \enc{Frömke}{Froemke}, C., Koch, A.\cr
-Inflation of the Type I Error: Investigations on Regulatory Recommendations for Bioequivalence of Highly Variable Drugs\cr
-Pharm Res. 2015;32(1):135-43
+Inflation of the Type I Error: Investigations on Regulatory Recommendations for
+Bioequivalence of Highly Variable Drugs\cr
+Pharm Res. 2015;32(1):135-43. \href{http://dx.doi.org/10.1007/s11095-014-1450-z}{doi 10.1007/s11095-014-1450-z}
+
+\enc{Muñoz}{Munoz} J., Alcaide D., \enc{Ocaña}{Ocana} J.\cr
+Consumer’s risk in the EMA and FDA regulatory approaches for bioequivalence
+in highly variable drugs\cr
+Stat Med. 2015;35(12):1933-43. \href{http://dx.doi.org/10.1002/sim.6834}{doi 10.1002/sim.6834}
 
 Labes, D., \enc{Schütz}{Schuetz}, H.\cr
-Inflation of Type I Error in the Evaluation of Scaled Average Bioequivalence, and a Method for its Control\cr
-in preparation 2016
+Inflation of Type I Error in the Evaluation of Scaled Average Bioequivalence,
+and a Method for its Control\cr
+submitted to Pharm. Res. 2016
 }
 \author{
 H. \enc{Schütz}{Schuetz}
@@ -153,11 +164,7 @@ If \code{theta0} \emph{is not} given, achievable power for the
 common target of 0.80 (both for \code{alpha} and adjusted alpha) will be
 estimated. If \code{theta0} \emph{is} specified, its value will be used; again for
 target power 0.80.\cr
-If you are interested in other levels of power, use \code{\link{sampleN.scABEL.ad}}.\cr
-
-In case of \code{regulator="ANVISA"} \emph{no} official guidance exists. There is
-a discontinuity at \code{CVswitch} = 0.40 which might require \emph{extreme}
-adjustments in the range \code{CVwR} ~0.37 to 0.40.
+If you are interested in other levels of power, use \code{\link{sampleN.scABEL.ad}}.
 }
 
 \section{Warning }{

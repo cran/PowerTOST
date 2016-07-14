@@ -6,18 +6,16 @@
 # Author: Helmut Schuetz
 #-----------------------------------------------------------------------
 scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
-                     design = c("2x3x3", "2x2x4", "2x2x3"), 
-                     regulator = c("EMA", "ANVISA"), n, alpha.pre = 0.05,
-                     imax = 100, tol, print = TRUE, details = FALSE, 
-                     setseed = TRUE, nsims = 1e6)
+                     design = c("2x3x3", "2x2x4", "2x2x3"), regulator, n,
+                     alpha.pre = 0.05, imax = 100, tol, print = TRUE,
+                     details = FALSE, setseed = TRUE, nsims = 1e6)
 {
   ## Arguments:
   ##   alpha      Nominal alpha (in BE generally fixed to 0.05).
   ##              Lower value only if needed (e.g. to correct for
   ##              multiplicity).
-  ##   theta0     If given, power is estimated for the expected GMR.
-  ##              Note that the default is 0.90 (different from
-  ##              sampleN.scABEL(), where the default is 0.95!
+  ##   theta0     If given, power is estimated for this expected ratio.
+  ##              Defaults to 0.90.
   ##   theta1     Lower margin. Defaults to 0.8.
   ##   theta2     Upper margin. Defaults to 1/theta1.
   ##   CV         Intra-subject CV(s) obtained in a replicate design.
@@ -27,18 +25,16 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   ##              CV[2] the CV of R. Important!
   ##              Defaults to 0.3 (maximum TIE for EMA).
   ##   design     "2x2x4", "2x2x3", "2x3x3". Defaults to "2x3x3".
-  ##   regulator  "EMA" or "ANVISA". "ANVISA" requires extreme
-  ##              adjustment close to CVwR 40%. Realistic?
-  ##              Cave: ANVISA's requirements are unofficial.
+  ##   regulator  "EMA" or "ANVISA". ANVISA recently adopted EMA's rules.
   ##   n          Total sample size or a vector of subjects/sequences.
   ##   nsims      Simulations for the TIE. Should not be <1e6.
-  ##   imax       max. steps in sample size search
-  ##   tol        desired accuracy (convergence tolerance)
-  ##              defaults to 1e-6 for EMA and 1e-7 for ANVISA
-  ##   print      Boolean (FALSE returns a list of results).
-  ##   details    Boolean (runtime, number of simulations).
+  ##   imax       Max. steps in sample size search.
+  ##   tol        Desired accuracy (convergence tolerance of uniroot);
+  ##              defaults to 1e-6.
+  ##   print      Logical (FALSE returns a list of results).
+  ##   details    Logical (runtime, number of simulations).
   ##   alpha.pre  Pre-specified level.
-  ##   setseed    Boolean (default TRUE uses set.seed(123456)).
+  ##   setseed    Logical (default TRUE uses set.seed(123456)).
   ## Returns:
   ##   alpha.adj  Iteratively adjusted alpha which does not inflate the
   ##              TIE (for given CVwR and n).
@@ -55,10 +51,10 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   ##              where rel.loss = 100(pwr.adj - pwr.unadj)/pwr.unadj
   ##   If alpha.pre is given:
   ##   Assessment of TIE; alpha.pre is justified if not > alpha.
-  ######################################################################
-  ## Tested on Win 7 Pro SP1 64bit
-  ##   R 3.2.4 Revised 64bit (2016-03-16), PowerTOST 1.3-4 (2016-03-10)
-  ######################################################################
+  ################################################################
+  ## Tested on Win 7 Pro SP1 64bit                              ##
+  ##   R 3.3.1 64bit (2016-06-21), PowerTOST 1.4-1 (2016-06-14) ##
+  ################################################################
   env <- as.character(Sys.info()[1]) # get info about the OS
   if ((env == "Windows") || (env == "Darwin")) flushable <- TRUE
     else flushable <- FALSE # supress flushing on other OS's
@@ -70,12 +66,11 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   if (theta0 < theta1 || theta0 > theta2)
     stop("theta0 must be within [theta1, theta2]")
   # check regulator arg
-  regulator <- toupper(regulator)
-  regulator <- match.arg(regulator)
-  # set iteration tolerance for uniroot(). Must be higher for ANVISA.
-  if (missing(tol)) {
-    if (regulator == "EMA") tol <- 1e-6 else tol <- 1e-7
-  }
+  if(missing(regulator)) regulator <- "EMA"
+  # should we also allow "FDA"?
+  reg <- reg_check(regulator, choices=c("EMA", "HC", "ANVISA"))
+  # set iteration tolerance for uniroot().
+  if (missing(tol)) tol <- 1e-6
   design <- match.arg(design)
   CVwT <- CV[1]
   if (length(CV) == 2) CVwR <- CV[2] else CVwR <- CVwT
@@ -88,19 +83,21 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
       al <- alpha        # If not, use alpha (commonly 0.05)
     }
     # sample size for targetpower 0.8
+    # what about theta1, theta2?
     n <- sampleN.scABEL(alpha = al, CV = CV, theta0 = theta0,
-                        design = design, regulator = regulator,
+                        design = design, regulator = reg,
                         imax=imax, print = FALSE, details = FALSE,
                         setseed = setseed)[["Sample size"]]
     if (is.na(n))
-      stop(paste0("Sample size search in sampleN.scABEL() failed.",
-                  "\nRestart with an explicit high n (>1000)."))
+      stop(paste0("Sample size search in sampleN.scABEL() failed.\n",
+                  "Restart with an explicit high n (>1000)."))
+    # DL: next should be outside I think. Or?
     if (sum(n) < 6) stop("Sample size too low.")
     no <- 1e5
   }
   if (alpha.pre > alpha) {
-    warning(paste0("alpha.pre > alpha doesn't make sense.",
-                   "\nalpha.pre was set to alpha."))
+    warning(paste0("alpha.pre > alpha doesn't make sense.\n",
+                   "alpha.pre was set to alpha."))
     alpha.pre <- alpha
   }
   seqs <- as.numeric(substr(design, 3, 3)) # subjects / sequence
@@ -110,16 +107,15 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
   TIE <- pwr <- rep(NA, 2) # initialize vectors: TIE and pwr
   alpha.adj <- NA          # adjusted alpha
   opt <- function(x) power.scABEL(alpha = x, CV = CV, theta0 = U, n = n,
-                                  regulator = regulator, design = design,
+                                  regulator = reg, design = design,
                                   nsims = nsims, setseed = setseed) - alpha
   # Finds adjusted alpha which gives TIE as close as possible to alpha.
   sig  <- binom.test(x = round(alpha*nsims, 0), n = nsims,
                      alternative = "less",
                      conf.level = 1 - alpha)$conf.int[2]
   method <- "ABE"
-  if ((regulator == "EMA" && CVwR > 0.3) ||
-      (regulator == "ANVISA" && CVwR > 0.4)) method <- "ABEL"
-  U <- scABEL(CV = CVwR, regulator = regulator)[["upper"]]
+  if (CVwR > reg$CVswitch) method <- "ABEL"
+  U <- scABEL(CV = CVwR, regulator = reg)[["upper"]]
   # Simulate at the upper (expanded) limit. For CVwR 30% that is
   # 1.25. Due to the symmetry simulations at the lower limit (0.8)
   # would work as well.
@@ -154,27 +150,27 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
       txt <- paste(txt, "\n")
     }
     cat(txt)
-    cat("Null (true) ratio             :", sprintf("%.4f", theta0), "\n")
-    cat(paste0("Regulatory settings           : ", regulator, " (",
+    cat("True ratio                    :", sprintf("%.4f", theta0), "\n")
+    cat(paste0("Regulatory settings           : ", reg$name, " (",
                method, ")\n"))
     if (flushable) flush.console() # advance console output.
   }
   TIE[1] <- power.scABEL(alpha = al, CV = CV, theta0 = U, n = n,
-                         design = design, regulator = regulator,
+                         design = design, regulator = reg,
                          nsims = nsims, setseed = setseed)
   no <- no + nsims
   pwr[1] <- power.scABEL(alpha = al, CV = CV, theta0 = theta0,
-                         n = n, design = design, regulator = regulator,
+                         n = n, design = design, regulator = reg,
                          setseed = setseed)
   no <- no + 1e5
   if (TIE[1] > alpha) { # adjust only if needed (> nominal alpha)
     x         <- uniroot(opt, interval = c(0, alpha), tol = tol)
     alpha.adj <- x$root
     TIE[2] <- power.scABEL(alpha = alpha.adj, CV = CV, theta0 = U, n = n,
-                           design = design, regulator = regulator,
+                           design = design, regulator = reg,
                            nsims = nsims, setseed = setseed)
     pwr[2] <- power.scABEL(alpha = alpha.adj, CV = CV, theta0 = theta0,
-                           n = n, design = design, regulator = regulator,
+                           n = n, design = design, regulator = reg,
                            setseed = setseed)
   }
   if (!is.na(alpha.adj)) no <- no + nsims*x$iter
@@ -234,8 +230,9 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
                       "justified.\n\n"))
     }
   cat(txt)
-  } else { # Prepare and return list of results.
-    res <- list(regulator = regulator, method = "ABEL", design = design,
+  } else { # print=FALSE
+    # Prepare and return list of results.
+    res <- list(regulator = reg$name, method = method, design = design,
                 type = type[match(design, designs)], alpha = alpha,
                 alpha.pre = alpha.pre, CV = CV, n = sum(n), theta0 = theta0,
                 TIE.unadj = signif(TIE[1], 5),
@@ -244,7 +241,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
                 pwr.unadj = signif(pwr[1], 5), alpha.adj = signif(alpha.adj, 5),
                 TIE.adj = signif(TIE[2], 5), pwr.adj = signif(pwr[2], 5),
                 rel.loss = ifelse(!is.na(pwr[2]),
-                                signif(100*(pwr[2] - pwr[1])/pwr[1], 5), NA),
+                                  signif(100*(pwr[2] - pwr[1])/pwr[1], 5), NA),
                 sims = no)
     return(res)
   }
@@ -262,7 +259,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
 #
 #   CVwR 0.3, n(i) 18|18|18 (N 54)
 #   Nominal alpha                 : 0.05
-#   Null (true) ratio             : 0.900
+#   True ratio                    : 0.900
 #   Regulatory settings           : EMA (ABE)
 #   Empiric TIE for alpha 0.0500  : 0.07189
 #   Iteratively adjusted alpha    : 0.03389
@@ -281,7 +278,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
 #
 #   CVwR 0.3, n(i) 17|17 (N 34)
 #   Nominal alpha                 : 0.05
-#   Null (true) ratio             : 0.900
+#   True ratio                    : 0.900
 #   Regulatory settings           : EMA (ABE)
 #   Empiric TIE for alpha 0.0500  : 0.08163 (rel. change of risk: +63.3%)
 #   Power for theta0 0.900        : 0.803
@@ -305,7 +302,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV = 0.3,
 #
 #   CVwR 0.3217, CVwT 0.2769, n(i) 15|14 (N 29)
 #   Nominal alpha                 : 0.05, pre-specified alpha 0.025
-#   Null (true) ratio             : 0.900
+#   True ratio                    : 0.900
 #   Regulatory settings           : EMA (ABEL)
 #   Empiric TIE for alpha 0.0250  : 0.03941
 #   TIE not > nominal alpha; the chosen pre-specified alpha is justified.

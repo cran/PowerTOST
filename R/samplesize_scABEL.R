@@ -1,8 +1,48 @@
+#---------------------------------------------------------------------------
+# unified function
+# chooses the sample size function according to regulator$est_method
+# former is now sampleN.scABEL1
+#
+# author dlabes
+#---------------------------------------------------------------------------
+sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
+                           theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"), 
+                           regulator, nsims=1E5, nstart, imax=100, print=TRUE, 
+                           details=TRUE, setseed=TRUE)
+{
+  # design must be checked outside
+  desi <- match.arg(design)
+  # check regulator
+  if (missing(regulator)) regulator <- "EMA"
+  reg  <- reg_check(regulator)
+  ssfun <- "sampleN.scABEL1"
+  if (reg$est_method=="ISC") ssfun <- "sampleN.scABEL2"
+  # browser()
+  # print(sys.call())
+  # next doesn't function if arguments are missing
+  # r <- do.call(ssfun,
+  #              list(alpha, targetpower, theta0, theta1, theta2, CV, 
+  #                   design=desi, regulator=reg, nsims, nstart, imax,
+  #                   print, details, setseed))
+  if (reg$est_method!="ISC"){
+    r <- sampleN.scABEL1(alpha, targetpower, theta0, theta1, theta2, CV, 
+                         design=desi, regulator=reg, nsims, nstart, imax,
+                         print, details, setseed)
+  } else {
+    r <- suppressWarnings(
+           sampleN.scABEL2(alpha, targetpower, theta0, theta1, theta2, CV, 
+                          design=desi, regulator=reg, nsims, nstart, imax,
+                          print, details, setseed)
+                          )
+  } 
+  
+}  
+
 #-----------------------------------------------------------------------------
 # Sample size for partial and full replicate design and scaled ABE 
 # via simulated (empirical) power
 # estimation method ANOVA and BE decision via ABEL (Average bioequivalence with 
-# expanding eimits)
+# expanding limits)
 # 
 # Author: dlabes
 #-----------------------------------------------------------------------------
@@ -17,27 +57,26 @@
   n
 }  
 
-sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
-                           theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"), 
-                           regulator, nsims=1E5, nstart, imax=100, print=TRUE, 
-                           details=TRUE, setseed=TRUE)
+sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1, 
+                            theta2, CV, design=c("2x3x3", "2x2x4", "2x2x3"), 
+                            regulator, nsims=1E5, nstart, imax=100, print=TRUE, 
+                            details=TRUE, setseed=TRUE)
 {
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
-  if (missing(theta2)) theta2=1/theta1
+  if (missing(theta2)) theta2 <- 1/theta1
+  if (missing(theta1)) theta1 <- 1/theta2
   # the two Laszlo's recommend theta0=0.9 for HVD's
   if (missing(theta0)) theta0 <- 0.9
   if ( (theta0<=theta1) | (theta0>=theta2) ) {
-    stop("Null ratio ",theta0," not between margins ",theta1," / ",
+    stop("True ratio ",theta0," not between margins ",theta1," / ",
          theta2,"!", call.=FALSE)
   }
   if (missing(CV)) stop("CV must be given!", call.=FALSE)
   
-  #if (!print) details <- FALSE # do not print anything
-  
   # subject-by-formulation interaction can't play a role here I think
-  # since the model doesn't allow such term
+  # since the EMA model doesn't allow such term
   CVwT <- CV[1]
-  # should we allow different variabilities in the EMA method?
+  # should we allow different variabilities in the EMA method at all?
   if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
@@ -45,11 +84,11 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if(missing(regulator)) regulator <- "EMA"
   # check regulator and get 
   # constants acc. to regulatory bodies (function in scABEL.R)
-  rc <- reg_check(regulator)
-  CVcap     <- rc$CVcap
-  CVswitch  <- rc$CVswitch
-  r_const   <- rc$r_const
-  pe_constr <- rc$pe_constr
+  reg <- reg_check(regulator)
+  CVcap     <- reg$CVcap
+  CVswitch  <- reg$CVswitch
+  r_const   <- reg$r_const
+  pe_constr <- reg$pe_constr
   
   # check design
   design <- match.arg(design)
@@ -92,19 +131,20 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if (print){
     cat("\n+++++++++++ scaled (widened) ABEL +++++++++++\n")
     cat("            Sample size estimation\n")
+    cat("   (simulation based on ANOVA evaluation)\n")
     cat("---------------------------------------------\n")
     cat("Study design: ",desi,"\n")
     cat("log-transformed data (multiplicative model)\n")
     cat(nsims,"studies for each step simulated.\n\n")
     cat("alpha  = ", alpha,", target power = ", targetpower,"\n", sep="")
     cat("CVw(T) = ", CVwT,"; CVw(R) = ", CVwR,"\n", sep="")
-    cat("Null (true) ratio = ",theta0,"\n", sep="")
+    cat("True ratio = ",theta0,"\n", sep="")
     cat("ABE limits / PE constraint =", theta1,"...", theta2,"\n")
-    if (details | rc$name=="USER") { 
-      print(rc)
+    if (details | reg$name=="USER") { 
+      print(reg)
       cat("\n")
     } else {
-      cat("Regulatory settings:", rc$name,"\n")
+      cat("Regulatory settings:", reg$name,"\n")
     }
   }
   
@@ -128,12 +168,11 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     # empirical correction in the vicinity of CV=0.3 for ratios 
     # outside 0.86 ... 1/0.86
     # does this fit also for CVswitch in case of ANVISA = 0.4?
-    #if(Emse < CV2mse(0.305) & Emse > CV2mse(0.295) & abs(mlog)>log(1/0.865)) {
     if(Emse < CV2mse(CVswitch+0.005) & Emse > CV2mse(CVswitch-0.005) 
         & abs(mlog)>log(1/0.865)) {
-      if (rc$name=="EMA")     n01 <- 0.9*n01
-      if (rc$name=="FDA")     n01 <- 0.65*n01
-      if (rc$name=="ANVISA")  n01 <- 0.6*n01
+      if (reg$name=="EMA")     n01 <- 0.9*n01
+      if (reg$name=="FDA")     n01 <- 0.65*n01
+      if (reg$name=="ANVISA")  n01 <- 0.6*n01
       n01 <- seqs*trunc(n01/seqs)
     }
     
@@ -155,9 +194,9 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   dfTT <- dfRR
 
   if(setseed) set.seed(123456)
-  p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
-                     design, nsims, CVswitch, r_const, CVcap, pe_constr,
-                     ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
+  p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+                       design, nsims, CVswitch, r_const, CVcap, pe_constr,
+                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
   pwr <- as.numeric(p["BE"]);
   pd <- max(4,round(log10(nsims),0)-1)  # digits for power
   if (details) {
@@ -187,9 +226,9 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
-                       design, nsims, CVswitch, r_const, CVcap, pe_constr,
-                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
+    p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+                         design, nsims, CVswitch, r_const, CVcap, pe_constr,
+                         ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
     if (details) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
@@ -207,9 +246,9 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .power.scABEL(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
-                       design, nsims, CVswitch, r_const, CVcap, pe_constr, 
-                       ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
+    p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+                         design, nsims, CVswitch, r_const, CVcap, pe_constr,
+                         ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
     
     if (details) cat( n," ", formatC(pwr, digits=pd, format="f"),"\n")
