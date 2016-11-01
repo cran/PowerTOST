@@ -25,18 +25,17 @@ numeric value of Owen's Q function.
 The argument \code{a=0} could be dropped but is retained for sake of completeness. 
 }
 \references{
-Owen, D.B. (1965) \cr
+Owen D B\cr
 "A Special Case of a Bivariate Non-central t-Distribution"\cr
-Biometrika Vol. 52, p437-446.
+Biometrika Vol. 52, 1965, pp.437-446.\cr
+\doi{10.2307/2333696}
 }
 \author{
 D. Labes
 }
 \note{
 This function is mainly for comparative / validation purposes.\cr
-It is used in \code{OwensQ()} in case of high nu and/or high upper integration 
-limit where the implementation via R's function \code{integrate()} may fail.
-The implementation needs \code{OwensT()} function.
+The function needs \code{OwensT()} function.
 }
 
 \seealso{

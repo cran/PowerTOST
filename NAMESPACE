@@ -11,6 +11,8 @@ importFrom(grDevices, colorRampPalette)
 importFrom(stats, dnorm, pnorm, qnorm, rnorm, dt, pt, qt, dchisq, qchisq, rchisq, 
            qf, uniroot, integrate, optim, binom.test)
 importFrom(utils, tail, head, read.table, flush.console)
+#importFrom(pracma, quad2d)
+importFrom(cubature, adaptIntegrate)
 
 # Export all names except those beginning with .
 # exportPattern("^[^\\.]")
@@ -48,7 +50,6 @@ export(
   , power.HVNTID
   , power.RSABE
   , power.scABEL
-  , power.scABEL2
   , power.dp
   , pvalue.TOST
   , pvalues.TOST
@@ -61,7 +62,6 @@ export(
   , sampleN.HVNTID
   , sampleN.RSABE
   , sampleN.scABEL
-  , sampleN.scABEL2
   , sampleN.scABEL.ad
   , sampleN.dp
   , scABEL

@@ -1,3 +1,28 @@
+Version 1.4-3
+Released 2016-11-01
+      - Little bug in power.TOST() removed which cause power <0 for large degrees 
+        of freedom
+      - Functions for expected power of the TOST procedure and sample size based 
+        on expected power reworked to deal also with uncertainty of theta0 or 
+        dealing with both uncertainties of CV and theta0. 
+        Contributed mainly by Benjamin Lang.
+      - Functions for expected power of non-inferiority testing and sample size 
+        based on that expected power reworked to deal also with uncertainty of 
+        theta0 or dealing with both uncertainties of CV and theta0. 
+        Contributed mainly by Benjamin Lang.
+      - Deprecated functions power.scABEL2() and sampleN.scABEL2() now removed.
+        regulator = "ANVISA" no longer allowed in the scaled ABEL functions.
+      - OwensQ() simpler/faster implemented. Now based soleyly on numerical
+        integrataion in combination with non-central t.
+      - Owen's T-function, used in OwensQOwen() now based on algorithm AS76 and 
+        remarks to that algorithm to avoid numerical errors of the implementation 
+        via integrate(). 
+      - Data.frame ct9.6.6 in data("data2x2x3") added which was missing a long
+        time ago.
+      - Little inconsistency resolved (by Helmut) in output of power analysis 
+        functions w.r.t. ratio or percent. Thanks to user myttiri of BEBA forum
+        for pointing out this inconsistency. 
+        
 Version 1.4-2
 Released 2016-07-14
       - Implementation_scaledABE_sims.pdf in \doc subdirectory updated to 

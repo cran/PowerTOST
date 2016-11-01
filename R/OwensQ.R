@@ -1,126 +1,63 @@
-#-------------------------------------------------------------------------------
-# author: dlabes
 #------------------------------------------------------------------------------
-#-- The functions of normal-, t-distributions and integrate() ------------------
-#require(stats) #this is usually not necessary within a standard installation
 # Owen's Q-function 
+# author: dlabes
+#-------------------------------------------------------------------------------
 # a, b must be a scalar numeric
 # nu, t and delta also, no vectors allowed
-OwensQ <- function (nu, t, delta, a, b)
+# This is a variant with variables transformation
+# and using the fact that Integral(0,b)+Integral(b,Inf) gives p(nct)
+OwensQ <- function (nu, t, delta, a=0, b)
 {
-  if(missing(a)) a <- 0
+  if (missing(b)) stop("Upper integration limit missing.")
+  if (a!=0) stop("Only a==0 implemented.")
   
-	if (length(nu)>1 | length(t)>1 | length(delta)>1 | length(a)>1 | 
-      length(b)>1) stop("Input must be scalars!")
-  if (nu<1) stop("nu must be >=1!")
+  if (length(nu)>1 | length(t)>1 | length(delta)>1 | length(a)>1 | length(b)>1) 
+    stop("Input must be scalars!")
+  if (nu<1) stop("nu must be >=1.")
   
   if(a==b) return(0)
-  
-  # Observation: for 'really' large df (nu>2000) and large delta/b the  
-	# density function is zero over nearly all its range! Q than returned 
-	# sometimes falsly as =0! See documentation ?integrate for that.
-	# example: OwensQ(3000,1.64,-10,0,300) = 1
-	#          OwensQ(3000,1.64,-10,0,350) = 5.614476e-12 ! Correct is 1.
-	# Idea: adapt upper and/or lower integration limit to account for that
-	low <- a; up <- b
-  
-  # May 2011: shrink  interval depending on delta*b 
-  #if (b>1E6) b <- Inf
-	# in case of alpha=0.5 b is infinite
+
+  # in case of alpha>=0.5 b is infinite
   # also in case of se=0 and diffm != ltheta1 or !=ltheta2
-	if (is.finite(b)){
-  	if (nu >= 1000 || abs(delta*b) > 30 || b>50){
-      # all adaptions don't cover all extremal cases!
-      
-      # return OwensQOwens for cases with high b, delta*b
-      # but only for df<400, else computation time may stuck
-      # up to 400 a call is <= 2 msec
-      if(nu<400 & a==0) return(OwensQOwen(nu,  t, delta, 0, b))
-      
-      # try to shorten the range via interval halving: Jul 2012, se below
-      # but this doesn't work for Jiri's extremal cases
-      # before we had checked the integrand at 500 points
-      # this is from computational time better then interval halving
-      # at least for high nu
-      step <- (b-a)/499
-      x <- a + (0:499) * step
-      dens <- .Q.integrand(x, nu, t, delta)
-      x <- x[dens!=0]
-      if (length(x)>0) {
-        low <- max(min(x) - step, a)
-        up  <- min(max(x) + step, b)
+  # for that case see:
+  # A bivariate noncentral T-distibution with applications
+  # Youn Min Chou
+  # Communications in Statistics - Theory and Methods, 21:12, 3427-3462, 1992
+  # DOI: 10.1080/03610929208830988
+  # 
+  # in case of abs(delta)>37.62 the non-central t is evaluated via a crude
+  # approximation which can be rather poor for small nu
+  # then we return OwensQOwen() but for speed reasons only for small nu
+  # what is small is more or less arbitrary
+  if (nu < 29 && abs(delta) > 37.62) {
+    if (is.infinite(b)) {
+      # for high delta we won't use the non-central t
+      # thus we try numerical integration of the original density from 0 to Inf, 
+      # remapped to 0,1
+      i_fun <- function(y) .Q.integrand(y / (1 - y), nu, t, delta) * 1/(1 - y)^2
+      return(integrate(i_fun, lower=0, upper=1, subdivisions = 1000L, 
+                       rel.tol = 1.e-8, stop.on.error = TRUE)[[1]])
+    } else {
+      return(OwensQOwen(nu, t, delta, 0, b))
+    }
+  } else {
+    if (is.infinite(b)) {
+      #we use the nct according to the Chou paper for low to moderate delta
+      return(suppressWarnings(pt(t, df=nu, ncp=delta)))
+    } else {
+      # We calculate Owen's Q via
+      # pt(t, df=nu, ncp=delta) - Integral(b,Inf)
+      # The Integral(b,Inf) is via transformation of the variables x=b+y/(1-y)
+      # remapped to an integral(0,1)
+      i_fun <- function(y) {
+        .Q.integrand(b + y/(1-y), nu, t, delta) / (1-y)^2
       }
-      # 
-#       # upper integration limit via interval halving
-#       ab <- b-a
-#       x  <- b
-#       dens <- .Q.integrand(x, nu, t, delta)
-#       #cat("Upper search\n")
-#       #cat("x=",x,"dens=",dens,"\n")
-#       while (dens==0){
-#         ab   <- ab*0.5
-#         x    <- x - ab
-#         dens <- .Q.integrand(x, nu, t, delta)
-#         #cat("x=",x,"dens=",dens,"\n")
-#         if (ab < 1E-10) break
-#       }
-#       if (dens>0) up <- min(x + ab, b) #else return(0)
-#       #cat("up=",up,"\n")
-#       # lower limit
-#       ab   <- up - a
-#       x    <- a
-#       dens <- .Q.integrand(x, nu, t, delta)
-#       #cat("Lower search\n")
-#       #cat("x=",x,"dens=",dens,"\n")
-#       while (dens==0){
-#         ab   <- ab*0.5 
-#         x    <- x + ab
-#         dens <- .Q.integrand(x, nu, t, delta)
-#         #cat("x=",x,"dens=",dens,"\n")
-#         if (ab<1E-10) break
-#       }
-#       if (dens>0)  low <- max(x - ab, a) #else return(0)
-#       #cat("low=",low,"\n")
-    }  
-  }
-	# result of integrate() is a list, see ?integrate
-	# .Machine$double.eps^.5 = 1.490116e-08 on my machine
-	# MBESS uses .Machine$double.eps^0.25 = 0.0001220703 for both tolerances
-	# seems it makes no difference
-	Qintegral <- integrate(.Q.integrand, lower = low, upper = up, 
-			         nu=nu, t=t, delta = delta, subdivisions = 10000, 
-			         #rel.tol = .Machine$double.eps^0.5, 
-               #abs.tol = .Machine$double.eps^0.5,
-			         rel.tol = 1.e-9, abs.tol=1.e-9, stop.on.error = TRUE)[[1]]
-	# error handling? How?
-	if(a==0){
-    # approx. via nct?
-    # this seems not correct for all cases!
-    # f.i. 
-    #>OwensQ(nu=100,t=1.64, delta=1,a=0,b=1)
-    # [1] 0.7361993
-    # Warning message:
-    #  In OwensQ(nu = 100, t = 1.64, delta = 1, a = 0, b = 1) :
-    #  OwensQ = 3.597533e-81 due to numeric problems.
-    #  Replaced with nct approx. = 0.7361993
-    #> OwensQOwen(nu=100,t=1.64, delta=1,a=0,b=1)
-    # [1] 8.326673e-17
-    # but seems to work for sufficient high b
-    # the question is what is sufficient
-    #browser()
-	  if (b>50){
-      check <- pt(t, df=nu, ncp=delta)
-      # debug print
-      # cat("Check aginst nct approx.:", check, Qintegral,"\n")
-      if(Qintegral<1e-9 & check>1e-7) {
-        warning("OwensQ = ", format(Qintegral, digits=7),
-                " due to numeric problems.",
-                "\n  Replaced with nct approx. = ", format(check, digits=7))
-        Qintegral <- check
-      }  
+      Integral01 <- integrate(i_fun, lower=0, upper=1, subdivisions = 1000L, 
+                              rel.tol = 1.e-8, stop.on.error = TRUE)
+      # suppress the warning w.r.t. precision of nct
+      return(suppressWarnings(pt(t, df=nu, ncp=delta)) - Integral01[[1]])
     }
   }
-	return(Qintegral)  
 }
 #-------------------------------------------------------------------------------
 # Integrand of the definit integral in Owen's Q. Used in the call of integrate()
@@ -128,20 +65,20 @@ OwensQ <- function (nu, t, delta, a, b)
 # function must give a vectorized answer in respect to x
 .Q.integrand <- function(x, nu, t, delta)
 { #version without for - loop, it works without
-	lnQconst <- -((nu/2.0)-1.0)*log(2.0) - lgamma(nu/2.)
-
-# what if x<0? Should here not possible, but ...
-# simple x^(nu-1) doesnt work for high nu because  = Inf 
-# and then exp( -0.5*x^2 + lnQconst )*x^(nu-1) -> NaN
-# (nu-1)*log(abs(x)) is NaN if nu=1, x=0! 0*(-Inf) -> NaN
+  lnQconst <- -((nu/2.0)-1.0)*log(2.0) - lgamma(nu/2.0)
+  
+  # what if x<0? Should here not possible, but ...
+  # simple x^(nu-1) doesnt work for high nu because  = Inf 
+  # and then exp( -0.5*x^2 + lnQconst )*x^(nu-1) -> NaN
+  # (nu-1)*log(abs(x)) is NaN if nu=1, x=0! 0*(-Inf) -> NaN
   
   dens <- x  # assures that dens=0 if x=0
   x1   <- x[x!=0]
   dens[x!=0] <- sign(x1)^(nu-1) *
-      pnorm( t*x1/sqrt(nu) - delta, mean = 0, sd = 1, log.p = FALSE) * 
-      exp( (nu-1)*log(abs(x1)) - 0.5*x1^2 + lnQconst )
+    pnorm( t*x1/sqrt(nu) - delta, mean = 0, sd = 1, log.p = FALSE) * 
+    exp( (nu-1)*log(abs(x1)) - 0.5*x1^2 + lnQconst )
   # return    
-	dens
+  dens
 }
 
 # Test cases:
@@ -156,7 +93,7 @@ OwensQ <- function (nu, t, delta, a, b)
 #      CV=1E-6 gives power=0      (      243033          -388112.3   R  152838.8
 #      CV=0    gives power=1             Inf              -Inf       Inf
 # tval=2.919986
-# for CV=1e-6: erroneous in versions pre 0.9-9. 2. call gave =0
+# for CV=1e-6: erroneous in versions pre 0.9-9. The 2. call gave =0
 # OwensQ(nu=2, t= 2.919986, delta= 243033,   0, 152838.8) ==0
 # OwensQ(nu=2, t=-2.919986, delta=-388112.3, 0, 152838.8) ==1
 # for CV=0 - no longer staistics
