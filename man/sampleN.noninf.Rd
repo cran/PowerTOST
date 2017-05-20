@@ -69,7 +69,25 @@ Defaults to 100. Adaption only in rare cases needed.
 \details{
 The sample size is calculated via iterative evaluation of \code{power.noninf()}.\cr
 Start value for the sample size search is taken from a large sample approximation.\cr
-The sample size is bound to 4 as minimum.
+The sample size is bound to 4 as minimum.\cr\cr
+
+\strong{Notes on the underlying hypotheses}\cr
+If the supplied margin is < 0 (\code{logscale=FALSE}) or < 1 (\code{logscale=TRUE}), 
+then it is assumed higher response values are better. The hypotheses are\cr
+\code{H0: theta0 <= margin vs. H1: theta0 > margin}\cr
+where \code{theta0 = mean(test)-mean(reference)} if \code{logscale=FALSE}\cr
+or\cr
+\code{H0: log(theta0) <= log(margin) vs. H1: log(theta0) > log(margin)}\cr
+where \code{theta0 = mean(test)/mean(reference)} if \code{logscale=TRUE}.\cr\cr
+
+If the supplied margin is > 0 (\code{logscale=FALSE}) or > 1 (\code{logscale=TRUE}), 
+then it is assumed lower response values are better. The hypotheses are\cr
+\code{H0: theta0 >= margin vs. H1: theta0 < margin}\cr
+where \code{theta0 = mean(test)-mean(reference)} if \code{logscale=FALSE}\cr
+or\cr
+\code{H0: log(theta0) >= log(margin) vs. H1: log(theta0) < log(margin)}\cr
+where \code{theta0 = mean(test)/mean(reference)} if \code{logscale=TRUE}.\cr
+This latter case may also be considered as 'non-superiority'.
 }
 \value{
 A data.frame with the input settings and results will be returned.\cr

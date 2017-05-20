@@ -9,12 +9,13 @@ importFrom(graphics, abline, box, close.screen, legend, par, plot, points,
            screen, split.screen,  segments, text, mtext, grid)
 importFrom(grDevices, colorRampPalette)
 importFrom(stats, dnorm, pnorm, qnorm, rnorm, dt, pt, qt, dchisq, qchisq, rchisq, 
-           qf, rf, df, uniroot, integrate, optim, binom.test, coef, lm.fit, 
-           .lm.fit, model.matrix, reshape)
+           qf, rf, df, uniroot, integrate, optim, binom.test, coef, confint, 
+           lm.fit, .lm.fit, lm, model.matrix, reshape)
 importFrom(utils, tail, head, read.table, flush.console, setTxtProgressBar,
            txtProgressBar)
 #importFrom(pracma, quad2d)
 importFrom(cubature, hcubature)
+importFrom(TeachingDemos, shadowtext)
 
 # Export all names except those beginning with .
 # exportPattern("^[^\\.]")

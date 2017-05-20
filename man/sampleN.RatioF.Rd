@@ -9,8 +9,8 @@ Fieller's confidence ('fiducial') interval.
 }
 \usage{
 sampleN.RatioF(alpha = 0.025, targetpower = 0.8, theta1 = 0.8, theta2, 
-              theta0 = 0.95, CV, CVb, design = "2x2", 
-              print = TRUE, details = FALSE, imax=100, setseed=TRUE)
+               theta0 = 0.95, CV, CVb, design = "2x2", 
+               print = TRUE, details = FALSE, imax=100, setseed=TRUE)
 }
 \arguments{
   \item{alpha}{
@@ -29,7 +29,7 @@ Upper bioequivalence limit. Typically 1.25.\cr
 Is set to \code{1/theta1} if missing.
   }
   \item{theta0}{
-True ('null') assumed bioequivalence ratio. Typically set to 0.95.
+'True' or assumed bioequivalence ratio. Typically set to 0.95.
   }
   \item{CV}{
 Coefficient of variation as ratio. In case of \code{design="parallel"} this is

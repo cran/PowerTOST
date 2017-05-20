@@ -27,7 +27,7 @@ Upper bioequivalence limit. Typically 1.25.\cr
 Is set to \code{1/theta1} if missing.
 }
   \item{theta0}{
-True ('null') assumed bioequivalence ratio. Typically set to 0.95 for planning.
+'True' or assumed bioequivalence ratio. Typically set to 0.95 for planning.
 }
   \item{CV}{
 Coefficient of variation as ratio. In case of \code{design="parallel"} this is
