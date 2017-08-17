@@ -10,7 +10,7 @@ designs covered.
 }
 \usage{
 expsampleN.TOST(alpha = 0.05, targetpower = 0.8, logscale=TRUE, theta0, 
-                theta1, theta2, CV, design = "2x2", robust = FALSE, dfCV,
+                theta1, theta2, CV, design = "2x2", robust = FALSE, 
                 prior.type = c("CV", "theta0", "both"), prior.parm = list(),
                 method = c("exact", "approx"), print = TRUE, details)
 }
@@ -27,7 +27,7 @@ Should the data used on log-transformed or on original scale? TRUE or FALSE.\cr
 Defaults to TRUE.
   }  
   \item{theta0}{
-Assumed 'true' (or 'observed' in case of \code{prior.type != "CV"}) bioequivalence 
+Assumed \sQuote{true} (or \sQuote{observed} in case of \code{prior.type != "CV"}) bioequivalence 
 ratio or difference.\cr
 Typically set to 0.95 (default if missing) if \code{logscale=TRUE}.
 Defaults to 0.05 if \code{logscale=FALSE}.
@@ -53,14 +53,9 @@ See \code{known.designs()} for designs covered in this package.
   }
   \item{robust}{
 Defaults to FALSE. With that value the usual degrees of freedom will be used.\cr
-Set to \code{TRUE} will use the degrees of freedom according to the 'robust' evaluation
+Set to \code{TRUE} will use the degrees of freedom according to the \sQuote{robust} evaluation
 (aka Senn's basic estimator). These df are calculated as \code{n-seq}.\cr
 See \code{known.designs()$df2} for designs covered in this package.
-  }
-  \item{dfCV}{
-Alias of the component \code{df} in argument \code{prior.parm} for backward
-compatibility.\cr
-This argument is deprecated and will be removed in next versions.
   }
   \item{prior.type}{
 Specifies which parameter uncertainty should be accounted for. In case of 
@@ -76,7 +71,7 @@ A list of parameters expressing the prior information about the
 variability and/or treatment effect. Possible components are \code{df}, 
 \code{SEM}, \code{m}, \code{design}.\cr
 For \code{prior.type = "CV"} the degrees of freedom from the prior trial are
-required. This information can be provided by speciffying the single component 
+required. This information can be provided by specifying the single component 
 \code{df} or the combination consisting of \code{m} and \code{design}.\cr
 For \code{prior.type != "CV"} the degrees of freedom and the standard error of
 the treatment difference are required. This information can be provided by 
@@ -90,7 +85,7 @@ In that case the expected power will be calculated as expected value of the
 power with respect to the (prior) distribution of the respective parameter(s).\cr
 Set to \code{method="approx"} the expected power according to the 
 approximate formulas given in the book from Julious or in the Julious/Owen 
-paper will be calculated (using non-central t); this only affects 
+paper will be calculated (using non-central \emph{t}); this only affects 
 \code{prior.type = "CV"}.
 }
   \item{print}{
@@ -114,27 +109,10 @@ obtained.
 Note that in case of \code{prior.type = "both"} the calculation may still take several seconds.
 
 Note also that the expected power is always bounded above by the so-called
-probability of technical success (PTS) which may be a value less than 1. 
+probability of technical success (\acronym{PTS}) which may be a value less than 1. 
 Therefore, it may be possible that it is either not possible to calculate the 
 required sample size at all or that the sample size gets very large 
-if the given targetpower is less but close to the PTS.\cr\cr
-
-\strong{Notes on the underlying hypotheses}\cr
-If the supplied margin is < 0 (\code{logscale=FALSE}) or < 1 (\code{logscale=TRUE}), 
-then it is assumed higher response values are better. The hypotheses are\cr
-\code{H0: theta0 <= margin vs. H1: theta0 > margin}\cr
-where \code{theta0 = mean(test)-mean(reference)} if \code{logscale=FALSE}\cr
-or \cr
-\code{H0: log(theta0) <= log(margin) vs. H1: log(theta0) > log(margin)}\cr
-where \code{theta0 = mean(test)/mean(reference)} if \code{logscale=TRUE}.\cr\cr
-If the supplied margin is > 0 (\code{logscale=FALSE}) or > 1 (\code{logscale=TRUE}), 
-then it is assumed lower response values are better. The hypotheses are\cr
-\code{H0: theta0 >= margin vs. H1: theta0 < margin}\cr
-where \code{theta0 = mean(test)-mean(reference)} if \code{logscale=FALSE}\cr
-or \cr
-\code{H0: log(theta0) >= log(margin) vs. H1: log(theta0) < log(margin)}\cr
-where \code{theta0 = mean(test)/mean(reference)} if \code{logscale=TRUE}.\cr
-This latter case may also be considered as 'non-superiority'.
+if the given targetpower is less but close to the \acronym{PTS}.
 }
 \value{
 A data.frame with the input values and the result of the sample size estimation.\cr
