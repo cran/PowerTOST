@@ -73,7 +73,11 @@ variability and/or treatment effect. Possible components are \code{df},
 For \code{prior.type = "CV"} the degrees of freedom from the prior trial are
 required. This information can be provided by specifying the single component 
 \code{df} or the combination consisting of \code{m} and \code{design}.\cr
-For \code{prior.type != "CV"} the degrees of freedom and the standard error of
+For \code{prior.type = "theta0"} the standard error of the treatment difference 
+from the prior trial is required. This information can be provided by specifying
+the single component \code{SEM} or the combination consisting of 
+\code{m} and \code{design}.\cr
+For \code{prior.type = "both"} the degrees of freedom and the standard error of
 the treatment difference are required. This information can be provided by 
 specifying the combination consisting of \code{df} and \code{SEM} or via the 
 combination \code{m} and \code{design}.\cr
@@ -101,12 +105,10 @@ and TRUE otherwise.
 }
 \details{
 The sample size is calculated based on iterative evaluation of expected power.
-
 The starting value of the sample size search is taken from a large sample 
 approximation if \code{prior.type = "CV"}. Else an empirical start value is
-obtained.
-
-Note that in case of \code{prior.type = "both"} the calculation may still take several seconds.
+obtained. Note that in case of \code{prior.type = "both"} the calculation may 
+still take several seconds.
 
 Note also that the expected power is always bounded above by the so-called
 probability of technical success (\acronym{PTS}) which may be a value less than 1. 

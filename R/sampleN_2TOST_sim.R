@@ -1,93 +1,7 @@
 #-----------------------------------------------------------------------------
-# Author: dlabes
-# Adapted for power.2TOST by Benjamin Lang
+# Author(s): dlabes, Benjamin Lang
 #-----------------------------------------------------------------------------
-
-# ----- helper functions for sampleN.TOST and other --------------------------
-# Sample size for a desired power, large sample approx.
-# bk = design constant, see known.designs()
-.sampleN0 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
-                      se, steps=2, bk=2, diffmthreshold=0.03)
-{
-  z1 <- qnorm(1-alpha)
-  # value diffmthreshold=0.04 corresponds roughly to log(0.96)
-  # with lower values there are many steps around between 0.95 and 1
-  # in sampleN.TOST
-  if (abs(diffm)>diffmthreshold) z2 <- qnorm(targetpower) else {
-    z2 <- qnorm(1-(1-targetpower)*0.5) # for diffm ~0 (log: theta0=1) 1-beta/2
-    diffm <- 0
-  }
-  n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
-  n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
-  
-  n0 <- ceiling(pmax(n01,n02))
-  #make an even multiple of step (=2 in case of 2x2 cross-over)
-  n0 <- steps*trunc(n0/steps)
-  
-  # minimum sample size will be checked outside
-  return(n0)
-}
-
-# pure Zhang's formula. doesn't work sufficiently?
-# Why? Don't know any more DL Jan 2015
-# examine_n0 shows superiority of this function over next one for 2x2
-# Paul Zhang (2003)
-# A Simple Formula for Sample Size Calculation in Equivalence Studies 
-# Journal of Biopharmaceutical Statistics, 13:3, 529-538
-.sampleN0_2 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
-                        se, steps=2, bk=2)
-{
-  # handle unsymmetric limits, Zhang's c0
-  c0 <- 0.5*exp(-7.06*(ltheta1+ltheta2)/(ltheta1-ltheta2))
-  # Zhang's formula, large sample
-  beta <- 1-targetpower
-  z1 <- qnorm(1-alpha)
-  fz <- ifelse(diffm<0, c0*exp(-7.06*diffm/ltheta1), c0*exp(-7.06*diffm/ltheta2))
-  z2 <- abs(qnorm((1-fz)*beta))
-  
-  n01<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta1)))^2;
-  n02<-(bk/2)*((z1+z2)*(se*sqrt(2)/(diffm-ltheta2)))^2;
-  
-  n0 <- pmax(n01,n02) # or ceiling/round?
-  # make an even multiple of step (=2 in case of 2x2 cross-over)
-  n0 <- steps*trunc(n0/steps)
-  
-  return(n0)
-}
-
-# mixture of old code and Zhang's formula 
-.sampleN0_3 <- function(alpha=0.05, targetpower=0.8, ltheta1, ltheta2, diffm, 
-                        se, steps=2, bk=2)
-{
-  # transform to limits symmetric around zero (if they are not)
-  locc    <- (ltheta1+ltheta2)/2
-  diffm   <- diffm - locc
-  ltheta1 <- ltheta1 - locc
-  ltheta2 <- -ltheta1
-  delta   <- abs((ltheta2-ltheta1)/2)
-  
-  z1   <- qnorm(1-alpha)
-  beta <- 1-targetpower
-  
-  c  <- abs(diffm/delta)
-  # probability for second normal quantil
-  # c=0.2 corresponds roughly to exp(diffm) >0.95 or < 1.05 if ltheta1/ltheta2
-  # are the logs of 0.8/1.25
-  # c=0.35 corresponds roughly to >0.925 ... < 1.08
-  # outside these we use 1-beta, inside smooth change to 1-beta/2
-  p2 <- ifelse(c<0.35, 1-(1-0.5*exp(-7.06*c))*beta, 1-beta)
-  z2 <- qnorm(p2)
-  # difference for denominator
-  dn <- ifelse(diffm<0, diffm-ltheta1, diffm-ltheta2)
-  n0 <- (bk/2)*((z1+z2)*(se*sqrt(2)/dn))^2
-  # make an even multiple of steps (=2 in case of 2x2 cross-over)
-  n0 <- steps*trunc(n0/steps)
-  
-  return(n0)
-}
-
-#------------------------------------------------------------------------------
-# Sample size for a desired power: 
+# Sample size for a desired power (now based on sims): 
 # see known.designs() for covered experimental designs
 # theta1 if empty is set to 0.8 or -0.2 depending on logscale
 # diff if empty is set to 0.95 or 0.05 depending on logscale
@@ -96,7 +10,7 @@
 sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE, 
                           theta0, theta1, theta2, CV, rho, design="2x2", 
                           setseed=TRUE, robust=FALSE, print=TRUE, details=FALSE,
-                          imax=100)
+                          imax=100, nsims = 1e+05)
 {
   if (length(alpha) != 2)
     stop("Two alpha values must be given!")
@@ -117,8 +31,8 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
     stop("Correlation between the two endpoints must be given!")
   if (length(rho) != 1)
     stop("One rho must be given!")
-  if (rho < -1 || rho > 1)
-    stop("Correlation must be >= -1 and =< 1.") 
+  if (rho <= -1 || rho >= 1)
+    stop("Correlation must be > -1 and < 1.") 
   
   #number of the design and check
   d.no <- .design.no(design)
@@ -143,9 +57,10 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
   nmin <- nmin + steps*(nmin<n)
   # print the configuration:
   if (print) {
-    cat("\n+++++++++++ Equivalence test - 2 TOSTs +++++++++++\n")
+    cat("\n")
+    cat("+++++++++++ Equivalence test - 2 TOSTs +++++++++++\n")
     cat("            Sample size estimation\n")
-    cat("-----------------------------------------------\n")
+    cat("--------------------------------------------------\n")
     cat("Study design: ",d.name,"\n")
     if (details) { 
       cat("Design characteristics:\n")
@@ -169,10 +84,14 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
       stop("One assumed ratio is not between respective margins!", 
            call. = FALSE)
     }
+    diffm <- log(theta0)
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
-    diffm   <- log(theta0)
     se      <- CV2se(CV)
+    # variance - covariance matrix
+    sigma <- matrix(0, nrow=2, ncol=2)
+    diag(sigma) <- CV2mse(CV)
+    sigma[1,2]  <- sigma[2,1] <- rho*sqrt(sigma[1,1]*sigma[2,2])
     if (print) cat("log-transformed data (multiplicative model)\n\n")
   } else {
     if (missing(theta0)) 
@@ -192,23 +111,30 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
     diffm   <- theta0
     se      <- CV
     if (print) cat("untransformed data (additive model)\n\n")
+    # variance - covariance matrix
+    sigma <- matrix(0, nrow=2, ncol=2)
+    diag(sigma) <- CV^2 # ??? is this correct?
+    sigma[1,2]  <- sigma[2,1] <- rho*sqrt(sigma[1,1]*sigma[2,2])
   }
   
   if (print) {
-    cat("alpha = ",paste(as.character(alpha), collapse = ", "),
+    cat("alpha = ", paste(as.character(alpha), collapse = ", "),
         "; target power = ", targetpower,"\n", sep="")
-    cat("BE margins =",theta1,"...", theta2,"\n")
-    if (logscale) cat("True ratios = ",paste(as.character(theta0), 
+    cat("BE margins =", paste0(theta1, collapse=", "),"...", 
+        paste0(theta2, collapse=", "),"\n")
+    if (logscale) cat("True ratios = ", paste(as.character(theta0), 
                                                     collapse = ", "),
-                      "; CV = ",paste(as.character(CV), collapse = ", "),
+                      "; CV = ", paste(as.character(CV), collapse = ", "),
                       "\n", sep="")
-    else          cat("True diffs  = ",paste(as.character(theta0), 
+    else          cat("True diffs  = ", paste(as.character(theta0), 
                                                     collapse = ", "),
-                      "; SD = ",paste(as.character(CV), collapse = ", "),
+                      "; SD = ", paste(as.character(CV), collapse = ", "),
                       "\n", sep="")
-    cat("Correlation between the two parameters = ",rho,"\n", sep="")
+    cat("Correlation between the two metrics = ", rho,"\n", sep="")
   }
   
+  # -------------------------------------------------------------------------
+  # sample size search starts
   # if both theta0 are near acceptance limits then starting value may not be
   # ideal resulting in a lot of iteration steps
   idx.d <- which.max(abs(diffm))
@@ -217,26 +143,32 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
                     .sampleN0_3(alpha[2], targetpower, ltheta1[2], 
                                 ltheta2[2], diffm[2], se[2], steps, bk))
   df <- eval(dfe)
-  pow <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
-                      ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
-                      alpha = alpha, setseed = setseed)
+  Cfact <- bk/n
+  # we have to set the seed at each invocation, else we have different powers
+  # between power.2TOST() amd sampleN.2TOST()
+  if (setseed) set.seed(123456)
+  pow <- .prob.2TOST(ltheta0=diffm, alpha, df, Cfact, ltheta1, ltheta2, sigma, 
+                     rho, nsims)
   if (!isTRUE(all.equal(pow, targetpower, tolerance = 1e-04))) {
     n <- .sampleN0_3(min(alpha), targetpower, ltheta1[idx.d], ltheta2[idx.d], 
                      diffm[idx.d], max(se), steps, bk)
     df <- eval(dfe)
-    pow.tmp <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
-                            ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
-                            alpha = alpha, setseed = setseed)
+    Cfact <- bk/n
+    if (setseed) set.seed(123456)
+    pow.tmp <- .prob.2TOST(ltheta0=diffm, alpha, df, Cfact, ltheta1, ltheta2, 
+                           sigma, rho, nsims)
     if (abs(pow.tmp - targetpower) <= abs(pow - targetpower)) {
       pow <- pow.tmp
     } else {
       n <- n.tmp
       df <- eval(dfe)
+      Cfact <- bk/n
     }
   }
   if (n < nmin) {
     n <- nmin
     df <- eval(dfe)
+    Cfact <- bk/n
   }
   if (details) {
     cat("\nSample size search (ntotal)\n")
@@ -261,9 +193,10 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
     n    <- n-steps     # step down if start power is too high
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
-                        ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
-                        alpha = alpha, setseed = setseed)
+    Cfact <- bk/n
+    if (setseed) set.seed(123456)
+    pow <- .prob.2TOST(ltheta0=diffm, alpha, df, Cfact, ltheta1, ltheta2, 
+                       sigma, rho, nsims)
     # do not print first step down
     if (details) cat( n," ", formatC(pow, digits=6),"\n")
     if (iter>imax) break  
@@ -276,9 +209,10 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
     n <- n+steps
     iter <- iter+1
     df   <- eval(dfe)
-    pow <- .prob.2TOST(ltheta0 = diffm, se = se*sqrt(bk/n), df = df,
-                        ltheta1 = ltheta1, ltheta2 = ltheta2, rho = rho,
-                        alpha = alpha, setseed = setseed)
+    Cfact <- bk/n
+    if (setseed) set.seed(123456)
+    pow <- .prob.2TOST(ltheta0=diffm, alpha, df, Cfact, ltheta1, ltheta2, 
+                       sigma, rho, nsims)
     if (details) cat( n," ", formatC(pow, digits=6, format="f"),"\n")
     if (iter>imax) break 
   }

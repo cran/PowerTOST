@@ -1,7 +1,22 @@
+Version 1.4-7
+2018-04-12 (dedicated to the birthday of Alfie Schuetz :-))
+      - Bug corrected in functions using expected power
+      - Function type1error.2TOST() no longer available since it suffers from
+        insufficient precision to obtain the type 1 error (TIE) via simulations.
+        Due to the intersection-union principle the TIE is always upper bounded
+        to alpha by theory.
+      - Function power.2TOST() now based on simulations to obtain the power 
+        of 2 TOSTs (statistical flaw in 4-dimensional t-distribution approach).
+      - sampleN.2TOST and man page adapted according to this change.
+      - regulator="FDA" implemented in scABEL.ad().
+      - New function power.RSABE2L.sds() which implements the 'exact' based
+        method for RSABE (ncTOST) of the two Laszlos.
+        Documentation included.
+
 Version 1.4-6
 Released 2017-08-17
-      - Bug fixed in functions relying in simulations if nsims>1e7.
-      - Functions CVwRfromU() / U2CVwR() calculate CVwR from the upper expanded 
+      - Bug fixed in functions relying on simulations if nsims>1e7.
+      - Functions CVwRfromU() / U2CVwR() to calculate CVwR from the upper expanded 
         limit of an ABEL study according to EMA's or Health Canada's rules.
       - Power and sample size for TOST: Argument alpha restricted to scalar.
         Internal functions now allow length = 2 (different alpha's
@@ -18,7 +33,7 @@ Released 2017-05-19
         mentioned instead of 'True ratio'.
       - Two new test scrips in /test subdirectory added: test_ABEL.R and
         test_RSABE which recalculate the sample size tables given in 
-        Thotfalusi & Endrenyi "Sample Sizes for Designing Bioequivalence Studies 
+        Tothfalusi & Endrenyi "Sample Sizes for Designing Bioequivalence Studies 
         for Highly Variable Drugs". Contributed by Helmut.
       - power.scABEL.sdsims() now has an argument design_dta to specify the
         design via a data.frame. May be useful for considering missing data.
