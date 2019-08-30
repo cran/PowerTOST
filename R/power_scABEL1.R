@@ -2,7 +2,7 @@
 # small CV correction of the ABE contribution (CV<=0.2)
 power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,   
                           design=c("2x3x3", "2x2x4", "2x2x3"), regulator,
-                          nsims=1E5, details=FALSE, setseed=TRUE)
+                          nsims, details=FALSE, setseed=TRUE)
 {
   if (missing(CV)) stop("CV must be given!")
   if (missing(n))  stop("Number of subjects n must be given!")
@@ -23,6 +23,15 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   # since the model doesn't allow such term
   CVwT <- CV[1]
   if (length(CV)==2) CVwR <- CV[2] else CVwR <- CVwT
+  
+  if (missing(nsims)) { # not given
+    if (theta0 == scABEL(CVwR)[["lower"]] | theta0 == scABEL(CVwR)[["upper"]]) {
+      nsims <- 1e6 # simulating TIE
+    } else {
+      nsims <- 1e5 # simulating power
+    }
+  }
+
   s2wT <- log(1.0 + CVwT^2)
   s2wR <- log(1.0 + CVwR^2)
   
@@ -52,11 +61,11 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     #sd2  <- (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02, wrong
     # simulations with s2D=0 show:
     Emse  <- (s2wT + 2.0*s2wR)/3
-    cvec <- c(1,2)
     # warning in case of CVwR != CVwT
     if (abs(s2wT-s2wR)>1e-4){
-      warning(paste("Heteroscedasticity in the 2x3x3 design may led", 
-                    "to poor accuracy of power!"), call.=FALSE)
+      warning(paste("Heteroscedasticity in the 2x3x3 design may lead", 
+                    "to poor accuracy of power;\nconsider the function",
+                    "power.scABEL.sdsims() instead."), call.=FALSE)
     }
   }
   if (design=="2x2x4") {
@@ -66,7 +75,6 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     dfe   <- parse(text="3*n-4", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     Emse  <- (s2wT + s2wR)/2
-    cvec  <- c(1,1)
   }
   if (design=="2x2x3") { # TRT|RTR design or TRR|RTT
     seqs  <- 2
@@ -75,7 +83,6 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     dfe   <- parse(text="2*n-3", srcfile=NULL)
     dfRRe <- parse(text="n/2-1", srcfile=NULL) # balanced design
     Emse  <- (s2wT + s2wR)/2
-    cvec  <- c(2,1) # dummy
   }
   if (length(n)==1){
     # for unbalanced designs we divide the ns by ourself
@@ -113,7 +120,7 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   } 
   
   if(setseed) set.seed(123456)
-  p <- .pwr.ABEL.ANOVA(mlog, sdm, Ccon=C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT, 
+  p <- .pwr.ABEL.ANOVA(mlog, sdm, Ccon=C2, Emse, df, s2wR, dfRR, s2wT, dfTT, 
                        design, nsims, CVswitch, r_const, CVcap, pe_constr,
                        ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
   
@@ -123,7 +130,7 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
             formatC(ptm["elapsed"], digits=2), "\n")
     #print(ptm)
     # return the vector of all counts
-    names(p) <- c("p(BE)", "p(BE-wABEL)", "p(BE-pe)", "p(BE-ABE)")
+    names(p) <- c("p(BE)", "p(BE-ABEL)", "p(BE-pe)", "p(BE-ABE)")
     if (!pe_constr) p <- p[-3] # without pe constraint
     p
   } else {
@@ -134,7 +141,7 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
 
 # --- working horse for power calculation
 # sims based on EMA ANOVA
-.pwr.ABEL.ANOVA <- function(mlog, sdm, Ccon, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT, 
+.pwr.ABEL.ANOVA <- function(mlog, sdm, Ccon, Emse, df, s2wR, dfRR, s2wT, dfTT, 
                             design, nsims, CVswitch, r_const, CVcap, pe_constr, 
                             ln_lBEL, ln_uBEL, alpha)
 {
@@ -142,8 +149,6 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   s2switch <- log(1.0 + CVswitch^2)
   s2cap    <- log(1.0 + CVcap^2)
   capABEL  <- sqrt(s2cap)*r_const
-  
-  denom    <- sum(cvec)
   
   # result vector
   counts        <- rep.int(0, times=4)
@@ -171,13 +176,13 @@ power.scABEL1 <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
       # simulate sample mse not for this design
       # s2wT is empirical because dfTT is not defined and  
       # artificially set to equal dfRR
-      mses  <- (cvec[1]*s2wTs + cvec[2]*s2wRs)/denom
+      mses  <- (s2wTs + 2*s2wRs)/3
     } 
     if (design=="2x2x4"){
       # simulate sample mse 
       mses_ABE  <- Emse*rchisq(nsi, df)/df
       #--- 'mean' of both attempts V1.1-02/V1.1-03 in case of 2x2x4
-      mses  <- (mses_ABE + (cvec[1]*s2wTs + cvec[2]*s2wRs)/denom)/2
+      mses  <- (mses_ABE + (s2wTs + s2wRs)/2)/2
     }
     if (design=="2x2x3"){
       # simulate sample mse 

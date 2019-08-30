@@ -125,9 +125,9 @@ power.RSABE2L.isc <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   mlog <- log(theta0)
   
   if(setseed) set.seed(123456)
-  p <- .pwr.RSABE.isc(mlog, sdm, C3, Emse, df, s2wT, s2wR, dfRR, k_est, nsims, 
-                      CVswitch, r_const, pe_constr, CVcap, SABE_test=SABE_test,
-                      ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
+  p <- .pwr.SABE.isc(mlog, sdm, C3, Emse, df, s2wT, s2wR, dfRR, k_est, nsims, 
+                     CVswitch, r_const, pe_constr, CVcap, SABE_test=SABE_test,
+                     ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     
   if (details) {
     ptm <- summary(proc.time()-ptm)
@@ -144,10 +144,11 @@ power.RSABE2L.isc <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   }
 }
 
-# working horse of RSABE, estimation via ISC
-.pwr.RSABE.isc <- function(mlog, sdm, C3, Emse, df, s2wT, s2wR, dfRR, k_est, nsims, 
-                           CVswitch, r_const, pe_constr, CVcap, SABE_test="exact",
-                           ln_lBEL, ln_uBEL, alpha=0.05)
+# ----------------------------------------------------------------------------
+# working horse of SABE, estimation via ISC
+.pwr.SABE.isc <- function(mlog, sdm, C3, Emse, df, s2wT, s2wR, dfRR, k_est, 
+                          nsims, CVswitch, r_const, pe_constr, CVcap, 
+                          SABE_test="exact", ln_lBEL, ln_uBEL, alpha=0.05)
 {
   tval     <- qt(1-alpha,df)
   chisqval <- qchisq(1-alpha, dfRR)
@@ -208,13 +209,11 @@ power.RSABE2L.isc <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
       # different, also the effect size
       # see f.i. eqn (17a, 17b) of the 2016 paper
       #
-      # avoid warnings wrt to full precision in pnt
-      #op2 <- options(warn=-1)
       # df for non-central t-distri; Which one?
       # here dfRR equals df, except for TRT|RTR
         #Ltheta <- qt(p=1-alpha, df=dfRR, ncp=-(Hf/k)*r_const)
-        # next line avoids warnings
-        Ltheta <- -qt(p=alpha, df=dfRR, ncp=(Hf/k)*r_const)
+        # suppress warnings wrt to full precision in pnt
+        Ltheta <- suppressWarnings(-qt(p=alpha, df=dfRR, ncp=(Hf/k)*r_const))
         # using non-central f distribution
         # doesn't give the same values!!!
         #Ltheta <- -sqrt(qf(p=alpha, df1=1, df2=dfRR, ncp=(r_const*Hf/k)^2))
@@ -225,7 +224,6 @@ power.RSABE2L.isc <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
         #Utheta <- qt(alpha, dfRR, +r_const/k)
         #Ltheta <- -qt(alpha, dfRR, +r_const/k)
         Utheta <- -Ltheta # is this in all cases correct?
-      #options(op2)
       # effect size
       es <- (pes/sqrt(s2wRs))/k
       # 2016 paper
@@ -282,4 +280,29 @@ power.RSABE2L.isc <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   } # end over chunks
   # return the pBEs
   counts/nsims
+}
+
+# ----------------------------------------------------------------------------
+# working horse for RSABE (FDA) based on .pwr.SABE.isc
+.power.RSABE <- function(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
+                         CVswitch, r_const, pe_constr, CVcap,
+                         ln_lBEL, ln_uBEL, alpha=0.05)
+{
+  pwr <- .pwr.SABE.isc(mlog, sdm, C3, Emse, df, s2wT=NULL, s2wR, dfRR, k_est=NULL, 
+                       nsims, CVswitch, r_const, pe_constr, CVcap, 
+                       SABE_test="fda", ln_lBEL, ln_uBEL, alpha=alpha)
+  pwr
+}
+
+# ----------------------------------------------------------------------------
+# working horse for ABEL with ISC est. based on .pwr.SABE.isc
+# k_est is only used with SABE_test="exact"
+.pwr.ABEL.ISC <- function(mlog, sdm, C3, Emse, df, s2wR, dfRR, nsims, 
+                            CVswitch, r_const, pe_constr, CVcap,
+                            ln_lBEL, ln_uBEL, alpha=0.05)
+{
+  pwr <- .pwr.SABE.isc(mlog, sdm, C3, Emse, df, s2wT=NULL, s2wR, dfRR, k_est=NULL, 
+                       nsims, CVswitch, r_const, pe_constr, CVcap, 
+                       SABE_test="abel", ln_lBEL, ln_uBEL, alpha=alpha)
+  pwr
 }

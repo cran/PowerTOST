@@ -24,11 +24,10 @@ convention commonly set to 0.05.
 }
   \item{targetpower}{
 Power to achieve at least. Must be >0 and <1. Typical values are 0.80
-to 0.90 (i.e., 80\% to 90\%). Defaults to 0.80 if not given explicitly.
+to 0.90 (\emph{i.e.}, 80\% to 90\%). Defaults to 0.80 if not given explicitly.
 }
   \item{theta0}{
-\sQuote{True} or assumed bioavailability ratio. Defaults to 0.90 if not
-given explicitly.
+\sQuote{True} or assumed T/R ratio. Defaults to 0.90 according to the two \enc{Laszlós}{Laszlos} if not given explicitly.
 }
   \item{theta1}{
 Conventional lower \acronym{ABE} limit to be applied in the mixed procedure
@@ -54,10 +53,10 @@ Intra-subject coefficient(s) of variation as ratio (not percent).
 }
   \item{design}{
 Design of the study to be planned.\cr
-\code{"2x3x3"} is the partial replicate design (TRR|RTR|RRT).\cr
-\code{"2x2x3"} is the 2-sequence 3-period full replicate design (TRT|RTR).\cr
-\code{"2x2x4"} is the 2-sequence 4-period full replicate design (TRTR|RTRT).\cr
-Defaults to \code{"2x3x3"}.
+\code{"2x3x3"} is the partial replicate design.\cr
+\code{"2x2x4"} is a full replicate design with 2 sequences and 4 periods.\cr
+\code{"2x2x3"} is a full replicate design with 2 sequences and 3 periods.\cr
+Defaults to \code{"2x3x3"}. Details are given the section about Designs.
 }
   \item{regulator}{
 Regulatory settings for the widening of the \acronym{BE} acceptance limits.
@@ -95,7 +94,7 @@ size is given.
 }
   \item{alpha.pre}{
 Pre-specified alpha (optional). Must be \code{<=alpha}. \acronym{ABEL} will be
-performed at level \code{alpha.pre} and the \acronym{TIE} assessed at level \code{alpha}.\cr
+performed at level \verb{alpha.pre} and the \acronym{TIE} assessed at level \code{alpha}.\cr
 Less powerful than adjusting alpha but an alternative in the critical
 region of maximum inflation of the \acronym{TIE}. In certain scenarios
 Bonferroni’s 0.025 is not sufficient to preserve the Type I Error.\cr
@@ -107,12 +106,13 @@ random number generator. To avoid differences in power for different
 runs \code{set.seed(123456)} is issued if \code{setseed=TRUE} (default).
 }
 \item{sdsims}{
-If \code{FALSE} (default) power is estimated by the respective statistics.
-Recommended for the full replicate designs for speed reasons.\cr
-Set to \code{TRUE} if results of \code{\link{power.scABEL}} are expected to be inaccurate
-(small sample sizes and/or heteroscedasticity) and subject data (via \code{\link{power.scABEL.sdsims}}) should be simulated instead. Very time consuming (easily 100times slower)!\cr
-If \code{design="2x3x3"} subject simulations are recommended -- even if homoscedasticity is assumed.\cr
-Subject data simulations are not supported for \code{regulator="HC"}.
+If \code{FALSE} (default) power is estimated by the respective \sQuote{key} statistics.
+Recommended for speed reasons.\cr
+Set to \code{TRUE} if results of \code{\link{power.scABEL}} are expected to
+be inaccurate (partial replicate design with unbalanced sequences and/or heteroscedasticity
+where CVwT > CVwR) and subject data via \code{\link{power.scABEL.sdsims}} should
+be simulated instead. Very time consuming (easily 100times slower)! Subject data
+simulations are only supported for \code{regulator="EMA"}.
 }
 \item{progress}{
 Set to \code{TRUE} if a progress bar should be displayed. Ignored if \code{sdsims=FALSE}.
@@ -125,18 +125,18 @@ Simulations for the \acronym{TIE} are performed at the upper (expanded) limit \e
 of the acceptance range. Due to the symmetry around 1 results are valid for the lower
 (expanded) limit \emph{L} as well.\cr
 \emph{U} at the \acronym{EMA}’s and Health Canada’s \code{CVswitch} and
-\code{CVcap}:\preformatted{scABEL(CV=0.3, regulator="EMA")[["upper"]]; scABEL(CV=0.3, regulator="HC")[["upper"]]
+\code{CVcap}:\preformatted{scABEL(CV=0.3, reg="EMA")[["upper"]]; scABEL(CV=0.3, reg="HC")[["upper"]]
 [1] 1.25
 [1] 1.25
-scABEL(CV=0.5, regulator="EMA")[["upper"]]; scABEL(CV=0.57382, regulator="HC")[["upper"]]
+scABEL(CV=0.5, reg="EMA")[["upper"]]; scABEL(CV=0.57382, reg="HC")[["upper"]]
 [1] 1.43191
 [1] 1.5}
-Simulated studies are evaluated by ANOVA (\sQuote{Method A}) as recommended in the
+Simulated studies are evaluated by ANOVA (Method A) as recommended in the
 \acronym{EMA}’s Q&A-document and by intra-subject contrasts if \code{regulator="HC"}.
-Health Canada requires a mixed-effects model which cannot be implemented in R. However,
+Health Canada requires a mixed effects model which cannot be implemented in R. However,
 intra-subjects contrasts are a sufficiently close approximation.\cr
 
-If an inflation of the \acronym{TIE} is expected (i.e., \code{>alpha}), alpha is
+If an inflation of the \acronym{TIE} is expected (\emph{i.e.}, \code{>alpha}), alpha is
 iteratively adjusted until at least the target power is reached and the consumer
 risk is maintained (\code{<=alpha}). For details about the algorithm see the
 respective section of \code{\link{scABEL.ad}}.
@@ -144,29 +144,20 @@ respective section of \code{\link{scABEL.ad}}.
 \value{
 Returns a data.frame with the input and results for adjusted alpha,
 type I error, sample size, and achieved power.\cr
-The \dQuote{Sample size} column contains the total sample size.
+The \code{Sample size} column contains the total sample size.
 If no adjustment is necessary, \code{NA} will be returned in the
-\dQuote{alpha.adj} column and other results are identical to the ones
+\code{alpha.adj} column and other results are identical to the ones
 obtained by \code{\link{sampleN.scABEL}}.
 }
 \references{
-\enc{Tóthfalusi}{Tothfalusi} L, \enc{Endrényi}{Endrenyi} L.\cr
-\emph{Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs}\cr
-J Pharm Pharmaceut Sci. 2011;15(1):73--84. \href{http://ejournals.library.ualberta.ca/index.php/JPPS/article/download/11612/9489}{free download}
+\enc{Tóthfalusi}{Tothfalusi} L, \enc{Endrényi}{Endrenyi} L. \emph{Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs.} J Pharm Pharmaceut Sci. 2011;15(1):73--84. \href{http://ejournals.library.ualberta.ca/index.php/JPPS/article/download/11612/9489}{open access}
 
-Wonnemann M, \enc{Frömke}{Froemke} C, Koch A.\cr
-\emph{Inflation of the Type I Error: Investigations on Regulatory Recommendations for
-Bioequivalence of Highly Variable Drugs}\cr
-Pharm Res. 2015;32(1):135--43. \doi{10.1007/s11095-014-1450-z}
+Wonnemann M, \enc{Frömke}{Froemke} C, Koch A. \emph{Inflation of the Type I Error: Investigations on Regulatory Recommendations for Bioequivalence of Highly Variable Drugs.} Pharm Res. 2015;32(1):135--43. \doi{10.1007/s11095-014-1450-z}
 
-\enc{Muñoz}{Munoz} J, Alcaide D, \enc{Ocaña}{Ocana} J.\cr
-\emph{Consumer’s risk in the EMA and FDA regulatory approaches for bioequivalence in highly variable drugs}\cr
-Stat Med. 2015;35(12):1933--43. \doi{10.1002/sim.6834}
+\enc{Muñoz}{Munoz} J, Alcaide D, \enc{Ocaña}{Ocana} J. \emph{Consumer’s risk in the EMA and FDA regulatory approaches for bioequivalence in highly variable drugs.} Stat Med. 2015;35(12):1933--43. \doi{10.1002/sim.6834}
 
-Labes D, \enc{Schütz}{Schuetz} H.\cr
-\emph{Inflation of Type I Error in the Evaluation of Scaled Average Bioequivalence, 
-and a Method for its Control}\cr
-Pharm Res. 2016;33(11):2805--14. \doi{10.1007/s11095-016-2006-1}
+Labes D, \enc{Schütz}{Schuetz} H. \emph{Inflation of Type I Error in the Evaluation of Scaled Average Bioequivalence, 
+and a Method for its Control.} Pharm Res. 2016;33(11):2805--14. \doi{10.1007/s11095-016-2006-1}
 }
 \author{
 H. \enc{Schütz}{Schuetz}
@@ -177,7 +168,17 @@ since the break down of the total subject number in case of unbalanced
 sequences is not unique. Moreover the formulas used are only for
 balanced designs.
 }
-
+\section{Designs}{
+Although some designs are more \sQuote{popular} than others, sample size estimations are valid for \emph{all} of the following designs:
+  \tabular{ll}{
+    \code{"2x2x4"} \tab TRTR | RTRT\cr
+    \tab TRRT | RTTR\cr
+    \tab TTRR | RRTT\cr
+    \code{"2x2x3"} \tab TRT | RTR\cr
+    \tab TRR | RTT\cr
+    \code{"2x3x3"} \tab TRR | RTR | RRT
+  }
+}
 \section{Warning }{
 The sample size estimation for extreme \code{theta0} (<0.83 or >1.21) may be time
 consuming and will eventually also fail since the start values chosen are
@@ -201,16 +202,16 @@ the power value agreement to those obtained from simulations via subject data.
 # using all the defaults:
 # TRR|RTR|RRT, target power 80\%, assumed ratio 0.90, 1E+6 simulated studies,
 # EMA regulatory settings (ABE limits, PE constraint 0.8 - 1.25)
-\dontrun{
+\donttest{
 sampleN.scABEL.ad(CV = 0.3)}
 # should result in n 60, power 0.8022.
 # Note: Without adjustment by sampleN.scABEL(): n 54, power 0.8159
 # Easier to show the details:
-\dontrun{
+\donttest{
 sampleN.scABEL.ad(CV = 0.3, details = TRUE)}
 #
 # TRTR|RTRT, target power 90\%, pre-specified alpha 0.025
-\dontrun{
+\donttest{
 sampleN.scABEL.ad(CV = 0.3, targetpower = 0.9, design = "2x2x4", alpha.pre = 0.025)}
 # should result in n 60, power 0.9021; pre-specified alpha justified.
 }

@@ -1,18 +1,21 @@
 \encoding{utf-8}
-\name{sampleN.scABEL}
-\alias{sampleN.scABEL}
+\name{sampleN.scABEL.sdsims}
+\alias{sampleN.scABEL.sdsims}
+\alias{sampleN.scABEL.sds}
 \title{
 Sample size estimation for BE decision via scaled (expanded) BE acceptance limits
 }
 \description{
 These functions performs the sample size estimation via power calculations of the 
-BE decision via scaled (expanded) BE acceptance limits, based on simulations.
+BE decision via scaled (expanded) BE acceptance limits, based on \bold{subject data} 
+simulations.\cr
+This function has an alias sampleN.scABEL.sds().
 }
 \usage{
-sampleN.scABEL(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV, 
-               design = c("2x3x3", "2x2x4", "2x2x3"), regulator,
-               nsims = 1e+05, nstart, imax = 100, print = TRUE, details = TRUE,
-               setseed = TRUE)
+sampleN.scABEL.sdsims(alpha = 0.05, targetpower = 0.8, theta0, theta1, theta2, CV,
+                      design = c("2x3x3", "2x2x4", "2x2x3"), regulator, nsims = 1e5,
+                      nstart, imax = 100, print = TRUE, details = TRUE,
+                      setseed = TRUE, progress)
 }
 \arguments{
   \item{alpha}{
@@ -55,12 +58,11 @@ Defaults to \code{design="2x3x3"}. Details are given the section about Designs.
 }
   \item{regulator}{
 Regulatory settings for the widening of the BE acceptance limits.\cr
-May be given as character from the choices \code{"EMA"}, \code{"HC"}, \code{"FDA"} or as an object of
+May be given as \code{"EMA"} or as an object of
 class 'regSet' (see \code{\link{reg_const}}).\cr
 Defaults to \code{regulator="EMA"} if missing.\cr
-This argument may be given also in lower case if given as character.\cr\cr
-The former argument \code{regulator="ANVISA"} is defunct. Use "EMA" since the 
-ANVISA now recommends the use of EMA regulatory settings. 
+This argument may be given also in lower case if given as character.\cr
+If given as object of class 'regSet' the component \code{est_method} must not be \code{"ISC"}. 
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the (empirical) power.
@@ -85,22 +87,26 @@ Simulations are dependent on the starting point of the (pseudo) random number
 generator. To avoid differences in power for different runs a \code{set.seed(123456)} 
 is issued if \code{setseed=TRUE}, the default. 
 }
+  \item{progress}{
+Should a progressbar be shown? Defaults to \code{TRUE} if missing and nsims >5E5.
+}
 }
 \details{
-The simulations are done via the distributional properties of the statistical
-quantities necessary for deciding BE based on ABEL (\sQuote{Average Bioequivalence with Expanded Limits}). For more details see
-a description in the \code{/doc} sub-directory of the package.\cr\cr
-Function \code{sampleN.scABEL()} is based on power calculations via simulations 
-using the distributional characteristics of the \sQuote{key} statistics obtained from 
-the EMA recommended evaluation via ANOVA if \code{regulator="EMA"} or if the
-regulator component \code{est_method} is set to \code{"ANOVA"} if regulator is an object 
-of class 'regSet'.\cr
-Otherwise, the simulations are based on the distributional characteristis of the 
-\sQuote{key} statistics obtained from evaluation via intra-subject contrasts (ISC), 
-as recommended by the FDA.\cr\cr
-Function \code{sampleN.scABEL2()} is solely based on power calculations via 
-simulation using the distributional characteristics of the \sQuote{key} statistics 
-obtained from evaluation via ISC. This function is deprecated.
+The methods rely on the analysis of log-transformed data, \emph{i.e.}, assume a 
+log-normal distribution on the original scale.\cr\cr
+The widened BE acceptance limits will be calculated by the formula\cr
+\verb{  [L, U] = exp(± r_const * sWR)}\cr
+with \code{r_const} the regulatory constant and \code{sWR} the standard deviation of the within
+subjects variability of the Reference. \code{r_const = 0.76} (~log(1.25)/0.29356) is used 
+in case of \code{regulator="EMA"}.
+If the CVwR of the Reference is < CVswitch=0.3 the conventional ABE limits 
+apply (mixed procedure).\cr 
+In case of \code{regulator="EMA"} a cap is placed on the widened limits if 
+CVwr>0.5, \emph{i.e.}, the widened limits are held at value calculated for CVwR=0.5.\cr\cr
+The simulations are done by simulating subject data (all effects fixed except the
+residuals) and evaluating these data via ANOVA of all data to get the point estimate
+of T vs. R along with its 90\% CI and an ANOVA of the data under R(eference) only
+to get an estimate of s2wR.
 }
 \value{
 Returns a data.frame with the input settings and sample size results.\cr
@@ -111,23 +117,19 @@ The \code{nlast} column contains the last \code{n} value. May be useful for rest
 \enc{Tóthfalusi}{Tothfalusi} L, \enc{Endrényi}{Endrenyi} L. \emph{Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs.} J Pharm Pharmaceut Sci. 2011;15(1):73--84. \href{http://ejournals.library.ualberta.ca/index.php/JPPS/article/download/11612/9489}{open access}
 }
 \author{
-D. Labes
+H. \enc{Schütz}{Schuetz}
 }
 \note{
 We are doing the sample size estimation only for balanced designs since the 
 break down of the total subject number in case of unbalanced sequence groups
-is not unique. Moreover the formulas used are only for balanced designs.\cr\cr
-In case of \code{regulator="FDA"} the sample size is only approximate since
-the BE decision method is not exactly what is expected by the FDA. But the two \enc{Laszlós}{Laszlos} state that the scABEL method should be \sQuote{operationally} equivalent to the
-FDA method. Thus the sample size should be comparable.\cr
-Consider in case of \code{regulator="FDA"} to use the function 
-\code{sampleN.RSABE()}.\cr\cr
-In case of \code{regulator="HC"} the underlying power is only approximative 
-since the Health Canada recommends evaluation by a mixed model approach. 
-But this could only implemented via subject data simulations which are very 
-time consuming.\cr\cr
+is not unique. Moreover the formulas used are only for balanced designs.\cr
 The minimum sample size is 6, even if the power is higher than the intended 
-targetpower.
+targetpower.\cr\cr
+Subject simulations are easily more than 100times slower than simulations based
+on the \sQuote{key} statistics. We recommend this function only for the partial
+replicate design (TRR|RTR|RRT) assuming heteroscedasticity, especially if \code{CVwT > CVwR}.\cr
+Thus be patient and go for a cup of coffee if you use this function with high 
+sample sizes!
 }
 \section{Designs}{
 Although some designs are more \sQuote{popular} than others, sample size estimations are valid for \emph{all} of the following designs:
@@ -143,44 +145,39 @@ Although some designs are more \sQuote{popular} than others, sample size estimat
 \section{Warning }{
 The sample size estimation for very extreme theta0 (<0.83 or >1.21) may be very 
 time consuming and will eventually also fail since the start values chosen are 
-not really reasonable in that ranges. This is especially true in the range around 
-CV = 0.3 and regulatory constant according to FDA.\cr
+not really reasonable in that ranges.\cr
 If you really need sample sizes in that range be prepared to restart the sample 
 size estimation via the argument nstart.\cr
 Since the dependence of power from n is very flat in the mentioned region you may 
 also consider to adapt the number of simulations not to tap in the simulation 
-error trap.\cr\cr
-If results of \code{\link{power.scABEL}} are expected to be inaccurate (partial
-replicate design with unbalanced sequences and/or heteroscedasticity
-where CVwT > CVwR), subject data via \code{\link{sampleN.scABEL.sdsims}} should
-be simulated instead. Very time consuming (easily 100times slower)! Subject data
-simulations are only supported for \code{regulator="EMA"}.
+error trap.
 }
 
 \seealso{
-\code{\link{power.scABEL}}, \code{\link{sampleN.scABEL.sdsims}}, \code{\link{sampleN.RSABE}},
-\code{\link{reg_const}}
+\code{\link{power.scABEL.sdsims}}, \code{\link{sampleN.scABEL}}, \code{\link{reg_const}}
 }
 \examples{
-# using all the defaults:
+# using the defaults:
 # partial replicate design, targetpower=80\%,
 # true assumed ratio = 0.90, 1E+5 simulated studies
 # ABE limits, PE constraint 0.8 - 1.25
 # EMA regulatory settings
-sampleN.scABEL(CV = 0.3)
-# should result in a sample size n=54, power=0.8159
-#
-# now with former (inofficial) ANVISA settings, CVswitch=40\%
-# (since 2016 ANVISA uses the same settings as EMA)
-reg      <- reg_const("USER", r_const = 0.76, CVswitch = 0.4, CVcap = 0.5)
-reg$name <- "Old ANVISA"
-sampleN.scABEL(CV = 0.3, regulator = reg)
-# should result in n=60, power=0.8101
-
-# for the full replicate design, target power = 90\%
-# true assumed ratio = 0.9, FDA regulatory settings
-# sims based on evalaution via ISC
-sampleN.scABEL(CV = 0.4, targetpower = 0.9, theta0 = 0.9,
-               design = "2x2x4", regulator = "FDA")
-# should result in a sample size n=32, power=0.9125
+# Heterogenicity (CVwT 0.4, CVwR 0.3)
+# compare results and run times
+\donttest{
+CV           <- c(0.4, 0.3)
+expl         <- data.frame(method = c("subject simulations", "\'key\' statistics"),
+                           n = NA, power = NA, seconds = NA)
+start        <- proc.time()[[3]]
+expl[1, 2:3] <- sampleN.scABEL.sdsims(CV = CV, print = FALSE,
+                                      details = FALSE)[8:9]
+expl[1, 4]   <- proc.time()[[3]] - start
+start        <- proc.time()[[3]]
+expl[2, 2:3] <- sampleN.scABEL(CV = CV, print = FALSE,
+                               details = FALSE)[8:9]
+expl[2, 4]   <- proc.time()[[3]] - start
+print(expl, row.names = FALSE)}
+# should result in a sample size n=69, power=0.80198 for
+# the subject simulations and n=66, power=0.80775 for the
+# 'key' statistics
 }

@@ -28,12 +28,15 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
     CV <- abs(CV)
   }
   if (missing(rho))
-    stop("Correlation between the two endpoints must be given!")
+    stop("Correlation between the two PK metrics must be given!")
   if (length(rho) != 1)
     stop("One rho must be given!")
-  if (rho <= -1 || rho >= 1)
-    stop("Correlation must be > -1 and < 1.") 
-  
+  if (rho < -1 || rho > 1)
+    stop("Correlation must be within {-1, +1}.")
+  # allow -1, +1 within machine epsilon [HS]
+  if (rho == -1) rho <- -1 + .Machine $double.eps
+  if (rho == +1) rho <- +1 - .Machine $double.eps
+
   #number of the design and check
   d.no <- .design.no(design)
   if (is.na(d.no)) stop("Design ",design, " unknown!", call.=FALSE)
@@ -61,7 +64,7 @@ sampleN.2TOST <- function(alpha=c(0.05, 0.05), targetpower=0.8, logscale=TRUE,
     cat("+++++++++++ Equivalence test - 2 TOSTs +++++++++++\n")
     cat("            Sample size estimation\n")
     cat("--------------------------------------------------\n")
-    cat("Study design: ",d.name,"\n")
+    cat("Study design:",d.name,"\n")
     if (details) { 
       cat("Design characteristics:\n")
       if (robust & (ades$df2 != ades$df)) {

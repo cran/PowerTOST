@@ -18,8 +18,8 @@ pa.NTIDFDA(CV, theta0 = 0.975, targetpower = 0.8, minpower = 0.7, ...)
 \arguments{
   \item{CV}{
 Coefficient of variation of the intra-subject variabilities of Test and Reference
-as ratio.\cr
-Here only the case CVwT=CVwR is implemented, i.e. CV has to be a scalar.
+as ratio (not percent).\cr
+Here only the case CVwT=CVwR is implemented, \emph{i.e.}, CV has to be a scalar.
 }
   \item{theta0}{
 \sQuote{True} or assumed T/R ratio. Often named GMR.\cr
@@ -37,8 +37,8 @@ Has to be lower than \code{targetpower}. Defaults to 0.7.\cr
 }
   \item{\dots}{
 More arguments to pass to \code{power.NTIDFDA()}.\cr
-F.i. \code{alpha}, \code{theta1}, \code{theta2} or \code{nsims} if other values
-then the defaults for these arguments are needed. \cr
+F.i., \code{alpha}, \code{theta1}, \code{theta2} or \code{nsims} if other values
+than the defaults for these arguments are needed. \cr
 See man page of \code{power.NTIDFDA()}.
 }
 }
@@ -72,26 +72,17 @@ The class \code{'pwrA'} has the S3 methods \code{print()} and \code{plot()}.
 See \code{\link{pa.ABE}} for usage.
 }
 \references{
-FDA. \emph{Draft Guidance on Warfarin Sodium.}\cr
-Recommended Dec 2012\cr
-\url{http://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/UCM201283.pdf}
 
-Yu LX et al.\cr
-\emph{Novel bioequivalence approach for narrow therapeutic index drugs}\cr
-Clin Pharmacol Ther. 2015;97(3):286--91. \doi{10.1002/cpt.28}
+Food and Drug Administration, Office of Generic Drugs (OGD). \emph{Draft Guidance on Warfarin Sodium.} Recommended Dec 2012. \href{https://www.accessdata.fda.gov/drugsatfda_docs/psg/Warfarin_Sodium_tab_09218_RC12-12.pdf}{download}
 
-Jiang W et al.\cr
-\emph{A Bioequivalence Approach for Generic Narrow Therapeutic Index Drugs: Evaluation of the Reference-Scaled Approach and Variability Comparison Criterion}\cr
-AAPS J. 2015;17(4):891--901. \doi{10.1208/s12248-015-9753-5}
+Yu LX, Jiang W, Zhang X, Lionberger R, Makhlouf F, Schuirmann DJ, Muldowney L, Chen ML, Davit B, Conner D, Woodcock J. \emph{Novel bioequivalence approach for narrow therapeutic index drugs.} Clin Pharmacol Ther. 2015;97(3):286--91. \doi{10.1002/cpt.28}
 
-\enc{Endrényi}{Endrenyi} L, \enc{Tóthfalusi}{Tothfalusi} L.\cr
-\emph{Determination of Bioequivalence for Drugs with Narrow Therapeutic Index: 
-Reduction of the Regulatory Burden}\cr
-J Pharm Pharm Sci. 2013;16(5):676--82. \href{https://ejournals.library.ualberta.ca/index.php/JPPS/article/viewFile/20900/15927}{free download}
+Jiang W, Makhlouf F, Schuirmann DJ, Zhang X, Zheng N, Conner D, Yu LX, Lionberger R. \emph{A Bioequivalence Approach for Generic Narrow Therapeutic Index Drugs: Evaluation of the Reference-Scaled Approach and Variability Comparison Criterion.} AAPS J. 2015;17(4):891--901. \doi{10.1208/s12248-015-9753-5}
+
+\enc{Endrényi}{Endrenyi} L, \enc{Tóthfalusi}{Tothfalusi} L. \emph{Determination of Bioequivalence for Drugs with Narrow Therapeutic Index: Reduction of the Regulatory Burden.} J Pharm Pharm Sci. 2013;16(5):676--82. \href{https://ejournals.library.ualberta.ca/index.php/JPPS/article/viewFile/20900/15927}{open access}
 }
 \author{
-D. Labes\cr
-according to code by H. \enc{Schütz}{Schuetz} for pa.ABE() and pa.scABE()
+D. Labes according to code by H. \enc{Schütz}{Schuetz} for pa.ABE() and pa.scABE().
 }
 \note{
 The code for impact of deviations from planned sample size tries
@@ -113,6 +104,6 @@ to values nearer to 1 to not run into errors and/or long execution times.
 # 1E5 sims in power.NTIDFDA()
 # not run due to timing policy of CRAN for examples
 # may run some ten seconds or more
-\dontrun{
+\donttest{
 plot(pa.NTIDFDA(CV=0.1))}
 }

@@ -25,7 +25,7 @@ des <- ("
         7  2x4x4    3*n-4  n-4    4    1    1/16  
         9  2x3x3    2*n-3  n-3    3    1.5  1/6   # partial replicate
         10  2x4x2    n-2    n-2    4    8    1/2   # Balaam's design
-        11  2x2x2r   3*n-2  n-2    2    1    1/4
+        11  2x2x2r   3*n-2  n-2    2    1    1/4   # Liu's repeated x-over
         100 paired   n-1    n-1    1    2    2/1   
         ")
 # no. 9 is f.i. the partial replicate design TRR/RTR/RRT
@@ -39,8 +39,8 @@ des <- ("
 des2 <- textConnection(des)
 designs <- read.table(des2, header=TRUE, sep="", strip.white=TRUE, as.is=TRUE)           
 close(des2)   # without this close() warnings are generated
-# convert fractions to number
-designs$bkni <- sapply(strsplit(designs$bknif,split="/"),
+# convert fractions to numeric
+designs$bkni <- sapply(strsplit(designs$bknif, split="/"),
                        function(x) as.numeric(x[1])/as.numeric(x[2])
 )
 # nicer names for nicer output of design
@@ -68,7 +68,7 @@ known.designs <- function() designs
 #--- determine the design no from the design string
 .design.no <- function(design)
 {
-  #take the first word if more then one f.i. in "parallel group"
+  # take the first word if more then one f.i. in "parallel group"
   desi <- unlist(strsplit(tolower(design)," "))[1]
   i    <- match(desi, designs$design)
   if (!is.na(i)) return(designs$no[i]) else return(NA)

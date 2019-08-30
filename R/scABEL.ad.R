@@ -134,20 +134,24 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV,
     }
   }
   # Simulate subject data (if sdsims=TRUE)
-  opt2 <- function(x) power.scABEL.sdsims(alpha = x, CV = CV, theta0 = U,
-                                          n = n, regulator = reg,
-                                          design = design, nsims = nsims,
-                                          setseed = setseed,
-                                          progress = progress) - alpha
+  opt2 <- function(x) {
+    power.scABEL.sdsims(alpha = x, CV = CV, theta0 = U, n = n,
+                        regulator = reg, design = design,
+                        nsims = nsims, setseed = setseed,
+                        progress = progress) - alpha
+  }
   sig <- binom.test(x = round(alpha*nsims, 0), n = nsims,
                     alternative = "less",
                     conf.level = 1 - alpha)$conf.int[2]
   method <- "ABE"
   if (CVwR > reg$CVswitch) {
-    if (regulator != "FDA") method <- "ABEL"
-    if (regulator == "FDA") method <- "RSABE"
+    if (reg$name == "FDA") {
+      method <- "RSABE"
+    } else {
+      method  <- "ABEL" 
+    }
   }
-  limits <- as.numeric(scABEL(CV = CVwR, regulator = reg))
+  limits <- as.numeric(scABEL(CV = CVwR, regulator = reg$name))
   U <- limits[2] # Simulate at the upper (expanded) limit. For CVwR
   # 30% that's 1.25. Due to the symmetry simulations
   # at the lower limit (0.80) should work as well.
@@ -157,7 +161,9 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV,
     al <- alpha     # If not, use alpha (commonly 0.05).
   }
   designs <- c("2x2x4", "2x2x3", "2x3x3")
-  type    <- c("TRTR|RTRT", "TRT|RTR", "TRR|RTR|RRT") # clear words
+  type    <- c("4 period full replicate",
+               "3 period full replicate",
+               "partial replicate")
   if (print) { # Show input to keep the spirits of the user high.
     if (sdsims) cat("Be patient. Simulating subject data will take a good while!\n\n")  
     cat("+++++++++++ scaled (widened) ABEL ++++++++++++\n")
@@ -171,11 +177,7 @@ scABEL.ad <-function(alpha = 0.05, theta0, theta1, theta2, CV,
     cat(formatC(nsims, format = "d", big.mark = ",", decimal.mark = "."),
         "studies in each iteration simulated.\n\n")
     txt <- paste0("CVwR ", sprintf("%.4g", CVwR))
-    if (length(CV) == 2) {
-      txt <- paste0(txt, ", CVwT ", sprintf("%.4g", CVwT), ", ")
-    } else {
-      txt <- paste0(txt, ", ")
-    }
+    txt <- paste0(txt, ", CVwT ", sprintf("%.4g", CVwT), ", ")
     cat(paste0(txt, "n(i) ", paste0(n, collapse = "|"), " (N ", sum(n),
                ")\n"))
     txt <- paste0("Nominal alpha                 : ", signif(alpha, 5))

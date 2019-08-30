@@ -32,7 +32,7 @@ sampleN.scABEL <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
                          design=desi, regulator=reg, nsims, nstart, imax,
                          print, details, setseed)
   } 
-  
+  if(print | details) return(invisible(r)) else return(r)
 }  
 
 #-----------------------------------------------------------------------------
@@ -62,7 +62,7 @@ sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   if (missing(theta1) & missing(theta2)) theta1 <- 0.8
   if (missing(theta2)) theta2 <- 1/theta1
   if (missing(theta1)) theta1 <- 1/theta2
-  # the two Laszlo's recommend theta0=0.9 for HVD's
+  # the two Laszlos recommend theta0=0.9 for HVDs
   if (missing(theta0)) theta0 <- 0.9
   if ( (theta0<=theta1) | (theta0>=theta2) ) {
     stop("True ratio ",theta0," not between margins ",theta1," / ",
@@ -93,44 +93,43 @@ sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   # thus we use here bk - design constant for ntotal
   # expressions for the df's
   if (design=="2x3x3") {
-    desi <- "2x3x3 (partial replicate)"
     bk <- 1.5; seqs <- 3
     dfe   <- parse(text="2*n-3", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     #sd2  <- (s2wT + s2wR)/2 # used in v1.1-00 - v1.1-02, wrong
     # simulations with s2D=0 show:
     Emse  <- (s2wT + 2.0*s2wR)/3
-    cvec  <- c(1, 2) # for sim of mses from s2wT and s2wR
   }
   if (design=="2x2x4") {
-    desi <- "2x2x4 (full replicate)"
     bk <- 1.0; seqs <- 2
     # only EMA settings
     dfe   <- parse(text="3*n-4", srcfile=NULL)
     dfRRe <- parse(text="n-2", srcfile=NULL)
     # sd^2 (variance) of the differences T-R from their components
     Emse  <- (s2wT + s2wR)/2
-    cvec  <- c(1, 1)
   }
   if (design=="2x2x3") {
-    desi <- "2x2x3 (TRT|RTR)"
     bk <- 1.5; seqs <- 2
     # only EMA settings
     dfe   <- parse(text="2*n-3", srcfile=NULL)
     dfRRe <- parse(text="n/2-1", srcfile=NULL)
     # sd^2 (variance) of the differences T-R from their components
     Emse  <- (s2wT + s2wR)/2 # for balanced designs we use here
-    cvec  <- c(1, 1) # dummy
   }
   
   mlog <- log(theta0)
   
   if (print){
+    designs <- c("2x2x4", "2x2x3", "2x3x3")
+    type    <- c("4 period full replicate",
+                 "3 period full replicate",
+                 "partial replicate") # clear words
     cat("\n+++++++++++ scaled (widened) ABEL +++++++++++\n")
     cat("            Sample size estimation\n")
     cat("   (simulation based on ANOVA evaluation)\n")
     cat("---------------------------------------------\n")
-    cat("Study design: ",desi,"\n")
+    cat("Study design: ")
+    cat(paste0(design, " (", type[match(design, designs)], ")\n"))
     cat("log-transformed data (multiplicative model)\n")
     cat(nsims,"studies for each step simulated.\n\n")
     cat("alpha  = ", alpha,", target power = ", targetpower,"\n", sep="")
@@ -164,12 +163,10 @@ sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
                      se=sqrt(Emse), steps=seqs, bk=bk)
     # empirical correction in the vicinity of CV=0.3 for ratios 
     # outside 0.86 ... 1/0.86
-    # does this fit also for CVswitch in case of ANVISA = 0.4?
     if(Emse < CV2mse(CVswitch+0.005) & Emse > CV2mse(CVswitch-0.005) 
         & abs(mlog)>log(1/0.865)) {
       if (reg$name=="EMA")     n01 <- 0.9*n01
       if (reg$name=="FDA")     n01 <- 0.65*n01
-      if (reg$name=="ANVISA")  n01 <- 0.6*n01
       n01 <- seqs*trunc(n01/seqs)
     }
     
@@ -191,7 +188,7 @@ sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   dfTT <- dfRR
 
   if(setseed) set.seed(123456)
-  p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+  p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, df, s2wR, dfRR, s2wT, dfTT,
                        design, nsims, CVswitch, r_const, CVcap, pe_constr,
                        ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
   pwr <- as.numeric(p["BE"]);
@@ -223,7 +220,7 @@ sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+    p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, df, s2wR, dfRR, s2wT, dfTT,
                          design, nsims, CVswitch, r_const, CVcap, pe_constr,
                          ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
@@ -243,7 +240,7 @@ sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
     dfRR <- eval(dfRRe)
     dfTT <- dfRR
     if(setseed) set.seed(123456)
-    p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, cvec, df, s2wR, dfRR, s2wT, dfTT,
+    p <- .pwr.ABEL.ANOVA(mlog, sdm, C2, Emse, df, s2wR, dfRR, s2wT, dfTT,
                          design, nsims, CVswitch, r_const, CVcap, pe_constr,
                          ln_lBEL=log(theta1),ln_uBEL=log(theta2), alpha=alpha)
     pwr <- as.numeric(p["BE"]);
@@ -273,7 +270,7 @@ sampleN.scABEL1 <- function(alpha=0.05, targetpower=0.8, theta0, theta1,
   #return results as data.frame
   res <- data.frame(design=design, alpha=alpha, CVwT=CVwT, CVwR=CVwR,
                     theta0=theta0, theta1=theta1, theta2=theta2, n=n, power=pwr, 
-                    targetpower=targetpower,nlast=nlast)
+                    targetpower=targetpower, nlast=nlast)
   names(res) <-c("Design", "alpha", "CVwT", "CVwR", "theta0", "theta1", "theta2",
                  "Sample size", "Achieved power", "Target power", "nlast")
 
