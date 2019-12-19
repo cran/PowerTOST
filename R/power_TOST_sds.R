@@ -97,12 +97,18 @@ power.TOST.sds <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
     # for comparative purposes only
     C2   <- NULL
   }
+  
   # groups, ngrp= number if subjects in groups
   if (is.null(ngrp)){
     ngrp <- nvec(n=n, grps=grps)
   } else {
     # check the giving in ngrp
     # TODO
+    grps <- length(ngrp)
+    if (n != sum(ngrp)) {
+      stop("Givings in n and ngrps contradict.")
+      # or better choose
+    }  
   }
   
   # grp no of subjects
@@ -118,8 +124,7 @@ power.TOST.sds <- function(alpha=0.05, theta1, theta2, theta0, CV, n,
   # progressbar or not
   if(missing(progress)) {
     progress <- FALSE
-    if(nsims>=5E5) progress <- TRUE
-    if(nsims>=1E5 & n>72) progress <- TRUE #???
+    if(nsims>=1E5) progress <- TRUE
     if(gmodel==1) progress <- TRUE
   }
   
@@ -141,7 +146,7 @@ power.ABE.sds <- power.TOST.sds
 {
   # start time measurement
   ptm <- proc.time()
-  
+
   if(progress) pb <- txtProgressBar( min = 0, max = 1, style = 3)
 
   if(setseed) set.seed(123456)
@@ -211,7 +216,7 @@ power.ABE.sds <- power.TOST.sds
   
   p.GxT <- vector(mode="numeric", length=nsims) # p-vals of grp by tmt interaction
   gmod  <- vector(mode="numeric", length=nsims) # which model after check if significance
-  #browser()
+
   if (gmodel==1) {
     # determine largest group(s?)
     largest <- as.numeric(which(summary(dta$grp) == max(summary(dta$grp))))
@@ -226,6 +231,11 @@ power.ABE.sds <- power.TOST.sds
     # save model matrix and QR decomposition
     mm3G <- model.matrix(m3G)
     qr3G <- qr(mm3G)
+    #C2 for CI with data from largest group only
+    t3G <- qt(1-0.05, df3G)
+    hw1   <- as.numeric(confint(m3G, level=1-2*0.05)["tmtT", 2]-coef(m3G)["tmtT"])
+    mse1  <- summary(m3G)$sigma^2
+    C2_3G <- (hw1/t3G)^2/mse1
   }
   # ---------------------------------------------------------------------------
   # loop of simulations
@@ -258,25 +268,23 @@ power.ABE.sds <- power.TOST.sds
       } else {
         # interaction significant, not allowed to pool
         # use model 3 with data of group with max. group size
-        #browser()
         # if logval isn't a matrix qr.coeff only returns a named numeric vector
-        logval <- as.matrix(logval[dta$grp==largest, 1])
+        logval3G <- as.matrix(logval[dta$grp==largest, 1])
         gmod[j1:j2] <- 3
-        coefs <- qr.coef(qr3G, logval)
+        coefs <- qr.coef(qr3G, logval3G)
         pes[j1:j2]  <- coefs["tmtT", ]
-        mses[j1:j2] <- colSums((qr.resid(qr3G, logval))^2)/df  
+        mses[j1:j2] <- colSums((qr.resid(qr3G, logval3G))^2)/df3G  
         # standard error of the difference T-R
-        seD  <- sqrt(C2*mses[j1:j2])
-        # ABE test = 1-2*alpha CI, df are the df of the ANOVA
+        seD  <- sqrt(C2_3G*mses[j1:j2])
+        # ABE test = 1-2*alpha CI, df from ANOVA with data from largest group
         hw   <- t3G*seD
         loCL <- pes[j1:j2] - hw
         upCL <- pes[j1:j2] + hw
         # conventional ABE decision
         BE_ABE[j1:j2] <- (loCL >=  ln_lBEL) & (upCL <= ln_uBEL)
-
-      }
-    } else {
-      # model 2 and 3
+        }
+      } else {
+      # model 2 or 3
       coefs <- qr.coef(qr_all, logval)
       pes[j1:j2]  <- coefs["tmtT", ]
       # astonishing enough the next line gives NA only in case of gmodel==2
@@ -305,7 +313,6 @@ power.ABE.sds <- power.TOST.sds
   
   # done with the progressbar
   if(progress) close(pb)
-  
   pwr <- sum(BE_ABE)/nsims
 
   if (details){
@@ -315,15 +322,15 @@ power.ABE.sds <- power.TOST.sds
     if(ptm["elapsed"]>60){
       ptm <- ptm/60; tunit <- "min"
     }
-    message(nsims," sims. Time elapsed (",tunit,"): ", 
+    message(nsims," sims. Time elapsed (", tunit ,"): ", 
             formatC(ptm["elapsed"], digits=3), "\n")
     if (gmodel!=1) {
-      # return only pwr
+      # return only pwr if gmodel==2 or gmodel==3
       pwr
     } else {
       #return pwr + some summary givings
       res <- list(pBE=pwr, 'p.GxT > p.level'=sum(p.GxT>p.level)/nsims)
-      df <- data.frame(gmodels=gmod, BE=BE_ABE)
+      df  <- data.frame(gmodels=gmod, BE=BE_ABE)
       res$xtab <- table(df)
       res
     }

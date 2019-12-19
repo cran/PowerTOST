@@ -12,6 +12,7 @@ print.pwrA <- function(x, digits=4, plotit=TRUE, ...)
   CVminI   <- which(x$paCV[, "CV"]==CV.min)
   min.pwrN <- min(x$paN[, "pwr"])
   min.N    <- min(x$paN[, "N"])
+  incr     <- x$incr
 
   if (abs(x$paCV[CVmaxI, "pwr"]-min.pwr)>1e-4) CV.max <- NA
   if (abs(x$paCV[CVminI, "pwr"]-min.pwr)>1e-4) CV.min <- NA
@@ -37,7 +38,7 @@ print.pwrA <- function(x, digits=4, plotit=TRUE, ...)
   cat("CV, theta0 and number of subjects which lead to min. acceptable ",
       "power of at least ", round(min.pwr, digits), ":\n", sep="")
   #react to RSABE NTID where there may be a CV.min, CV.max which
-  if (method!="RSABE NTID"){
+  if (method!="RSABE NTID") {
     # let to power=minpower
     cat(" CV= ", round(CV.max, digits), ", theta0= ",
         round(min.theta0, digits),"\n", sep="")
@@ -46,7 +47,11 @@ print.pwrA <- function(x, digits=4, plotit=TRUE, ...)
       cat(" CV = (", round(CV.min, digits), ", ", round(CV.max, digits),
           "), theta0= ", round(min.theta0, digits),"\n", sep="")
   }
-  cat(" N = ", min.N, " (power= ", round(min.pwrN, digits), ")\n", sep="")
+  cat(" n = ", min.N, " (power= ", round(min.pwrN, digits), ")\n", sep="")
+  if (incr) {
+    cat("Sample size was increased from the estimated one in order to comply",
+        "\nwith regulatory requirements.")
+  }
   cat("\n")
 }
 
@@ -136,7 +141,7 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
   if (x$method == "ABE") {
     plot(CVs, pwr, type="n",
          main=paste0("Higher variability\n",
-                     "constant: ", ratiolabel, " = ", GMRmain, ", N = ", n.est),
+                     "constant: ", ratiolabel, " = ", GMRmain, ", n = ", n.est),
          lwd=2, xlab=xlabtxt, ylab="", las=1)
     mtext(side=2, ylabtxt, line=2.5)
     grid()
@@ -153,7 +158,7 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
     # any scABE (including RSABE NTID)
     plot(CVs, pwr, type="n",
          main=paste0("Lower/higher variability\n",
-                     "constant: ", ratiolabel, " = ", GMRmain, ", N = ", n.est),
+                     "constant: ", ratiolabel, " = ", GMRmain, ", n = ", n.est),
          lwd=2, xlab=xlabtxt, ylab="", las=1)
     grid()
     abline(h=c(targetpower, 0.8*fact, minpower), lty=3)
@@ -191,7 +196,7 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
   if (fact == 1) { # like in previous versions (ratio)
     plot(GMRs, pwr, type="n",
          main=paste0("Larger deviation from 1\n",
-                     "constant: CV = ", CV, pctsign,", N = ", n.est),
+                     "constant: CV = ", CV, pctsign,", n = ", n.est),
          lwd=2, xlim=c(GMR, GMR.min), xlab=ratiolabel, ylab="", las=1,
          cex.main=0.95, cex.axis=0.95)
     grid()
@@ -210,7 +215,7 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
     } else {
     plot(100*GMRs, pwr, type="n",
          main=paste0("Larger deviation from 100%\n",
-                     "constant: CV = ", CV, pctsign,", N = ", n.est),
+                     "constant: CV = ", CV, pctsign,", n = ", n.est),
          lwd=2, xlim=100*c(GMR, GMR.min), xlab=paste(ratiolabel, "(%)"), ylab="", las=1,
          cex.main=0.95, cex.axis=0.95)
     grid()
@@ -246,7 +251,7 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
                    "constant: ", ratiolabel, " = ", GMRmain,
                    ", CV = ", CV, pctsign),
        lwd=2, xlim=c(max(Ns), min(Ns)), ylim=c(minpower, pwr.est),
-       xlab="N", xaxp=xticks,
+       xlab="n", xaxp=xticks,
        ylab="", las=1, cex.main=0.95)
   grid()
   abline(h=c(targetpower, fact*0.8, minpower), lty=3)
@@ -262,7 +267,7 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
   shadowtext(do.even, pwr.even, labels=n.est-do.even,
              col="black", bg="white", pos=3, r=0.4, cex=0.75)
   shadowtext(max(Ns), (minpower+(pwr.est-minpower)*0.1),
-             labels=paste0("N = ", min(Ns), " (", signif(min(pwr), 4), pctsign, ")"),
+             labels=paste0("n = ", min(Ns), " (", signif(min(pwr), 4), pctsign, ")"),
              col="black", bg="white", pos=4, r=0.5, cex=0.9)
   box()
 
@@ -346,12 +351,12 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
  if (fact == 100) { # percent
    legend("topleft", inset=-0.055,
           legend=c(paste0(design, " design", "; assumed:"),
-                   sprintf("  %s %1.0f%%%s%s%s %.2f%%", "CV =", CV, ", ", ratiolabel, " =", 100*GMR),
+                   sprintf("  %s %.2f%%%s%s%s %.2f%%", "CV =", CV, ", ", ratiolabel, " =", 100*GMR),
                    BEARtxt,
                    "power:",
                    sprintf("  %s %2.0f%%", "target =", targetpower),
                    sprintf("  %s %5.2f%% %s %i%s", "estimated =", pwr.est,
-                           "(N =", n.est, ")"),
+                           "(n =", n.est, ")"),
                    sprintf("  %s %2.0f%%", "minimum acceptable =", minpower),
                    "acceptable (relative) deviations:",
                    #TODO:react to RSABE NTID where there may be also a CVmin
@@ -359,24 +364,24 @@ plot.pwrA <- function(x, pct=TRUE, ratiolabel="theta0", cols=c("blue", "red"), .
                    sprintf("  %s%s %5.2f%% (%+5.2f%%)",
                            ratiolabel, " =", 100*GMR.min, 100*(GMR.min-GMR)/GMR),
                    sprintf("  %s %i (%+5.1f%%)",
-                           "N =", min(Ns), 100*(min(Ns)-n.est)/n.est)),
+                           "n =", min(Ns), 100*(min(Ns)-n.est)/n.est)),
           bty="n", cex=cex)
   } else { # ratios
     legend("topleft", inset=-0.065,
            legend=c(paste0(design, " design", "; assumed:"),
-                    sprintf("  %s %5.4f%s%s%s %.4f", "CV =", CV, ", ", ratiolabel, " =", GMR),
+                    sprintf("  %s %.4f%s%s%s %.4f", "CV =", CV, ", ", ratiolabel, " =", GMR),
                     BEARtxt,
                     "power:",
                     sprintf("  %s %5.4f", "target =", targetpower),
                     sprintf("  %s %5.4f %s %i%s", "estimated =", pwr.est,
-                            "(N =", n.est, ")"),
+                            "(n =", n.est, ")"),
                     sprintf("  %s %5.4f", "minimum acceptable =", minpower),
                     "acceptable (relative) deviations:",
                     CVtxt,
                     sprintf("  %s%s %.4f (%+5.2f%%)",
                             ratiolabel, " =", GMR.min, 100*(GMR.min-GMR)/GMR),
                     sprintf("  %s %i (%+5.1f%%)",
-                            "N =", min(Ns), 100*(min(Ns)-n.est)/n.est)),
+                            "n =", min(Ns), 100*(min(Ns)-n.est)/n.est)),
            bty="n", cex=cex)
   }
 
