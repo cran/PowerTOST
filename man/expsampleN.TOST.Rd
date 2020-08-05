@@ -29,23 +29,34 @@ Should the data used on log-transformed or on original scale? \code{TRUE} (defau
   \item{theta0}{
 Assumed \sQuote{true} (or \sQuote{observed} in case of \code{prior.type != "CV"}) bioequivalence 
 ratio or difference.\cr
-Typically set to 0.95 (default if missing) if \code{logscale=TRUE}.
-Defaults to 0.05 if \code{logscale=FALSE}.
+In case of \code{logscale=TRUE} it must be given as ratio T/R.\cr
+If \code{logscale=FALSE}, the difference in means. In this case, the difference may be expressed in two ways: relative to the same (underlying) reference mean, i.e. as (T-R)/R = T/R - 1; or as difference in means T-R. Note that in the former case the units of \code{CV}, \code{theta1} and \code{theta2} need also be given relative to the reference mean (specified as ratio).\cr
+Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}
   }
   \item{theta1}{
-Lower bioequivalence limit as ratio if \code{logscale=TRUE} or as difference.\cr
-Can be missing. Defaults then to 0.8 if \code{logscale=TRUE} or to -0.2 if 
-\code{logscale=FALSE}.
+Lower (bio-)equivalence limit.\cr
+In case of \code{logscale=TRUE} it is given as ratio.\cr
+If \code{logscale=FALSE}, the limit may be expressed in two ways:
+difference of means relative to the same (underlying) reference mean or in units of the difference of means.
+Note that in the former case the units of \code{CV}, \code{theta0} and \code{theta2} need also be given relative to the reference mean (specified as ratio).\cr
+Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
   }
   \item{theta2}{
-Upper bioequivalence limit as ratio if \code{logscale=TRUE} or as difference.\cr
-If not given \code{theta2} will be calculated as \code{1/theta1} if \code{logscale=TRUE},
-else as \code{-theta1}.
+Upper (bio-)equivalence limit.\cr
+In case of \code{logscale=TRUE} it is given as ratio.
+If \code{logscale=FALSE}, the limit may be expressed in two ways:
+difference of means relative to the same (underlying) reference mean or in units of the difference of means.
+Note that in the former case the units of \code{CV}, \code{theta0} and \code{theta1} need also be given relative to the reference mean (specified as ratio).\cr
+If not given, \code{theta2} will be calculated as \code{1/theta1} if \code{logscale=TRUE} or as \code{-theta1} if \code{logscale=FALSE}.
   }
   \item{CV}{
-Assumed true or observed coefficient of variation as ratio (not percent). Only values > 0 are allowed.\cr
+In case of \code{logscale=TRUE} the (geometric) coefficient of variation given as ratio.\cr
+If \code{logscale=FALSE} the argument refers to (residual) standard deviation of the response. In this case, standard deviation may be expressed two ways: relative to a reference mean (specified as ratio sigma/muR), i.e. again as a coefficient of variation; or untransformed, i.e. as standard deviation of the response. Note that in the former case the units of \code{theta0}, \code{theta1} and \code{theta2} need also be given relative to the reference mean (specified as ratio).\cr
+
 If \code{prior.type="CV"} may be given as vector: The CVs are then pooled (as a 
-weighted mean with their degrees of freedoms as weights).
+weighted mean with their degrees of freedoms as weights).\cr
+
+In case of cross-over studies this is the within-subject CV, in case of a parallel-group design the CV of the total variability.
   }
   \item{design}{
 Character string describing the study design.\cr
@@ -105,7 +116,7 @@ and \code{TRUE} otherwise.
 \details{
 The sample size is calculated based on iterative evaluation of expected power.
 The starting value of the sample size search is taken from a large sample 
-approximation if \code{prior.type = "CV"}. Else an empirical start value is
+approximation if \code{prior.type = "CV"}. Otherwise, an empirical start value is
 obtained. Note that in case of \code{prior.type = "both"} the calculation may 
 still take several seconds.
 
@@ -113,11 +124,12 @@ Note also that the expected power is always bounded above by the so-called
 probability of technical success (\acronym{PTS}) which may be a value less than 1. 
 Therefore, it may be possible that it is either not possible to calculate the 
 required sample size at all or that the sample size gets very large 
-if the given targetpower is less but close to the \acronym{PTS}.
+if the given targetpower is less but close to the \acronym{PTS}.\cr\cr
+The estimated sample size gives always the \emph{total} number of subjects (not subject/sequence in crossovers or subjects/group in parallel designs -- like in some other software packages).
 }
 \value{
 A data.frame with the input values and the result of the sample size estimation.\cr
-The \code{Sample size} column contains the \bold{total} sample size in case of all
+The \code{Sample size} column contains the total sample size in case of all
 designs implemented.
 }
 \references{

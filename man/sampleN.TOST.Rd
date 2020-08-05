@@ -14,7 +14,7 @@ sampleN.TOST(alpha = 0.05, targetpower = 0.8, logscale = TRUE,
 }
 \arguments{
   \item{alpha}{
-Type I error probability. Per convention mostly set to 0.05.
+Significance level (one-sided). Commonly set to 0.05.
   }
   \item{targetpower}{
 Power to achieve at least. Must be >0 and <1.\cr
@@ -25,24 +25,33 @@ Should the data used on log-transformed (\code{TRUE}) or on original
 scale (\code{FALSE})? Defaults to \code{TRUE}.
   }
   \item{theta0}{
-\sQuote{True} or assumed T/R ratio.\cr
-In case of \code{logscale=TRUE} it must be given as ratio, otherwise as 
-difference to 1. See examples.\cr
-Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}.
-  }
+\sQuote{True} or assumed T/R ratio or difference.\cr
+In case of \code{logscale=TRUE} it must be given as ratio T/R.\cr
+If \code{logscale=FALSE}, the difference in means. In this case, the difference may be expressed in two ways: relative to the same (underlying) reference mean, i.e. as (T-R)/R = T/R - 1; or as difference in means T-R. Note that in the former case the units of \code{CV}, \code{theta1} and \code{theta2} need also be given relative to the reference mean (specified as ratio).\cr
+Defaults to 0.95 if \code{logscale=TRUE} or to 0.05 if \code{logscale=FALSE}
+}
   \item{theta1}{
-Lower bioequivalence limit.\cr
-In case of \code{logscale=TRUE} it is given as ratio, otherwise as difference to 1.\cr
+Lower (bio-)equivalence limit.\cr
+In case of \code{logscale=TRUE} it is given as ratio.\cr
+If \code{logscale=FALSE}, the limit may be expressed in two ways:
+difference of means relative to the same (underlying) reference mean or in units of the difference of means.
+Note that in the former case the units of \code{CV}, \code{theta0} and \code{theta2} need also be given relative to the reference mean (specified as ratio).\cr
 Defaults to 0.8 if \code{logscale=TRUE} or to -0.2 if \code{logscale=FALSE}.
-  }
+}
   \item{theta2}{
-Upper bioequivalence limit.\cr
-If not given theta2 will be calculated as \code{1/theta1} if \code{logscale=TRUE}\cr
-or as \code{-theta1} if \code{logscale=FALSE}.
-  }
+Upper (bio-)equivalence limit.\cr
+In case of \code{logscale=TRUE} it is given as ratio.
+If \code{logscale=FALSE}, the limit may be expressed in two ways:
+difference of means relative to the same (underlying) reference mean or in units of the difference of means.
+Note that in the former case the units of \code{CV}, \code{theta0} and \code{theta1} need also be given relative to the reference mean (specified as ratio).\cr
+If not given, \code{theta2} will be calculated as \code{1/theta1} if \code{logscale=TRUE} or as \code{-theta1} if \code{logscale=FALSE}.
+}
   \item{CV}{
-Coefficient of variation as ratio.
-  }
+In case of \code{logscale=TRUE} the (geometric) coefficient of variation given as ratio.\cr
+If \code{logscale=FALSE} the argument refers to (residual) standard deviation of the response. In this case, standard deviation may be expressed two ways: relative to a reference mean (specified as ratio sigma/muR), i.e. again as a coefficient of variation; or untransformed, i.e. as standard deviation of the response. Note that in the former case the units of \code{theta0}, \code{theta1} and \code{theta2} need also be given relative to the reference mean (specified as ratio).\cr
+
+In case of cross-over studies this is the within-subject CV, in case of a parallel-group design the CV of the total variability.
+}
   \item{design}{
 Character string describing the study design.\cr
 See \code{known.designs()} for designs covered in this package.
@@ -77,14 +86,15 @@ sample size calculations will be shown. Defaults to \code{FALSE}.
   }
   \item{imax}{
 Maximum number of steps in sample size search.\cr 
-Defaults to 100. Adaption only in rare cases needed.
+Defaults to 100. Adaption only in rare cases needed.\cr
   }
 }
 \details{
 The sample size is calculated via iterative evaluation of power of the \acronym{TOST} procedure.\cr
 Start value for the sample size search is taken from a large sample approximation
 according to Zhang, modified.\cr
-The sample size is bound to 4 as minimum.
+The sample size is bound to 4 as minimum.\cr\cr
+The estimated sample size gives always the \emph{total} number of subjects (not subject/sequence in crossovers or subjects/group in parallel designs -- like in some other software packages).
 }
 \value{
 A data.frame with the input and results will be returned.\cr

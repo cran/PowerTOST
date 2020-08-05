@@ -42,7 +42,7 @@ power.noninf(design = "2x2x4", margin = 1.25, CV = 0.25,
              theta0 = 1.10, n = 32) # higher CV, worse theta0
 
 ## -----------------------------------------------------------------------------
-res <- data.frame(design = "2x2x4", indended = c("ABEL", "ABE"),
+res <- data.frame(design = "2x2x4", intended = c("ABEL", "ABE"),
                   metric = c("Cmin", "Cmax"), CV = c(0.35, 0.20),
                   theta0 = c(0.90, 1.05), n = NA, power = NA,
                   stringsAsFactors = FALSE)
@@ -58,13 +58,13 @@ print(res, row.names = FALSE)
 n <- sampleN.scABEL(CV = 0.35, theta0 = 0.90, design = "2x2x4",
                     print = FALSE, details = FALSE)[["Sample size"]]
 # CV and theta0 of both metrics worse than assumed
-res <- data.frame(design = "2x2x4", indended = c("ABEL", "ABE"),
+res <- data.frame(design = "2x2x4", intended = c("ABEL", "ABE"),
                   metric = c("Cmin", "Cmax"), CV = c(0.50, 0.25),
                   theta0 = c(0.88, 1.12), n = n, power = NA,
                   stringsAsFactors = FALSE)
 res[1, 7] <- power.scABEL(CV = res$CV[1], theta0 = res$theta0[1],
-                            design = res$design[1], n = n)
+                          design = res$design[1], n = n)
 res[2, 7] <- power.TOST(CV = res$CV[2], theta0 = res$theta0[2],
-                          design = res$design[2], n = n)
+                        design = res$design[2], n = n)
 print(res, row.names = FALSE)
 
