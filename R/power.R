@@ -255,21 +255,26 @@ power.TOST <- function(alpha=0.05, logscale=TRUE, theta1, theta2, theta0,
   # handle log-transformation	
   if (logscale) {
     if (missing(theta0)) theta0 <- 0.95
-    if (missing(theta1)) theta1 <- 0.8
-    if (missing(theta2)) theta2 <- 1/theta1
+    if (missing(theta1) & missing(theta2)) theta1 <- 0.80
+    if (missing(theta1)) theta1 = 1/theta2
+    if (missing(theta2)) theta2 = 1/theta1
     ltheta1 <- log(theta1)
     ltheta2 <- log(theta2)
     ldiff   <- log(theta0)
     se      <- CV2se(CV)
   } else { # untransformed
-    if (missing(theta1)) theta1 <- -0.2
     if (missing(theta0)) theta0 <- 0.05
+    if (missing(theta1) & missing(theta2)) theta1 <- -0.2
+    if (missing(theta1)) theta1 <- -theta2
     if (missing(theta2)) theta2 <- -theta1
     ltheta1 <- theta1
     ltheta2 <- theta2
     ldiff   <- theta0
     se      <- CV
   }
+  
+  if (length(CV) > 1 & length(theta0 > 1))
+    stop("Only CV or theta0 can be vectors, not both of them")
   
   df <- eval(dfe)
   if (any(df<1)) stop("n too small. Degrees of freedom <1!")

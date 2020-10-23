@@ -5,7 +5,7 @@
 Sample size estimation for BE decision via linearized scaled ABE criterion
 }
 \description{
-This function performs the Sample size estimation for the BE decision via 
+This function performs the sample size estimation for the BE decision via 
 linearized scaled ABE criterion based on simulations.
 }
 \usage{
@@ -24,7 +24,7 @@ Typical values are 0.8 or 0.9.
 }
   \item{theta0}{
 \sQuote{True} or assumed T/R ratio. \cr
-Defaults to 0.90 according to the two \enc{Laszlós}{Laszlos} if not given explicitly.
+Defaults to 0.90 according to the two \enc{Lászlós}{Laszlos} if not given explicitly.
 }
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 

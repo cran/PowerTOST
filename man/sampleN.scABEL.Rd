@@ -24,7 +24,7 @@ Typical values are 0.8 or 0.9.
 }
   \item{theta0}{
 \sQuote{True} or assumed T/R ratio. \cr
-Defaults to 0.90 according to the two \enc{Laszlós}{Laszlos} if not given explicitly.
+Defaults to 0.90 according to the two \enc{Lászlós}{Laszlos} if not given explicitly.
 }
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 
@@ -119,7 +119,7 @@ We are doing the sample size estimation only for balanced designs since the
 break down of the total subject number in case of unbalanced sequence groups
 is not unique. Moreover the formulas used are only for balanced designs.\cr\cr
 In case of \code{regulator="FDA"} the sample size is only approximate since
-the BE decision method is not exactly what is expected by the FDA. But the two \enc{Laszlós}{Laszlos} state that the scABEL method should be \sQuote{operationally} equivalent to the
+the BE decision method is not exactly what is expected by the FDA. But the two \enc{Lászlós}{Laszlos} state that the scABEL method should be \sQuote{operationally} equivalent to the
 FDA method. Thus the sample size should be comparable.\cr
 Consider in case of \code{regulator="FDA"} to use the function 
 \code{sampleN.RSABE()}.\cr\cr

@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
 ## ----setup--------------------------------------------------------------------
 library(PowerTOST) # attach the library
 
-## -----------------------------------------------------------------------------
+## ----example1-----------------------------------------------------------------
 mod.fibo <- function(lowest, levels) {
   # modified Fibonacci dose-escalation
   fib      <- c(2, 1 + 2/3, 1.5, 1 + 1/3)
@@ -32,24 +32,22 @@ levels <- 3
 doses  <- mod.fibo(lowest, levels)
 sampleN.dp(CV = 0.20, doses = doses, beta0 = 1.02)
 
-## -----------------------------------------------------------------------------
+## ----example2-----------------------------------------------------------------
 levels <- 4
 doses  <- mod.fibo(lowest, levels)
 x <- sampleN.dp(CV = 0.20, doses = doses, beta0 = 1.02) # we need the data.frame later
 
-## -----------------------------------------------------------------------------
-res <- data.frame(n = seq(x[["Sample size"]], 12, -1),
-                  power = NA)
+## ----example3-----------------------------------------------------------------
+res <- data.frame(n = seq(x[["Sample size"]], 12, -1), power = NA)
 for (i in 1:nrow(res)) {
   res$power[i] <- signif(suppressMessages(
                            power.dp(CV = 0.20, doses = doses,
-                                    beta0 = 1.02,
-                                    n = res$n[i])), 5)
+                                    beta0 = 1.02, n = res$n[i])), 5)
 }
 res <- res[res$power >= 0.80, ]
 print(res, row.names = FALSE)
 
-## -----------------------------------------------------------------------------
+## ----example4-----------------------------------------------------------------
 levels <- 5
 doses  <- mod.fibo(lowest, levels)
 per    <- 3
@@ -58,7 +56,7 @@ dm     <- crossdes::balmin.RMD(levels, block, per)
 x      <- sampleN.dp(CV = 0.20, doses = doses, beta0 = 1.02,
                      design = "IBD", dm = dm)
 
-## -----------------------------------------------------------------------------
+## ----example5-----------------------------------------------------------------
 res <- data.frame(n = seq(x[["Sample size"]], nrow(dm), -1),
                   power = NA)
 for (i in 1:nrow(res)) {
@@ -70,13 +68,13 @@ for (i in 1:nrow(res)) {
 res <- res[res$power >= 0.80, ]
 print(res, row.names = FALSE)
 
-## -----------------------------------------------------------------------------
+## ----example6-----------------------------------------------------------------
 doses  <- 2^(seq(0, 8, 2))
 levels <- length(doses)
 sampleN.dp(CV = 0.30, doses = doses, beta0 = 1.02,
            design = "crossover")
 
-## -----------------------------------------------------------------------------
+## ----example7-----------------------------------------------------------------
 sampleN.dp(CV = 0.30, doses = doses, beta0 = 1.02,
            design = "crossover", theta1 = 0.75)
 

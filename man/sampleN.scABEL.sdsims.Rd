@@ -27,7 +27,7 @@ Typical values are 0.8 or 0.9.
 }
   \item{theta0}{
 \sQuote{True} or assumed T/R ratio. \cr
-Defaults to 0.90 according to the two \enc{Laszlós}{Laszlos} if not given explicitly.
+Defaults to 0.90 according to the two \enc{Lászlós}{Laszlos} if not given explicitly.
 }
   \item{theta1}{
 Conventional lower ABE limit to be applied in the mixed procedure if 
@@ -94,7 +94,7 @@ Should a progressbar be shown? Defaults to \code{TRUE} if missing and nsims >5E5
 \details{
 The methods rely on the analysis of log-transformed data, \emph{i.e.}, assume a 
 log-normal distribution on the original scale.\cr\cr
-The widened BE acceptance limits will be calculated by the formula\cr
+The expanded BE acceptance limits will be calculated by the formula\cr
 \verb{  [L, U] = exp(± r_const * sWR)}\cr
 with \code{r_const} the regulatory constant and \code{sWR} the standard deviation of the within
 subjects variability of the Reference. \code{r_const = 0.76} (~log(1.25)/0.29356) is used 

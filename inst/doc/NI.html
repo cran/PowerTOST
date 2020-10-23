@@ -12,7 +12,7 @@
 
 
 
-<title>PowerTOST • Non-Inferiority</title>
+<title>Non-Inferiority</title>
 
 <script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
 // v0.0.1
@@ -30,6 +30,78 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      code.sourceCode > span { display: inline-block; line-height: 1.25; }
+  code.sourceCode > span { color: inherit; text-decoration: inherit; }
+  code.sourceCode > span:empty { height: 1.2em; }
+  .sourceCode { overflow: visible; }
+  code.sourceCode { white-space: pre; position: relative; }
+  div.sourceCode { margin: 1em 0; }
+  pre.sourceCode { margin: 0; }
+  @media screen {
+  div.sourceCode { overflow: auto; }
+  }
+  @media print {
+  code.sourceCode { white-space: pre-wrap; }
+  code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+  }
+  pre.numberSource code
+    { counter-reset: source-line 0; }
+  pre.numberSource code > span
+    { position: relative; left: -4em; counter-increment: source-line; }
+  pre.numberSource code > span > a:first-child::before
+    { content: counter(source-line);
+      position: relative; left: -1em; text-align: right; vertical-align: baseline;
+      border: none; display: inline-block;
+      -webkit-touch-callout: none; -webkit-user-select: none;
+      -khtml-user-select: none; -moz-user-select: none;
+      -ms-user-select: none; user-select: none;
+      padding: 0 4px; width: 4em;
+      color: #aaaaaa;
+    }
+  pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+  div.sourceCode
+    {   }
+  @media screen {
+  code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+  }
+  code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+  code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+  code span.at { color: #7d9029; } /* Attribute */
+  code span.bn { color: #40a070; } /* BaseN */
+  code span.bu { } /* BuiltIn */
+  code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+  code span.ch { color: #4070a0; } /* Char */
+  code span.cn { color: #880000; } /* Constant */
+  code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+  code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+  code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+  code span.dt { color: #902000; } /* DataType */
+  code span.dv { color: #40a070; } /* DecVal */
+  code span.er { color: #ff0000; font-weight: bold; } /* Error */
+  code span.ex { } /* Extension */
+  code span.fl { color: #40a070; } /* Float */
+  code span.fu { color: #06287e; } /* Function */
+  code span.im { } /* Import */
+  code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+  code span.op { color: #666666; } /* Operator */
+  code span.ot { color: #007020; } /* Other */
+  code span.pp { color: #bc7a00; } /* Preprocessor */
+  code span.sc { color: #4070a0; } /* SpecialChar */
+  code span.ss { color: #bb6688; } /* SpecialString */
+  code span.st { color: #4070a0; } /* String */
+  code span.va { color: #19177c; } /* Variable */
+  code span.vs { color: #4070a0; } /* VerbatimString */
+  code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -135,7 +207,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<h1 class="title toc-ignore">PowerTOST • Non-Inferiority</h1>
+<h1 class="title toc-ignore">Non-Inferiority</h1>
 
 
 <div id="TOC">
@@ -191,13 +263,13 @@ Details and examples of other methods are accessible via the menu bar on top of 
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\alpha\)</span></td>
+<td><span class="math inline">\(\small{\alpha}\)</span></td>
 <td><code>alpha</code></td>
 <td>Nominal level of the test</td>
 <td><code>0.025</code></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\pi\)</span></td>
+<td><span class="math inline">\(\small{\pi}\)</span></td>
 <td><code>targetpower</code></td>
 <td><span title="typically 0.80 – 0.90">Minimum desired power</span></td>
 <td><code>0.80</code></td>
@@ -215,7 +287,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 <td>see below</td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\(\theta_{0}\)</span></td>
+<td><span class="math inline">\(\small{\theta_0}\)</span></td>
 <td><code>theta0</code></td>
 <td>‘True’ or assumed T/R ratio</td>
 <td>see below</td>
@@ -252,7 +324,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 </tr>
 </tbody>
 </table>
-<p>Note that contrary to the other functions of the package a one-sided <em>t</em>-test (instead of TOST) is employed. Hence, <span class="math inline">\(\alpha\)</span> defaults to 0.025.<br />
+<p>Note that contrary to the other functions of the package a one-sided <em>t</em>-test (instead of <span title="Two One-Sided Tests">TOST</span>) is employed. Hence, <span class="math inline">\(\small{\alpha}\)</span> defaults to 0.025.<br />
 Defaults depending on the argument <code>logscale</code>:</p>
 <table>
 <thead>
@@ -271,15 +343,15 @@ Defaults depending on the argument <code>logscale</code>:</p>
 <td align="center"><code>–0.20</code></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\theta_{0}\)</span></td>
+<td><span class="math inline">\(\small{\theta_0}\)</span></td>
 <td><code>theta0</code></td>
 <td align="center"><code>0.95</code></td>
 <td align="center"><code>+0.05</code></td>
 </tr>
 </tbody>
 </table>
-<p>Arguments <code>targetpower</code>, <code>margin</code>, <code>theta0</code>, and <code>CV</code> have to be given as fractions, not percent.<br />
-The <em>CV</em> is generally the <em>within</em>-subject coefficient of variation. Only for <code>design = &quot;parallel&quot;</code> it is the <em>total</em> (<span title="also known as">a.k.a.</span> pooled) <em>CV</em>.</p>
+<p>Arguments <code>targetpower</code>, <code>margin</code>, <code>theta0</code>, and <code>CV</code> have to be given as fractions, not in percent.<br />
+The <em>CV</em> is generally the <em>within-</em> (intra-) subject coefficient of variation. Only for <code>design = &quot;parallel&quot;</code> it is the <em>total</em> (<span title="also known as">a.k.a.</span> pooled) <em>CV</em>.</p>
 <p>Designs with one (parallel), two (conventional crossover and paired), and three or four periods (replicates) are supported.</p>
 <pre><code>#      design                        name   df
 #  &quot;parallel&quot;           2 parallel groups  n-2
@@ -293,20 +365,20 @@ The <em>CV</em> is generally the <em>within</em>-subject coefficient of variatio
 #    &quot;2x2x2r&quot; Liu’s 2x2x2 repeated x-over 3n-2
 #    &quot;paired&quot;                paired means  n-1</code></pre>
 <p>The terminology of the <code>design</code> argument follows this pattern: <code>treatments x sequences x periods</code>. The conventional TR|RT (<span title="also known as">a.k.a.</span> AB|BA) design can be abbreviated as <code>&quot;2x2&quot;</code>. Some call the <code>&quot;parallel&quot;</code> design a ‘one-sequence’ design. The design <code>&quot;paired&quot;</code> has two periods but no sequences, <em>e.g.</em>, in studying linear pharmacokinetics a single dose is followed by multiple doses. A profile in steady state (T) is compared to the one after the single dose (R). Note that the underlying model assumes no period effects.</p>
-<p>With <code>sampleN.noninf(..., details = FALSE, print = FALSE)</code> results are provided as a <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html">data.frame</a> with eight columns <code>Design</code>, <code>alpha</code>, <code>CV</code>, <code>theta0</code>, <code>Margin</code>, <code>Sample size</code>, <code>Achieved power</code>, and <code>Target power</code>. To access <em>e.g.</em>, the sample size use either <code>sampleN.noninf[1, 6]</code> or <code>sampleN.noninf[[&quot;Sample size&quot;]]</code>. We suggest to use the latter in your code for clarity.</p>
-<p><span style="background-color:#FFFF99">The estimated sample size gives always the <em>total</em> number of subjects (not subject/sequence in crossovers or subjects/group in parallel designs – like in some other software packages).</span></p>
+<p>With <code>sampleN.noninf(..., details = FALSE, print = FALSE)</code> results are provided as a data frame<small> </small><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> with eight columns <code>Design</code>, <code>alpha</code>, <code>CV</code>, <code>theta0</code>, <code>Margin</code>, <code>Sample size</code>, <code>Achieved power</code>, and <code>Target power</code>. To access <em>e.g.</em>, the sample size use either <code>sampleN.noninf[1, 6]</code> or <code>sampleN.noninf[[&quot;Sample size&quot;]]</code>. We suggest to use the latter in scripts for clarity.</p>
+<p><span class="hl">The estimated sample size gives always the <em>total</em> number of subjects (not subject/sequence in crossovers or subjects/group in parallel designs – like in some other software packages).</span></p>
 </div>
 <div id="non-inferiority" class="section level1">
 <h1>Non-Inferiority</h1>
-<p>If the supplied margin is &lt; 1 (<code>logscale = TRUE</code>) or &lt; 0 (<code>logscale = FALSE</code>), then it is assumed that <em>higher</em> response values are <u>better</u>. The hypotheses are</p>
+<p>If the supplied margin is &lt; 1 (<code>logscale = TRUE</code>) or &lt; 0 (<code>logscale = FALSE</code>), then it is assumed that <em>higher</em> response values are <u>better</u>. The hypotheses are with</p>
 <ul>
-<li><p><code>logscale = TRUE</code> <span class="math display">\[H_{0}:\theta_0 \leq \log({margin})\:vs\:H_{1}:\theta_0&gt;\log({margin})\]</span> where <span class="math inline">\(\theta_0=\mu_T/\mu_R\)</span></p></li>
-<li><p><code>logscale = FALSE</code> <span class="math display">\[H_{0}:\theta_0 \leq {margin}\:vs\:H_{1}:\theta_0&gt;{margin}\]</span></p>
-<p>where <span class="math inline">\(\theta_0=\mu_T-\mu_R\)</span></p></li>
+<li><p><code>logscale = TRUE</code> <span class="math display">\[\small{H_0:\theta_0 \leq \log({margin})\:vs\:H_1:\theta_0&gt;\log({margin})}\]</span> where <span class="math inline">\(\small{\theta_0=\mu_\textrm{T}/\mu_\textrm{R}}\)</span></p></li>
+<li><p><code>logscale = FALSE</code> <span class="math display">\[\small{H_0:\theta_0 \leq {margin}\:vs\:H_1:\theta_0&gt;{margin}}\]</span></p>
+<p>where <span class="math inline">\(\small{\theta_0=\mu_T-\mu_R}\)</span></p></li>
 </ul>
 <div id="example-1" class="section level2">
 <h2>Example 1</h2>
-<p>Estimate the sample size for assumed intra-subject <em>CV</em> 0.25. Defaults <code>margin</code> 0.80 and <span class="math inline">\(\theta_{0}\)</span> 0.95 employed.</p>
+<p>Estimate the sample size for assumed intra-subject <em>CV</em> 0.25. Defaults <code>margin</code> 0.80 and <span class="math inline">\(\small{\theta_{0}}\)</span> 0.95 employed.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">sampleN.noninf</span>(<span class="dt">CV =</span> <span class="fl">0.25</span>)</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="co"># </span></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="co"># ++++++++++++ Non-inferiority test +++++++++++++</span></span>
@@ -325,7 +397,7 @@ The <em>CV</em> is generally the <em>within</em>-subject coefficient of variatio
 <p>To get only the sample size:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">sampleN.noninf</span>(<span class="dt">CV =</span> <span class="fl">0.25</span>, <span class="dt">details =</span> <span class="ot">FALSE</span>, <span class="dt">print =</span> <span class="ot">FALSE</span>)[[<span class="st">&quot;Sample size&quot;</span>]]</span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="co"># [1] 36</span></span></code></pre></div>
-<p>Note that the sample size is always rounded up to give balanced sequences (here a multiple of two). Since power is higher than our target, likely this was the case here. Let us check that.<br />
+<p>Note that the sample size is always rounded up to give balanced sequences (here a multiple of two). Since power is higher than our target, likely this was the case here. Let us assess that:<br />
 Which power will we get with a sample size of 35?</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">power.noninf</span>(<span class="dt">CV =</span> <span class="fl">0.25</span>, <span class="dt">n =</span> <span class="dv">35</span>)</span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="co"># Unbalanced design. n(i)=18/17 assumed.</span></span>
@@ -335,11 +407,11 @@ Which power will we get with a sample size of 35?</p>
 </div>
 <div id="non-superiority" class="section level1">
 <h1>Non-Superiority</h1>
-<p>If the supplied margin is &gt; 1 (<code>logscale = TRUE</code>) or &gt; 0 (<code>logscale = FALSE</code>), then it is assumed that <em>lower</em> response values are <u>better</u>. The hypotheses are</p>
+<p>If the supplied margin is &gt; 1 (<code>logscale = TRUE</code>) or &gt; 0 (<code>logscale = FALSE</code>), then it is assumed that <em>lower</em> response values are <u>better</u>. The hypotheses are with</p>
 <ul>
-<li><p><code>logscale = TRUE</code> <span class="math display">\[H_{0}:\theta_0 \geq \log({margin})\:vs\:H_{1}:\theta_0&lt;\log({margin})\]</span> where <span class="math inline">\(\theta_0=\mu_T/\mu_R\)</span></p></li>
-<li><p><code>logscale = FALSE</code> <span class="math display">\[H_{0}:\theta_0 \geq {margin}\:vs\:H_{1}:\theta_0&lt;{margin}\]</span></p>
-<p>where <span class="math inline">\(\theta_0=\mu_T-\mu_R\)</span></p></li>
+<li><p><code>logscale = TRUE</code> <span class="math display">\[\small{H_{0}:\theta_0 \geq \log({margin})\:vs\:H_{1}:\theta_0&lt;\log({margin})}\]</span> where <span class="math inline">\(\small{\theta_0=\mu_\textrm{T}/\mu_\textrm{R}}\)</span></p></li>
+<li><p><code>logscale = FALSE</code> <span class="math display">\[\small{H_{0}:\theta_0 \geq {margin}\:vs\:H_{1}:\theta_0&lt;{margin}}\]</span></p>
+<p>where <span class="math inline">\(\small{\theta_0=\mu_T-\mu_R}\)</span></p></li>
 </ul>
 <div id="example-2" class="section level2">
 <h2>Example 2</h2>
@@ -359,12 +431,12 @@ Which power will we get with a sample size of 35?</p>
 <span id="cb6-13"><a href="#cb6-13"></a><span class="co"># Sample size (total)</span></span>
 <span id="cb6-14"><a href="#cb6-14"></a><span class="co">#  n     power</span></span>
 <span id="cb6-15"><a href="#cb6-15"></a><span class="co"># 36   0.820330</span></span></code></pre></div>
-<p>Same sample size like in <a href="#example-1">example 1</a> since reciprocal values of both <code>margin</code> 0.80 and <span class="math inline">\(\theta_{0}\)</span> are specified.</p>
+<p>Same sample size like in <a href="#example-1">example 1</a> since reciprocal values of both <code>margin</code> 0.80 and <span class="math inline">\(\small{\theta_{0}}\)</span> are specified.</p>
 </div>
 </div>
 <div id="bracketing-approach" class="section level1">
 <h1>Bracketing Approach</h1>
-<p>Compare a new modified release formulation (regimen once a day) with an intermediate release formulation (twice a day).<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> <em>C<sub>min</sub></em> is the target metric for efficacy (non-inferiority) and <em>C<sub>max</sub></em> for safety (non-superiority). Margins are 0.80 for <em>C<sub>min</sub></em> and 1.25 for <em>C<sub>max</sub></em>. <em>CV</em>s are 0.35 for <em>C<sub>min</sub></em> and 0.20 for <em>C<sub>max</sub></em>; <span class="math inline">\(\theta_{0}\)</span> 0.95 for <em>C<sub>min</sub></em> and 1.05 for <em>C<sub>max</sub></em>. Full replicate design due to the high variability of <em>C<sub>min</sub></em>.<br />
+<p>Compare a new modified release formulation (regimen once a day) with an intermediate release formulation (twice a day).<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> <em>C</em><sub>min</sub> is the target metric for efficacy (non-inferiority) and <em>C</em><sub>max</sub> for safety (non-superiority). Margins are 0.80 for <em>C</em><sub>min</sub> and 1.25 for <em>C</em><sub>max</sub>. <em>CV</em>s are 0.35 for <em>C</em><sub>min</sub> and 0.20 for <em>C</em><sub>max</sub>; <span class="math inline">\(\small{\theta_{0}}\)</span> 0.95 for <em>C</em><sub>min</sub> and 1.05 for <em>C</em><sub>max</sub>. Full replicate design due to the high variability of <em>C</em><sub>min</sub>.<br />
 Which PK metric leads the sample size?</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>res &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">design =</span> <span class="st">&quot;2x2x4&quot;</span>, <span class="dt">metric =</span> <span class="kw">c</span>(<span class="st">&quot;Cmin&quot;</span>, <span class="st">&quot;Cmax&quot;</span>),</span>
 <span id="cb7-2"><a href="#cb7-2"></a>                  <span class="dt">margin =</span> <span class="kw">c</span>(<span class="fl">0.80</span>, <span class="fl">1.25</span>), <span class="dt">CV =</span> <span class="kw">c</span>(<span class="fl">0.35</span>, <span class="fl">0.20</span>),</span>
@@ -381,15 +453,15 @@ Which PK metric leads the sample size?</p>
 <span id="cb7-13"><a href="#cb7-13"></a><span class="co">#  design metric margin   CV theta0  n     power</span></span>
 <span id="cb7-14"><a href="#cb7-14"></a><span class="co">#   2x2x4   Cmin   0.80 0.35   0.95 32 0.8077926</span></span>
 <span id="cb7-15"><a href="#cb7-15"></a><span class="co">#   2x2x4   Cmax   1.25 0.20   1.05 12 0.8406410</span></span></code></pre></div>
-<p>The sample size depends on <em>C<sub>min</sub></em>. Hence, the study is ‘overpowered’ for <em>C<sub>max</sub></em>.</p>
+<p>The sample size depends on <em>C</em><sub>min</sub>. Hence, the study is ‘overpowered’ for <em>C</em><sub>max</sub>.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">power.noninf</span>(<span class="dt">design =</span> <span class="st">&quot;2x2x4&quot;</span>, <span class="dt">margin =</span> <span class="fl">1.25</span>, <span class="dt">CV =</span> <span class="fl">0.20</span>,</span>
 <span id="cb8-2"><a href="#cb8-2"></a>             <span class="dt">theta0 =</span> <span class="fl">1.05</span>, <span class="dt">n =</span> <span class="dv">32</span>)</span>
 <span id="cb8-3"><a href="#cb8-3"></a><span class="co"># [1] 0.9984996</span></span></code></pre></div>
-<p>Therefore, that gives us some ‘headroom’ for <em>C<sub>max</sub></em>.</p>
+<p>Therefore, that gives us some ‘safety margin’ for <em>C</em><sub>max</sub>.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">power.noninf</span>(<span class="dt">design =</span> <span class="st">&quot;2x2x4&quot;</span>, <span class="dt">margin =</span> <span class="fl">1.25</span>, <span class="dt">CV =</span> <span class="fl">0.25</span>,</span>
 <span id="cb9-2"><a href="#cb9-2"></a>             <span class="dt">theta0 =</span> <span class="fl">1.10</span>, <span class="dt">n =</span> <span class="dv">32</span>) <span class="co"># higher CV, worse theta0</span></span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="co"># [1] 0.8279726</span></span></code></pre></div>
-<p>The bracketing approach does not necessarily give lower sample sizes than tests for equivalence. In this example we could aim at reference-scaling for the highly variable <em>C<sub>min</sub></em> and at conventional ABE for <em>C<sub>max</sub></em>.</p>
+<p>The bracketing approach does not necessarily give lower sample sizes than tests for equivalence. In this example we could aim at reference-scaling for the highly variable <em>C</em><sub>min</sub> and at conventional ABE for <em>C</em><sub>max</sub>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>res &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">design =</span> <span class="st">&quot;2x2x4&quot;</span>, <span class="dt">intended =</span> <span class="kw">c</span>(<span class="st">&quot;ABEL&quot;</span>, <span class="st">&quot;ABE&quot;</span>),</span>
 <span id="cb10-2"><a href="#cb10-2"></a>                  <span class="dt">metric =</span> <span class="kw">c</span>(<span class="st">&quot;Cmin&quot;</span>, <span class="st">&quot;Cmax&quot;</span>), <span class="dt">CV =</span> <span class="kw">c</span>(<span class="fl">0.35</span>, <span class="fl">0.20</span>),</span>
 <span id="cb10-3"><a href="#cb10-3"></a>                  <span class="dt">theta0 =</span> <span class="kw">c</span>(<span class="fl">0.90</span>, <span class="fl">1.05</span>), <span class="dt">n =</span> <span class="ot">NA</span>, <span class="dt">power =</span> <span class="ot">NA</span>,</span>
@@ -404,7 +476,7 @@ Which PK metric leads the sample size?</p>
 <span id="cb10-12"><a href="#cb10-12"></a><span class="co">#  design intended metric   CV theta0  n     power</span></span>
 <span id="cb10-13"><a href="#cb10-13"></a><span class="co">#   2x2x4     ABEL   Cmin 0.35   0.90 34 0.8118400</span></span>
 <span id="cb10-14"><a href="#cb10-14"></a><span class="co">#   2x2x4      ABE   Cmax 0.20   1.05 10 0.8517596</span></span></code></pre></div>
-<p>Which method is optimal is a case-to-case decision. Although in this example the bracketing approach seems to be the ‘winner’ (32 subjects instead of 34), we might fail if the <em>CV</em> of <em>C<sub>min</sub></em> is larger than assumed, whereas in reference-scaling we might still pass due to the expanded limits.</p>
+<p>Which method is optimal is a case-to-case decision. Although in this example the bracketing approach seems to be the ‘winner’ (32 subjects instead of 34), we might fail if the <em>CV</em> of <em>C</em><sub>min</sub> is larger than assumed, whereas in reference-scaling we might still pass due to the expanded limits.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>n &lt;-<span class="st"> </span><span class="kw">sampleN.scABEL</span>(<span class="dt">CV =</span> <span class="fl">0.35</span>, <span class="dt">theta0 =</span> <span class="fl">0.90</span>, <span class="dt">design =</span> <span class="st">&quot;2x2x4&quot;</span>,</span>
 <span id="cb11-2"><a href="#cb11-2"></a>                    <span class="dt">print =</span> <span class="ot">FALSE</span>, <span class="dt">details =</span> <span class="ot">FALSE</span>)[[<span class="st">&quot;Sample size&quot;</span>]]</span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="co"># CV and theta0 of both metrics worse than assumed</span></span>
@@ -429,14 +501,15 @@ Which PK metric leads the sample size?</p>
 <div id="license" class="section level1">
 <h1>License</h1>
 <h4 class="author">
-Helmut Schütz 2020-08-04
+Helmut Schütz 2020-10-23
 </h4>
-<p><a href="https://cran.r-project.org/web/licenses/GPL-2" title="GNU General Public License, Version 2">GPL-2</a> | <a href="https://cran.r-project.org/web/licenses/GPL-3" title="GNU General Public License, Version 3">GPL-3</a></p>
+<p><a href="https://cran.r-project.org/web/licenses/GPL-3" title="GNU General Public License, Version 3">GPL-3</a></p>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>European Medicines Agency, Committee for Medicinal Products for Human Use. <em>Guideline on the pharmacokinetic and clinical evaluation of modified release dosage forms.</em> London, 20 November 2014. <a href="https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-pharmacokinetic-clinical-evaluation-modified-release-dosage-forms_en.pdf">EMA/CPMP/EWP/280/96 Corr1</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>R Documentation. <em>Data Frames.</em> 2020-05-02. <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html">R-manual</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>European Medicines Agency, Committee for Medicinal Products for Human Use. <em>Guideline on the pharmacokinetic and clinical evaluation of modified release dosage forms.</em> London, 20 November 2014. <a href="https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-pharmacokinetic-clinical-evaluation-modified-release-dosage-forms_en.pdf">EMA/CPMP/EWP/280/96 Corr1</a>.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

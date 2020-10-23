@@ -1,25 +1,43 @@
-# PowerTOST 1.5-0 (Maintenance release dedicated to 70 birtday of Detluuu)
+# PowerTOST 1.5-1
 
-On CRAN 2020-08-09.
+On CRAN 2020-10-22
+
+## Bug fixes
+  * Check of arg `theta0` within range `theta1 ... theta2` fixed.
+  * Fix of the default settings of `theta1, theta2` if missing in various functions.
+  * Added `emmeans` to `Suggests`. Otherwise `NOTE` on r-devel-linux-x86_64-fedora-clang. THX to Gábor Csárdi and Duncan Murdoch on r-package-devel. Will be required in R4.1.0 released next year.
+
+## Minor changes
+
+  * Added example for statistical assurance to the ABE-Vignette. 
+  * More checks of CV and theta0 vectorized input to power.TOST(). Only one argument may be a vector.
+  * Unified man pages of `sampleN.*`: Always *estimation* instead of *calculation*. References added for Fieller’s CI.
+  * More examples in `README`.
+  * Changed http(s) locations of References according to R CMD check.
+  * Cosmetics in Vignettes. Added examples for `logscale = FALSE` to the ABE-Vignette.
+
+# PowerTOST 1.5-0 
+
+On CRAN 2020-08-09. (Maintenance release dedicated to 70 birthday of Detluuu)
 
 ## Bug fixes
   
-  * Bug fix in scABEL.ad w.r.t. coercion 
-  * Fix of the link to package emmeans in man pages of expected power.
+  * Bug fix in `scABEL.ad` w.r.t. coercion.
+  * Fix of the link to package `emmeans` in man pages of expected power.
   * Fix in Example 1 of `ABE.Rmd` (not a good idea specify a variable with the same name as a function).
 
 ## Major changes
 
-  * Pre-compiled RSABE vignette.
+  * Pre-compiled RSABE-Vignette.
 
 ## Minor changes
 
   * Highlight clarification about *total* sample size in vignettes.
-  * Removed links to man-pages in vignettes (they work in the library but not in the public ones on CRAN).
+  * Removed links to man pages in vignettes (they work in the library but not in the public ones on CRAN).
   * Moved `tufte` from Imports to Suggests (Duncan Murdoch).
   * Harmonize default value of `theta1` in `pvalue.TOST` in case of `logscale = FALSE`
   * Clarification of argument `CV` (and `theta0`, `theta1`, `theta2`) in case of `logscale = FALSE`.
-  * Clarify in man-pages that all functions return the *total* sample size (and not subjects/sequence in crossovers and subjects/group in parallel designs -- like in some other software packages). Suggested by Amandine Schmutz.
+  * Clarify in man pages and vignettes that all functions return the *total* sample size (and not subjects/sequence in crossovers and subjects/group in parallel designs -- like in some other software packages). Suggested by Amandine Schmutz.
 
 # PowerTOST 1.4-9
 
