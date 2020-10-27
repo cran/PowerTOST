@@ -9,7 +9,8 @@ library(PowerTOST)
 res <- data.frame(CV = c(rep(0.574, 3), rep(0.1, 2)),
                   regulator = c("EMA", "HC", "RU/EEU/GGC", "EMA", "HC"),
                   method = c(rep("ABEL", 2), rep("ABE", 3)),
-                  L = NA, U = NA, n.GL =NA, theta1 = NA, theta2 = NA, n = NA)
+                  L = NA, U = NA, n.GL = NA, theta1 = NA, theta2 = NA, n = NA,
+                  stringsAsFactors = FALSE) # this line for R <4.0.0
 for (i in 1:nrow(res)) {
   if (i <= 2) {
     LU <- scABEL(CV = res$CV[i], regulator = res$regulator[i])

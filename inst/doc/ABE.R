@@ -20,7 +20,8 @@ power.TOST(CV = 0.30, n = 39)
 designs <- c("2x2x2", "2x2x3", "2x3x3", "2x2x4")
 # data.frame of results
 res <- data.frame(design = designs, n = NA, power = NA, n.do = NA,
-                  power.do = NA, stringsAsFactors = FALSE)
+                  power.do = NA,
+                  stringsAsFactors = FALSE) # this line for R <4.0.0
 for (i in 1:4) {
   # print = FALSE and details = FALSE suppress output to the console
   # we are only interested in columns 7-8
@@ -37,7 +38,8 @@ print(res, row.names = FALSE)
 ## ----example1e, echo = FALSE--------------------------------------------------
 designs <- c("2x2x2", "2x2x3", "2x3x3", "2x2x4")
 res <- data.frame(design = rep(NA, 4), name = NA, n = NA, formula = NA,
-                  df = NA, t.value = NA, stringsAsFactors = FALSE)
+                  df = NA, t.value = NA,
+                  stringsAsFactors = FALSE) # this line for R <4.0.0
 res[, c(2:1, 4)] <- known.designs()[which(known.designs()[, 2] %in% designs),
                                     c(9, 2:3)]
 for (i in 1:4) {
@@ -131,7 +133,7 @@ CV  <- 0.214
 res <- data.frame(target = c(rep(0.8, 5), rep(0.9, 5)),
                   theta0 = rep(c(1, seq(0.95, 0.92, -0.01)), 2),
                   n.1 = NA, power = NA,
-                  sigma.u = rep(c(0.001, seq(0.05, 0.08, 0.01)), 2),
+                  sigma.u = rep(c(0.0005, seq(0.05, 0.08, 0.01)), 2),
                   n.2 = NA, assurance = NA)
 for (i in 1:nrow(res)) {
   res[i, 3:4] <- sampleN.TOST(CV = CV, targetpower = res$target[i],

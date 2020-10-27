@@ -2,8 +2,8 @@ Encoding: UTF-8
 Package: PowerTOST
 Type: Package
 Title: Power and Sample Size for (Bio)Equivalence Studies
-Version: 1.5-1
-Date: 2020-10-22
+Version: 1.5-2
+Date: 2020-10-27
 Authors@R: c(person("Detlew", "Labes",
                role = c("aut","cre"),
                email = "DetlewLabes@gmx.de",
@@ -30,10 +30,10 @@ URL: https://github.com/Detlew/PowerTOST
 BugReports: https://github.com/Detlew/PowerTOST/issues
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2020-10-23 09:55:02 UTC; Detlew
+Packaged: 2020-10-27 09:42:53 UTC; Detlew
 Author: Detlew Labes [aut, cre] (<https://orcid.org/0000-0003-2169-426X>),
   Helmut Schütz [aut] (<https://orcid.org/0000-0002-1167-7880>),
   Benjamin Lang [aut]
 Maintainer: Detlew Labes <DetlewLabes@gmx.de>
 Repository: CRAN
-Date/Publication: 2020-10-23 10:40:02 UTC
+Date/Publication: 2020-10-27 14:10:15 UTC
