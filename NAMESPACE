@@ -13,8 +13,6 @@ importFrom(stats, dnorm, pnorm, qnorm, rnorm, dt, pt, qt, dchisq, qchisq, rchisq
            confint, lm.fit, .lm.fit, lm, model.matrix, reshape, rWishart, anova)
 importFrom(utils, tail, head, read.table, flush.console, setTxtProgressBar,
            txtProgressBar)
-#importFrom(tufte, quote_footer)
-#importFrom(pracma, quad2d)
 importFrom(cubature, hcubature)
 importFrom(TeachingDemos, shadowtext)
 
@@ -56,7 +54,8 @@ export(
   , power.NTIDFDA
   , power.HVNTID
   , power.RSABE
-  , power.RSABE2L.sds
+  , power.RSABE2L.sdsims
+  , power.RSABE2L.sds      # alias
   , power.scABEL
   , power.scABEL.sdsims
   , power.scABEL.sds       # alias

@@ -30,45 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-<style type="text/css">
-a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
-a.anchor-section::before {content: '#';}
-.hasAnchor:hover a.anchor-section {visibility: visible;}
-</style>
-<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
-document.addEventListener('DOMContentLoaded', function() {
-  // Do nothing if AnchorJS is used
-  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
-    return;
-  }
-
-  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-
-  // Do nothing if sections are already anchored
-  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
-    return null;
-  }
-
-  // Use section id when pandoc runs with --section-divs
-  const section_id = function(x) {
-    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
-            ? x.id : '');
-  };
-
-  // Add anchors
-  h.forEach(function(x) {
-    const id = x.id || section_id(x.parentElement);
-    if (id === '') {
-      return null;
-    }
-    let anchor = document.createElement('a');
-    anchor.href = '#' + id;
-    anchor.classList = ['anchor-section'];
-    x.classList.add('hasAnchor');
-    x.appendChild(anchor);
-  });
-});
-</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -168,6 +129,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -439,7 +401,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 <span id="cb2-4"><a href="#cb2-4"></a><span class="co">#     2x2  0.05 0.2   0.92    0.8   1.25          28       0.822742</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a><span class="co"># </span></span>
 <span id="cb2-6"><a href="#cb2-6"></a><span class="co"># Power analysis</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="co"># CV, theta0 and number of subjects which lead to min. acceptable power of at least 0.7:</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co"># CV, theta0 and number of subjects leading to min. acceptable power of =0.7:</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a><span class="co">#  CV= 0.2377, theta0= 0.9001</span></span>
 <span id="cb2-9"><a href="#cb2-9"></a><span class="co">#  n = 21 (power= 0.7104)</span></span></code></pre></div>
 <div class="figure">
@@ -466,7 +428,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 <span id="cb3-6"><a href="#cb3-6"></a><span class="co">#           0.8</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a><span class="co"># </span></span>
 <span id="cb3-8"><a href="#cb3-8"></a><span class="co"># Power analysis</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="co"># CV, theta0 and number of subjects which lead to min. acceptable power of at least 0.7:</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co"># CV, theta0 and number of subjects leading to min. acceptable power of =0.7:</span></span>
 <span id="cb3-10"><a href="#cb3-10"></a><span class="co">#  CV= 0.6668, theta0= 0.8689</span></span>
 <span id="cb3-11"><a href="#cb3-11"></a><span class="co">#  n = 33 (power= 0.7085)</span></span></code></pre></div>
 <div class="figure">
@@ -486,7 +448,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 <span id="cb4-6"><a href="#cb4-6"></a><span class="co">#           0.8</span></span>
 <span id="cb4-7"><a href="#cb4-7"></a><span class="co"># </span></span>
 <span id="cb4-8"><a href="#cb4-8"></a><span class="co"># Power analysis</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="co"># CV, theta0 and number of subjects which lead to min. acceptable power of at least 0.7:</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co"># CV, theta0 and number of subjects leading to min. acceptable power of =0.7:</span></span>
 <span id="cb4-10"><a href="#cb4-10"></a><span class="co">#  CV= 0.6938, theta0= 0.8763</span></span>
 <span id="cb4-11"><a href="#cb4-11"></a><span class="co">#  n = 23 (power= 0.7123)</span></span></code></pre></div>
 <div class="figure">
@@ -502,14 +464,14 @@ Details and examples of other methods are accessible via the menu bar on top of 
 </h5>
 <p>Same assumptions (<em>CV</em>, <span class="math inline">\(\small{\theta_0}\)</span>) like in <a href="#expl2">Example 2</a>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">pa.scABE</span>(<span class="dt">CV =</span> <span class="fl">0.55</span>, <span class="dt">regulator =</span> <span class="st">&quot;HC&quot;</span>)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="co"># Sample size plan scABE (HC/ABEL2)</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co"># Sample size plan scABE (HC/ABEL)</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="co">#  Design alpha CVwT CVwR theta0 theta1 theta2 Sample size Achieved power</span></span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="co">#   2x3x3  0.05 0.55 0.55    0.9    0.8   1.25          39        0.81418</span></span>
 <span id="cb5-5"><a href="#cb5-5"></a><span class="co">#  Target power</span></span>
 <span id="cb5-6"><a href="#cb5-6"></a><span class="co">#           0.8</span></span>
 <span id="cb5-7"><a href="#cb5-7"></a><span class="co"># </span></span>
 <span id="cb5-8"><a href="#cb5-8"></a><span class="co"># Power analysis</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="co"># CV, theta0 and number of subjects which lead to min. acceptable power of at least 0.7:</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co"># CV, theta0 and number of subjects leading to min. acceptable power of =0.7:</span></span>
 <span id="cb5-10"><a href="#cb5-10"></a><span class="co">#  CV= 0.7599, theta0= 0.8647</span></span>
 <span id="cb5-11"><a href="#cb5-11"></a><span class="co">#  n = 30 (power= 0.7125)</span></span></code></pre></div>
 <div class="figure">
@@ -532,7 +494,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 <span id="cb6-6"><a href="#cb6-6"></a><span class="co">#           0.8</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a><span class="co"># </span></span>
 <span id="cb6-8"><a href="#cb6-8"></a><span class="co"># Power analysis</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="co"># CV, theta0 and number of subjects which lead to min. acceptable power of at least 0.7:</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co"># CV, theta0 and number of subjects leading to min. acceptable power of =0.7:</span></span>
 <span id="cb6-10"><a href="#cb6-10"></a><span class="co">#  CV= 0.9713, theta0= 0.8652</span></span>
 <span id="cb6-11"><a href="#cb6-11"></a><span class="co">#  n = 23 (power= 0.7001)</span></span></code></pre></div>
 <div class="figure">
@@ -556,7 +518,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 <span id="cb7-6"><a href="#cb7-6"></a><span class="co">#           0.8</span></span>
 <span id="cb7-7"><a href="#cb7-7"></a><span class="co"># </span></span>
 <span id="cb7-8"><a href="#cb7-8"></a><span class="co"># Power analysis</span></span>
-<span id="cb7-9"><a href="#cb7-9"></a><span class="co"># CV, theta0 and number of subjects which lead to min. acceptable power of at least 0.7:</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co"># CV, theta0 and number of subjects leading to min. acceptable power of =0.7:</span></span>
 <span id="cb7-10"><a href="#cb7-10"></a><span class="co">#  CV = (0.0716, 0.3059), theta0= 0.9569</span></span>
 <span id="cb7-11"><a href="#cb7-11"></a><span class="co">#  n = 13 (power= 0.7064)</span></span></code></pre></div>
 <div class="figure">
@@ -599,7 +561,7 @@ Details and examples of other methods are accessible via the menu bar on top of 
 <div id="license" class="section level1">
 <h1>License</h1>
 <h4 class="author">
-Helmut Schütz 2020-10-27
+Helmut Schütz 2021-01-18
 </h4>
 <p><a href="https://cran.r-project.org/web/licenses/GPL-3" title="GNU General Public License, Version 3">GPL-3</a></p>
 </div>

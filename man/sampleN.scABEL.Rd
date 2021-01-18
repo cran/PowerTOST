@@ -41,9 +41,10 @@ Defaults to 1.25 if not given explicitly.
 Intra-subject coefficient(s) of variation as ratio (not percent).
   \itemize{
     \item If given as a scalar (\code{length(CV)==1}) the \emph{same} CV of Test
-          and Reference is assumed (homoscedasticity, \code{CVwT==CVwR}).
+          and Reference is assumed (homoscedasticity, \ifelse{latex}{\out{$CV_\textrm{wT}=CV_\textrm{wR}$}}{\ifelse{html}{\out{<em>CV</em><sub>wT</sub>&nbsp=&nbsp;<em>CV</em><sub>wR</sub>}}{CVwT = CVwR}}).
     \item If given as a vector (\code{length(CV)==2}), \emph{i.e.}, assuming
-          heteroscedasticity, the CV of the Test \strong{must} be given in \code{CV[1]} and the one of the Reference in the \code{CV[2]}.
+          heteroscedasticity, the \ifelse{latex}{\out{$CV$}}{\ifelse{html}{\out{<em>CV</em>}}{CV}} of the Test \strong{must} be given in 
+          \code{CV[1]} and the one of the Reference in the \code{CV[2]}.
   }
 }
   \item{design}{
@@ -55,17 +56,15 @@ Defaults to \code{design="2x3x3"}. Details are given the section about Designs.
 }
   \item{regulator}{
 Regulatory settings for the widening of the BE acceptance limits.\cr
-May be given as character from the choices \code{"EMA"}, \code{"HC"}, \code{"FDA"} or as an object of
-class 'regSet' (see \code{\link{reg_const}}).\cr
+May be given as character from the choices \code{"EMA"}, \code{"HC"}, \code{"GCC"},
+\code{"FDA"} or as an object of class 'regSet' (see \code{\link{reg_const}}).\cr
 Defaults to \code{regulator="EMA"} if missing.\cr
 This argument may be given also in lower case if given as character.\cr\cr
-The former argument \code{regulator="ANVISA"} is defunct. Use "EMA" since the 
-ANVISA now recommends the use of EMA regulatory settings. 
 }
   \item{nsims}{
 Number of simulations to be performed to obtain the (empirical) power.
 The default value 100,000 = 1e+5 is usually sufficient. Consider to rise 
-this value if theta0<=0.85 or >=1.25. But see the warning section.
+this value if \code{theta0} <=0.85 or >=1.20. But see the warning section.
 }
   \item{nstart}{
 Set this to a start for the sample size search if a previous run failed.\cr
@@ -75,7 +74,8 @@ After reworking the start n in version 1.1-05 rarely needed.
 Maximum number of steps in sample size search. Defaults to 100.
 }
   \item{print}{
-If \verb{TRUE} (default) the function prints its results. If \verb{FALSE} only the result data.frame will be returned.
+If \verb{TRUE} (default) the function prints its results. 
+If \verb{FALSE} only the result data.frame will be returned.
 }
   \item{details}{
 If set to \code{TRUE} (default), the steps during sample size search are shown.
@@ -88,8 +88,7 @@ is issued if \code{setseed=TRUE}, the default.
 }
 \details{
 The simulations are done via the distributional properties of the statistical
-quantities necessary for deciding BE based on ABEL (\sQuote{Average Bioequivalence with Expanded Limits}). For more details see
-a description in the \code{/doc} sub-directory of the package.\cr\cr
+quantities necessary for deciding BE based on ABEL (\sQuote{Average Bioequivalence with Expanded Limits}). For more details see a description in the \code{/doc} sub-directory of the package.\cr\cr
 Function \code{sampleN.scABEL()} is based on power calculations via simulations 
 using the distributional characteristics of the \sQuote{key} statistics obtained from 
 the EMA recommended evaluation via ANOVA if \code{regulator="EMA"} or if the
@@ -98,10 +97,11 @@ of class 'regSet'.\cr
 Otherwise, the simulations are based on the distributional characteristis of the 
 \sQuote{key} statistics obtained from evaluation via intra-subject contrasts (ISC), 
 as recommended by the FDA.\cr\cr
-The estimated sample size gives always the \emph{total} number of subjects (not subject/sequence -- like in some other software packages).\cr\cr
+The estimated sample size gives always the \emph{total} number of subjects 
+(not subject/sequence -- like in some other software packages).\cr\cr
 Function \code{sampleN.scABEL2()} is solely based on power calculations via 
 simulation using the distributional characteristics of the \sQuote{key} statistics 
-obtained from evaluation via ISC. This function is deprecated.
+obtained from evaluation via intra-subject contrasts (ISC). This function is deprecated.
 }
 \value{
 Returns a data.frame with the input settings and sample size results.\cr
@@ -109,7 +109,8 @@ The \code{Sample size} column contains the total sample size.\cr
 The \code{nlast} column contains the last \code{n} value. May be useful for restarting.
 }
 \references{
-\enc{Tóthfalusi}{Tothfalusi} L, \enc{Endrényi}{Endrenyi} L. \emph{Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs.} J Pharm Pharmaceut Sci. 2011;15(1):73--84. \href{http://ejournals.library.ualberta.ca/index.php/JPPS/article/download/11612/9489}{open access}
+\enc{Tóthfalusi}{Tothfalusi} L, \enc{Endrényi}{Endrenyi} L. \emph{Sample Sizes for Designing Bioequivalence Studies for Highly Variable Drugs.} J Pharm Pharmaceut Sci. 2011;15(1):73--84. 
+\href{http://ejournals.library.ualberta.ca/index.php/JPPS/article/download/11612/9489}{open access}
 }
 \author{
 D. Labes
@@ -122,7 +123,7 @@ In case of \code{regulator="FDA"} the sample size is only approximate since
 the BE decision method is not exactly what is expected by the FDA. But the two \enc{Lászlós}{Laszlos} state that the scABEL method should be \sQuote{operationally} equivalent to the
 FDA method. Thus the sample size should be comparable.\cr
 Consider in case of \code{regulator="FDA"} to use the function 
-\code{sampleN.RSABE()}.\cr\cr
+\code{sampleN.RSABE()} instead.\cr\cr
 In case of \code{regulator="HC"} the underlying power is only approximative 
 since the Health Canada recommends evaluation by a mixed model approach. 
 But this could only implemented via subject data simulations which are very 
@@ -142,20 +143,17 @@ Although some designs are more \sQuote{popular} than others, sample size estimat
   }
 }
 \section{Warning }{
-The sample size estimation for very extreme theta0 (<0.83 or >1.21) may be very 
+The sample size estimation for extreme \code{theta0} (<0.83 or >1.21) may be very 
 time consuming and will eventually also fail since the start values chosen are 
 not really reasonable in that ranges. This is especially true in the range around 
 CV = 0.3 and regulatory constant according to FDA.\cr
 If you really need sample sizes in that range be prepared to restart the sample 
-size estimation via the argument nstart.\cr
+size estimation via the argument \code{nstart}.\cr
 Since the dependence of power from n is very flat in the mentioned region you may 
-also consider to adapt the number of simulations not to tap in the simulation 
+also consider to adapt the number of simulations not to get caught in the simulation 
 error trap.\cr\cr
 If results of \code{\link{power.scABEL}} are expected to be inaccurate (partial
-replicate design with unbalanced sequences and/or heteroscedasticity
-where CVwT > CVwR), subject data via \code{\link{sampleN.scABEL.sdsims}} should
-be simulated instead. Very time consuming (easily 100times slower)! Subject data
-simulations are only supported for \code{regulator="EMA"}.
+replicate design with unbalanced sequences and/or heteroscedasticity in the case of  \ifelse{latex}{\out{$CV_\textrm{wT}>CV_\textrm{wR}$}}{\ifelse{html}{\out{<em>CV</em><sub>wT</sub>&nbsp&gt;&nbsp;<em>CV</em><sub>wR</sub>}}{CVwT > CVwR}}, subject data via \code{\link{sampleN.scABEL.sdsims}} should be simulated instead. Very time consuming (easily 100times slower)! Subject data simulations are only supported for \code{regulator="EMA"} and \code{regulator="GCC"}.
 }
 
 \seealso{
@@ -170,18 +168,23 @@ simulations are only supported for \code{regulator="EMA"}.
 # EMA regulatory settings
 sampleN.scABEL(CV = 0.3)
 # should result in a sample size n=54, power=0.8159
-#
-# now with former (inofficial) ANVISA settings, CVswitch=40\%
+
+# Now with former (inofficial) ANVISA settings, CVswitch=40\%
 # (since 2016 ANVISA uses the same settings as EMA)
 reg      <- reg_const("USER", r_const = 0.76, CVswitch = 0.4, CVcap = 0.5)
 reg$name <- "Old ANVISA"
 sampleN.scABEL(CV = 0.3, regulator = reg)
-# should result in n=60, power=0.8101
+# should result in a sample size n=60, power=0.8101
 
-# for the full replicate design, target power = 90\%
+# For the full replicate design, target power = 90\%
 # true assumed ratio = 0.9, FDA regulatory settings
 # sims based on evalaution via ISC
-sampleN.scABEL(CV = 0.4, targetpower = 0.9, theta0 = 0.9,
-               design = "2x2x4", regulator = "FDA")
+sampleN.scABEL(CV = 0.4, targetpower = 0.9, design = "2x2x4",
+               regulator = "FDA")
 # should result in a sample size n=32, power=0.9125
+
+# Fixed wider limits (0.7500 - 1.3333) for the GCC
+sampleN.scABEL(CV = 0.4, targetpower = 0.9, design = "2x2x4",
+               regulator = "GCC")
+# should result in a sample size n=40, power=0.9039              
 }
