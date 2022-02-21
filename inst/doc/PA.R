@@ -20,8 +20,11 @@ pa.scABE(CV = 0.40, design = "2x2x4")
 pa.scABE(CV = 0.55, regulator = "HC")
 
 ## ----example5-----------------------------------------------------------------
-pa.scABE(CV = 0.55, regulator = "FDA")
+pa.scABE(CV = 0.55, regulator = "GCC")
 
 ## ----example6-----------------------------------------------------------------
-pa.NTIDFDA(CV = 0.125)
+pa.scABE(CV = 0.55, regulator = "FDA")
+
+## ----example7-----------------------------------------------------------------
+pa.NTID(CV = 0.125)
 

@@ -70,7 +70,3 @@ package <- "PowerTOST"
 inst    <- package %in% installed.packages()
 if (length(package[!inst]) > 0) install.packages(package[!inst])
 
-## ----sess, sessioninfo--------------------------------------------------------
-options(width = 80)
-devtools::session_info()
-

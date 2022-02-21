@@ -26,20 +26,20 @@ convention commonly set to 0.05.
 }
   \item{theta1}{
 Conventional lower \acronym{ABE} limit to be applied in the mixed procedure
-if \code{CVwR==CVswitch}. Also lower limit for the point estimate
+if \code{CVwR == CVswitch}. Also lower limit for the point estimate
 constraint. Defaults to 0.80 if not given explicitly.
 }
   \item{theta2}{
 Conventional upper \acronym{ABE} limit to be applied in the mixed procedure
-if \code{CVwR==CVswitch}. Also upper limit for the point estimate
+if \code{CVwR == CVswitch}. Also upper limit for the point estimate
 constraint. Defaults to 1.25 if not given explicitly.
 }
   \item{CV}{
 Intra-subject coefficient(s) of variation as ratio (not percent).
   \itemize{
-    \item If given as a scalar (\code{length(CV)==1}) the \emph{same} CV of Test
+    \item If given as a scalar (\code{length(CV) == 1}) the \emph{same} CV of Test
           and Reference is assumed (homoscedasticity, \code{CVwT==CVwR}).
-    \item If given as a vector (\code{length(CV)==2}), \emph{i.e.}, assuming
+    \item If given as a vector (\code{length(CV) == 2}), \emph{i.e.}, assuming
           heteroscedasticity, the CV of the Test \strong{must} be given in \code{CV[1]} and the one of the Reference in the \code{CV[2]}.
   }
 }
@@ -62,7 +62,7 @@ in the full replicate designs or not a multiple of three in the partial
 replicate), the code tries to keep subjects / sequence as balanced as possible.\cr
 In evaluating a particular \emph{unbalanced} study \strong{always} give \code{n}
 as a vector.\cr
-Only if \code{design="2x2x3"} (TRT|RTR) the \emph{order} of sample sizes
+Only if \code{design = "2x2x3"} (TRT|RTR) the \emph{order} of sample sizes
 is important. \code{n[1]} is for sequence TRT and \code{n[2]} for sequence RTR.\cr
 If \code{n} is missing, a sample size is estimated with target power 0.80 and pre-specified
 alpha if defined. Otherwise, alpha is used.
@@ -107,10 +107,10 @@ Set to \code{TRUE} if results of \code{\link{power.scABEL}} are expected to
 be inaccurate (partial replicate design with unbalanced sequences and/or heteroscedasticity
 where CVwT > CVwR) and subject data via \code{\link{power.scABEL.sdsims}} should
 be simulated instead. Very time consuming (easily 100times slower)! Subject data
-simulations are only supported for \code{regulator="EMA"} and \code{regulator="GCC"}.
+simulations are only supported for \code{regulator = "EMA"} and \code{regulator = "GCC"}.
 }
   \item{progress}{
-Set to \code{TRUE} if a progress bar should be displayed. Ignored if \code{sdsims=FALSE}.
+Set to \code{TRUE} if a progress bar should be displayed. Ignored if \code{sdsims = FALSE}.
 }
 }
 \details{
@@ -119,14 +119,14 @@ quantities necessary for assessing \acronym{BE} based on \acronym{ABEL}.
 Simulations for the \acronym{TIE} are performed at the upper (expanded) limit \emph{U}
 of the acceptance range. Due to the symmetry around 1 results are valid for the lower
 (expanded) limit \emph{L} as well.\cr
-\emph{U} at the \acronym{EMA}\enc{’}{'}s and Health Canada\enc{’}{'}s \code{CVcap}, the \acronym{GCC}\enc{’}{'}s for \emph{any} CVwR > 0.3:\preformatted{scABEL(CV=0.5, reg="EMA")[["upper"]]
+\emph{U} at the \acronym{EMA}\enc{’}{'}s and Health Canada\enc{’}{'}s \code{CVcap}, the \acronym{GCC}\enc{’}{'}s for \emph{any} CVwR > 0.3:\preformatted{scABEL(CV = 0.5, reg = "EMA")[["upper"]]
 [1] 1.43191
-scABEL(CV=0.57382, reg="HC")[["upper"]]
+scABEL(CV = 0.57382, reg = "HC")[["upper"]]
 [1] 1.5
-scABEL(CV=0.5, reg="GCC")[["upper"]]
+scABEL(CV = 0.5, reg = "GCC")[["upper"]]
 [1] 1.333333}
 Simulated studies are evaluated by ANOVA (Method A) as recommended in the
-\acronym{EMA}\enc{’}{'} Q&A-document and by intra-subject contrasts if \code{regulator="HC"}.
+\acronym{EMA}\enc{’}{'} Q&A-document and by intra-subject contrasts if \code{regulator = "HC"}.
 Health Canada requires a mixed-effects model which cannot be implemented in R.
 However, intra-subjects contrasts are a sufficiently close approximation.\cr
 The Type I Error in \acronym{ABEL} depends only on \code{CVwR} and -- to a
@@ -162,10 +162,9 @@ European Medicines Agency, Committee for Medicinal Products for Human Use. \emph
 
 European Medicines Agency, Committee for Medicinal Products for Human Use. \emph{Questions & Answers: positions on specific questions addressed to the Pharmacokinetics Working Party (PKWP).} London, 19 November 2015. \href{https://www.ema.europa.eu/en/documents/scientific-guideline/questions-answers-positions-specific-questions-addressed-pharmacokinetics-working-party_en.pdf}{EMA/618604/2008 Rev. 13}
 
-Health Canada, Therapeutic Products Directorate. \emph{Policy on Bioequivalence Standards for Highly Variable Drug Products.} Ottawa, 18 April 2016. \href{https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/announcements/notice-policy-bioequivalence-standards-highly-variable-drug-products.html}{16-104293-140}
+Health Canada, Therapeutic Products Directorate. \emph{Comparative Bioavailability Standards: Formulations Used for Systemic Effects, 2.1.1.8 Highly variable drug products} Ottawa, 08 June 2018. \href{https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/applications-submissions/guidance-documents/bioavailability-bioequivalence/comparative-bioavailability-standards-formulations-used-systemic-effects.html#a2.1.1.8}{online}
 
-Executive Board of the Health Ministers’ Council for GCC States. \emph{The GCC Guidelines for
-Bioequivalence.} 30 March 2016. \href{https://old.sfda.gov.sa/en/drug/drug_reg/Regulations/GCC_Guidelines_Bioequivalence.pdf}{Version 2.4}
+Executive Board of the Health Ministers’ Council for GCC States. \emph{The GCC Guidelines for Bioequivalence.} May 2021. \href{https://www.sfda.gov.sa/sites/default/files/2021-10/GCC_Guidelines_Bioequivalence.pdf}{Version 3.0}
 }
 
 \author{
@@ -179,7 +178,7 @@ of 0.80 (both for \code{alpha} and adjusted alpha) will be estimated. If
 If you are interested in other levels of power, use \code{\link{sampleN.scABEL.ad}}.
 
 The EMA\enc{’s}{'s} method is currently recommended in other jurisdictions as well (\emph{e.g.}, by the WHO;
-in ASEAN States, Australia, Brazil, Egypt, the Eurasian Economic Union, New Zealand, the Russian Federation, and the East African Community).\cr
+in ASEAN States, Australia, Brazil, Egypt, the Eurasian Economic Union, New Zealand, and the East African Community).\cr
 If CVwR > 30\%, \emph{fixed} wider limits of 0.7500--1.3333 are recommended by the Gulf Cooperation Council (Bahrain, Kuwait, Oman, Qatar, Saudi Arabia, United Arab Emirates).
 }
 \section{Designs}{
