@@ -63,10 +63,7 @@ If simulating for power (`theta0` within the BE limits), `nsims` defaults to 100
 #    design                        name   df
 #   "2x2x3"   2x2x3 replicate crossover 2n-3
 #   "2x2x4"   2x2x4 replicate crossover 3n-4
-#   "2x4x4"   2x4x4 replicate crossover 3n-4
 #   "2x3x3"   partial replicate (2x3x3) 2n-3
-#   "2x4x2"            Balaam’s (2x4x2)  n-2
-#  "2x2x2r" Liu’s 2x2x2 repeated x-over 3n-2
 ```
 The terminology of the `design` argument follows this pattern: `treatments x sequences x periods`.
 
@@ -100,7 +97,7 @@ res[, 4]  <- signif(as.numeric(res[, 4]), 5)
 print(res, row.names = FALSE)
 ```
 `CVswitch` is the lower cap of scaling, *i.e.*, if *CV*~wR~ is below this value reference-scaling is not acceptable. The upper cap of scaling `CVcap` differes between the EMA and HC, whereas for the FDA scaling is unlimited. The regulatory constant `r_const` is used for calculating the expanded limits (EMA, HC) and ‘implied limits’ (FDA) based on *s*~wR~: $\small{\left [ L,U \right ]=100\cdot\exp (\mp 0.760\cdot s_{\textrm{wR}})}$\
-Here `L` and `U` give the maximum acceptable expansion based on $\small{s_{\textrm{wR}}^{*}=\sqrt{\log_{e}(CV_\textrm{cap}^2)+1}}$. The point estimate constraint `pe_constr` [0.80, 1.25] is applicable in all regulations. Evaluation has to be performed by ANOVA (EMA) or a mixed-effects model (HC, FDA). For the latter intra-subject contrasts are a suffiently close approximation.
+Here `L` and `U` give the maximum acceptable expansion based on $\small{s_{\textrm{wR}}^{*}=\sqrt{\log_{e}(CV_\textrm{cap}^2)+1}}$. The point estimate constraint `pe_constr` [0.80, 1.25] is applicable in all regulations. Evaluation has to be performed by ANOVA (EMA) or a mixed-effects model (HC, FDA). For the latter intra-subject contrasts are a sufficiently close approximation.
  
 # Sample Size
 ## Highly Variable Drugs / Drug Products
@@ -166,7 +163,9 @@ Average Bioequivalence with Expanding Limits (ABEL). Defaults as above but `regu
 sampleN.scABEL(CV = 0.55, regulator = "HC")
 ```
 ### Gulf Cooperation Council
-Special case of ABEL: Conventional limits if *CV*~wR~ ≤30\% and widened limits of 0.7500--1.3333 otherwise. No upper cap of widening. Defaults as above but `regulator = "GCC"`.
+Special case of ABEL: Conventional limits if *CV*~wR~ ≤30\% and widened limits of 0.7500--1.3333 otherwise. 
+No upper cap of widening. Defaults as above but `regulator = "GCC"`.
+Only to compare with previous studies because since in Version 3.1 of 10 August 2022 the GCC implemented the EMA’s method.
 ```{r GCC}
 sampleN.scABEL(CV = 0.55, regulator = "GCC")
 ```
@@ -369,8 +368,9 @@ res$HC.cap[res$CV >= 0.57382] <- "upper"
 res$GCC.cap[res$CV <= 0.30]   <- res$GCC.cap[res$CV <= 0.30] <- "lower"
 print(res, row.names = FALSE)
 ```
-For all agencies the lower cap for scaling is 30\%. Whereas the upper cap for the EMA is at 50\% (expanded limits 69.84--143.19\%), for Health Canada it is at ~57.4\% (expanded limits 66.7--150.0\%). The GCC has no upper cap (fixed widened limits 75.00--133.33\%).
-
+For all agencies the lower cap for scaling is 30\%. Whereas the upper cap for the EMA is at 50\% (expanded limits 69.84--143.19\%), for Health Canada it is at ~57.4\% (expanded limits 66.7--150.0\%). 
+The GCC had no upper cap (fixed widened limits 75.00--133.33\%); since August 2022 
+the GCC uses the EMA’s method.
 ### FDA
 For the FDA there is no upper cap (scaling is unlimited).
 
